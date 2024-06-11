@@ -108,7 +108,6 @@
 //! ```
 
 #![deny(bare_trait_objects)]
-#![deny(unused_qualifications)]
 
 /// The Sandwich API.
 #[doc(inline)]
