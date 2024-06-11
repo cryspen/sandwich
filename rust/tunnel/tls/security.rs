@@ -145,35 +145,39 @@ fn assert_tls13_ke_compliance(
     quantum_safe_choice: QuantumSafeAlgoChoice,
     desired_strength: NISTSecurityStrengthBits,
 ) -> crate::Result<()> {
+    let mut result = Ok(());
     for k in kes {
-        let bit_strength = match KESettings::try_from(k.as_ref())? {
-            Hybrid(hybrid_bit_strength) => {
-                if hybrid_choice == pb_api::HybridAlgoChoice::HYBRID_ALGORITHMS_FORBID {
-                    Err(TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID_CASE)?
+        if let Ok(_) = result {
+            let bit_strength = match KESettings::try_from(k.as_ref())? {
+                Hybrid(hybrid_bit_strength) => {
+                    if hybrid_choice == pb_api::HybridAlgoChoice::HYBRID_ALGORITHMS_FORBID {
+                        Err(TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID_CASE)?
+                    }
+                    hybrid_bit_strength
                 }
-                hybrid_bit_strength
-            }
-            Classical(classical_bit_strength) => {
-                if classical_choice == pb_api::ClassicalAlgoChoice::CLASSICAL_ALGORITHMS_FORBID {
-                    Err(TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID_CASE)?
+                Classical(classical_bit_strength) => {
+                    if classical_choice == pb_api::ClassicalAlgoChoice::CLASSICAL_ALGORITHMS_FORBID
+                    {
+                        Err(TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID_CASE)?
+                    }
+                    classical_bit_strength
                 }
-                classical_bit_strength
-            }
-            QuantumSafe(quantum_bit_strength) => {
-                if quantum_safe_choice
-                    == pb_api::QuantumSafeAlgoChoice::QUANTUM_SAFE_ALGORITHMS_FORBID
-                {
-                    Err(TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID_CASE)?
+                QuantumSafe(quantum_bit_strength) => {
+                    if quantum_safe_choice
+                        == pb_api::QuantumSafeAlgoChoice::QUANTUM_SAFE_ALGORITHMS_FORBID
+                    {
+                        Err(TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID_CASE)?
+                    }
+                    quantum_bit_strength
                 }
-                quantum_bit_strength
-            }
-        };
+            };
 
-        if bit_strength < BitStrength::from(desired_strength) {
-            return Err(TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID_CASE.into());
+            if bit_strength < BitStrength::from(desired_strength) {
+                result = Err(TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID_CASE.into());
+            }
         }
     }
-    Ok(())
+    result
 }
 
 /// Checks that the TLS 1.3 Key Exchange (KE) and Ciphersuite are satisfied by the configuration.
@@ -198,10 +202,11 @@ fn assert_tls13_compliance(tls13_config: &TLSv13Config) -> crate::Result<()> {
 
 /// Checks that the policy is satisfied by the configuration.
 pub(crate) fn assert_compliance(cfg: &pb_api::Configuration) -> crate::Result<()> {
-    let Some(tls13) = super::get_tls13_config(cfg) else {
-        return Ok(());
-    };
-    assert_tls13_compliance(tls13)
+    if let Some(tls13) = super::get_tls13_config(cfg) {
+        assert_tls13_compliance(tls13)
+    } else {
+        Ok(())
+    }
 }
 
 #[cfg(test)]
