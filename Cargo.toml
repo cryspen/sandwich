@@ -30,7 +30,7 @@ path = "rust/lib.rs"
 
 [features]
 boringssl = []
-default = ["openssl1_1_1", "openssl3", "boringssl", "tunnel"]
+default = ["openssl3", "tunnel"]
 ffi = []
 openssl1_1_1 = []
 openssl3 = []
@@ -38,8 +38,8 @@ tunnel = []
 turbo = []
 
 [dependencies]
-boringssl = { path = "rust_vendor/boringssl" }
-openssl1_1_1 = { path = "rust_vendor/openssl1_1_1" }
+# boringssl = { path = "rust_vendor/boringssl" }
+# openssl1_1_1 = { path = "rust_vendor/openssl1_1_1" }
 openssl3 = { path = "rust_vendor/openssl3" }
 protobuf = "=3.3.0"
 sandwich-api-proto = { path = "rust_vendor/sandwich-api-proto" }
