@@ -82,18 +82,18 @@ pub(crate) fn tls_options_get_x509_verifier(
 pub(crate) fn x509_verifier_verify_emptiness(
     x509_verifier: Option<&X509Verifier>,
 ) -> Result<Option<&X509Verifier>> {
-    let Some(x509) = x509_verifier else {
-        return Ok(None);
-    };
-
-    if x509.trusted_cas.is_empty() && !x509.load_cas_from_default_verify_path {
-        Err((
-            pb::TLSConfigurationError::TLSCONFIGURATIONERROR_EMPTY,
-            "X.509 verifier empty",
-        )
-            .into())
+    if let Some(x509) = x509_verifier {
+        if x509.trusted_cas.is_empty() && !x509.load_cas_from_default_verify_path {
+            Err((
+                pb::TLSConfigurationError::TLSCONFIGURATIONERROR_EMPTY,
+                "X.509 verifier empty",
+            )
+                .into())
+        } else {
+            Ok(x509_verifier)
+        }
     } else {
-        Ok(x509_verifier)
+        Ok(None)
     }
 }
 
