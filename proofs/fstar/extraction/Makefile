@@ -101,7 +101,7 @@ FSTAR_FLAGS = --cmi \
 
 FSTAR = $(FSTAR_BIN) $(FSTAR_FLAGS)
 
-.depend: $(HINT_DIR) $(CACHE_DIR) $(ROOTS)
+.depend: $(HINT_DIR) $(CACHE_DIR) $(ROOTS) $(HACL_HOME)
 	$(info $(ROOTS))
 	$(FSTAR) --cmi --dep full $(ROOTS) --extract '* -Prims -LowStar -FStar' > $@
 
@@ -113,7 +113,7 @@ $(HINT_DIR):
 $(CACHE_DIR):
 	mkdir -p $@
 
-$(CACHE_DIR)/%.checked: | .depend $(HINT_DIR) $(CACHE_DIR)
+$(CACHE_DIR)/%.checked: | .depend $(HINT_DIR) $(CACHE_DIR) $(HACL_HOME)
 	$(FSTAR) $(OTHERFLAGS) $< $(ENABLE_HINTS) --hint_file $(HINT_DIR)/$(notdir $*).hints
 
 verify: $(addsuffix .checked, $(addprefix $(CACHE_DIR)/,$(ROOTS)))
