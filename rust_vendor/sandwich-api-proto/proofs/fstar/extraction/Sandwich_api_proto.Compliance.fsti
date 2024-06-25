@@ -6,10 +6,10 @@ open FStar.Mul
 let _ =
   (* This module has implicit dependencies, here we make them explicit. *)
   (* The implicit dependencies arise from typeclasses instances. *)
-  let open Protobuf.Enums in
-  let open Protobuf.Message in
-  let open Protobuf.Reflect.Runtime_types in
-  let open Protobuf.Reflect.Value in
+  // let open Protobuf.Enums in
+  // let open Protobuf.Message in
+  // let open Protobuf.Reflect.Runtime_types in
+  // let open Protobuf.Reflect.Value in
   ()
 
 type t_ClassicalAlgoChoice =
