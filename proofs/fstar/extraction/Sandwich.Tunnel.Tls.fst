@@ -135,12 +135,12 @@ let impl__TunnelSecurityRequirements__openssl3_assess_x509_store_error
           self.f_allow_expired_certificate &&
           error =. (cast (Openssl3.v_X509_V_ERR_CERT_HAS_EXPIRED <: u32) <: i32)
         then
-          let! hoist2:Rust_primitives.Hax.t_Never =
+          let! hoist3:Rust_primitives.Hax.t_Never =
             Core.Ops.Control_flow.ControlFlow_Break true
             <:
             Core.Ops.Control_flow.t_ControlFlow bool Rust_primitives.Hax.t_Never
           in
-          Core.Ops.Control_flow.ControlFlow_Continue (Rust_primitives.Hax.never_to_any hoist2)
+          Core.Ops.Control_flow.ControlFlow_Continue (Rust_primitives.Hax.never_to_any hoist3)
           <:
           Core.Ops.Control_flow.t_ControlFlow bool Prims.unit
         else

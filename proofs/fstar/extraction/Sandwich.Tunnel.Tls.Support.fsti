@@ -17,14 +17,21 @@ val tls_options_get_min_max_tls_version (tls_options: Sandwich_api_proto.Tls.t_T
       Prims.l_True
       (fun _ -> Prims.l_True)
 
-/// Builds a ciphersuite string from a list of ciphers.
-val build_ciphersuites_list
-      (#v_S #impl_995885649_: Type0)
-      {| i2: Core.Convert.t_AsRef v_S string |}
-      {| i3: Core.Iter.Traits.Collect.t_IntoIterator impl_995885649_ |}
-      (ciphers: impl_995885649_)
-      (invalid_chars: string)
-    : Prims.Pure (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error)
+/// Reads the content of a certificate as described in a protobuf message.
+val configuration_read_certificate (cert: Sandwich_api_proto.Certificate.t_Certificate)
+    : Prims.Pure
+      (Core.Result.t_Result
+          (Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat &
+            Sandwich.Support.Data_source.t_DataSource) Sandwich.Error.t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
+
+/// Reads the content of a private key as described in a protobuf message.
+val configuration_read_private_key (private_key: Sandwich_api_proto.Private_key.t_PrivateKey)
+    : Prims.Pure
+      (Core.Result.t_Result
+          (Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat &
+            Sandwich.Support.Data_source.t_DataSource) Sandwich.Error.t_Error)
       Prims.l_True
       (fun _ -> Prims.l_True)
 
@@ -50,20 +57,13 @@ val x509_verifier_verify_emptiness
       (Core.Result.t_Result (Core.Option.t_Option Sandwich_api_proto.Verifiers.t_X509Verifier)
           Sandwich.Error.t_Error) Prims.l_True (fun _ -> Prims.l_True)
 
-/// Reads the content of a certificate as described in a protobuf message.
-val configuration_read_certificate (cert: Sandwich_api_proto.Certificate.t_Certificate)
-    : Prims.Pure
-      (Core.Result.t_Result
-          (Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat &
-            Sandwich.Support.Data_source.t_DataSource) Sandwich.Error.t_Error)
-      Prims.l_True
-      (fun _ -> Prims.l_True)
-
-/// Reads the content of a private key as described in a protobuf message.
-val configuration_read_private_key (private_key: Sandwich_api_proto.Private_key.t_PrivateKey)
-    : Prims.Pure
-      (Core.Result.t_Result
-          (Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat &
-            Sandwich.Support.Data_source.t_DataSource) Sandwich.Error.t_Error)
+/// Builds a ciphersuite string from a list of ciphers.
+val build_ciphersuites_list
+      (#v_S #impl_995885649_: Type0)
+      {| i2: Core.Convert.t_AsRef v_S string |}
+      {| i3: Core.Iter.Traits.Collect.t_IntoIterator impl_995885649_ |}
+      (ciphers: impl_995885649_)
+      (invalid_chars: string)
+    : Prims.Pure (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error)
       Prims.l_True
       (fun _ -> Prims.l_True)

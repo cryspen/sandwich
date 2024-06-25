@@ -34,7 +34,8 @@ type t_KESettings =
 
 /// Implements [`From`] for [`BitStrength`].
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl: Core.Convert.t_From t_BitStrength Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits =
+let impl: Core.Convert.t_From #t_BitStrength
+  #Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits =
   {
     f_from_pre
     =
@@ -60,7 +61,7 @@ let impl: Core.Convert.t_From t_BitStrength Sandwich_api_proto.Compliance.t_NIST
 
 /// Implements [`TryFrom`] for [`KESettings`].
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1: Core.Convert.t_TryFrom t_KESettings string =
+let impl_1: Core.Convert.t_TryFrom #t_KESettings #string =
   {
     f_Error = Sandwich.Error.t_Error;
     f_try_from_pre = (fun (alg: string) -> true);
