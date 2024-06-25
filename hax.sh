@@ -2,57 +2,56 @@
 function extract() {
     # Extract the `sandwich` crate as F* code
     cargo hax -C -p sandwich \; \
-          into -i '-** +~sandwich::tunnel::tls::**' \
+          into -i '-** +!sandwich::tunnel::tls::**' \
           fstar --interfaces '+!** +sandwich::tunnel::tls::**'
+    # Using `hax` on branch `experimental-sandbox-tweaks`, we get a
+    # list of things to extract in "/tmp/idents.json"
 
-    # Extract the `sandwich-proto` crate as an F* interface
-    cargo hax -C -p sandwich-proto \; \
-          into -i '-** +:**' \
-          fstar --interfaces '+!**'
-}
-
-function list_names() {
-    if ! command -v jq &> /dev/null
-    then
-        echo "Please install `jq` (see https://jqlang.github.io/jq/)"
-        exit 1
-    fi
-
-    # Filters items: only the ones defined in `sandwich::tunner::tls` remains
-    function filter_sandwich_tunner_tls() {
-        jq '[.[] | select(.owner_id.krate == "sandwich") | select(.owner_id.path | map(try .data.TypeNs catch null) | .[0:2] == ["tunnel", "tls"])]'
+    function to_flags() {
+        grep -v 'Constructor$' | grep -v 'Field$' | grep -v "AssociatedItem$" | cut -d$'\t' -f2 | sort -u | xargs -IX printf '+:%s ' "X"
     }
     
-    # Find every definintion identifiers nested inside a JSON blob
-    function find_def_ids() {
-        jq '[.. | objects | select(has("krate")) | select(has("path"))] | unique'
-    }
+    # Compute a include clause
+    FLAGS=""
+    FLAGS=$(
+        {
+            echo "$FLAGS"
+            cat /tmp/idents.json
+        } | sort -u
+         )
 
-    # Print def ids in an human readable form
-    function prettyprint_def_id() {
-        jq '.[] | [.krate, (.path | [.[] | .data | if type == "string" then . else .[(keys | .[0])] end])] | flatten | join("::")' -r
-    }
+    export HAX_RUSTFMT="no"
+    CONTINUE=y
+    # Extract interfaces
+    while [ "$CONTINUE" = "y" ]; do
+        CONTINUE=n
+        for PACKAGE in openssl3 sandwich-api-proto sandwich-proto sandwich; do
+            rm /tmp/idents.json
+            cargo hax -C -p "$PACKAGE" \; into -i "-** $(echo "$FLAGS" | to_flags)-sandwich::tunnel::tls::**" --make-impl-interfaces-opaque fstar --interfaces '+!**'
+            PREV_FLAGS=$(echo "$FLAGS")
+            FLAGS=$(
+                {
+                    echo "$FLAGS"
+                    cat /tmp/idents.json
+                } | sort -u
+                 )
+            if [ "$FLAGS" = "$PREV_FLAGS" ]; then
+                echo "No new dependencies for this crate"
+            else
+                echo "New definitions found, iterating..."
+                CONTINUE=y
+            fi
+        done
+    done
 
-    cargo hax -C -p sandwich \; json -o - \
-        | filter_sandwich_tunner_tls \
-        | find_def_ids \
-              > external-names.json
-
-    cat external-names.json \
-        | prettyprint_def_id \
-        | grep -v '^sandwich::tunnel::tls' \
-        | grep -v '^core::' \
-        | grep -v '^alloc::' \
-               > external-names.txt
+    echo "$FLAGS" > FLAGS.backup
 }
 
 case $1 in
     extract) extract;;
-    list-names) list_names;;
     *)
         echo 'usage:'
         echo '  hax.sh extract     Extract crates as F*'
-        echo '  hax.sh list-names  List names of external dependencies for the `sandwich` crate'
         exit 1
     ;;
 esac
