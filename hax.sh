@@ -4,6 +4,10 @@ function extract() {
     cargo hax -C -p sandwich \; \
           into -i '-** +!sandwich::tunnel::tls::**' \
           fstar --interfaces '+!** +sandwich::tunnel::tls::**'
+}
+
+function extract_interfaces() {
+    extract
     # Using `hax` on branch `experimental-sandbox-tweaks`, we get a
     # list of things to extract in "/tmp/idents.json"
 
@@ -49,9 +53,11 @@ function extract() {
 
 case $1 in
     extract) extract;;
+    extract-interfaces) extract_interfaces;;
     *)
         echo 'usage:'
-        echo '  hax.sh extract     Extract crates as F*'
+        echo '  hax.sh extract             Extract `sandwich::tunnel::tls` as F*'
+        echo '  hax.sh extract-interfaces  Extract interfaces for dependencies as F*'
         exit 1
     ;;
 esac
