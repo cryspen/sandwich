@@ -3,4 +3,4 @@ module Openssl3
 open Core
 open FStar.Mul
 
-let v_X509_V_ERR_CERT_HAS_EXPIRED: u32 = Rust_primitives.Hax.dropped_body
+val v_X509_V_ERR_CERT_HAS_EXPIRED: u32 // = Rust_primitives.Hax.dropped_body
