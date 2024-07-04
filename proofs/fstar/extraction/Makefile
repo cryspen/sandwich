@@ -41,6 +41,8 @@ FSTAR_BIN     ?= $(shell command -v fstar.exe 1>&2 2> /dev/null && echo "fstar.e
 CACHE_DIR     ?= .cache
 HINT_DIR      ?= .hints
 
+OTHERFLAGS    ?= --admit_smt_queries true
+
 .PHONY: all verify clean
 
 all:
