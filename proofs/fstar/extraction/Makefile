@@ -8,7 +8,7 @@
 #  1. `fstar.exe` to be in PATH (alternatively, you can also set
 #     $FSTAR_HOME to be set to your F* repo/install directory)
 #
-#  2. `cargo`, `hax` and `rustup` to be installed and in PATH.
+#  2. `cargo`, `rustup`, `hax` and `jq` to be installed and in PATH.
 #
 #  3. the extracted Cargo crate to have "hax-lib" as a dependency:
 #     `hax-lib = { version = "0.1.0-pre.1", git = "https://github.com/hacspec/hax"}`
@@ -41,7 +41,9 @@ FSTAR_BIN     ?= $(shell command -v fstar.exe 1>&2 2> /dev/null && echo "fstar.e
 CACHE_DIR     ?= .cache
 HINT_DIR      ?= .hints
 
-OTHERFLAGS    ?= --admit_smt_queries true
+EXECUTABLES = cargo cargo-hax jq
+K := $(foreach exec,$(EXECUTABLES),\
+        $(if $(shell which $(exec)),some string,$(error "No $(exec) in PATH")))
 
 .PHONY: all verify clean
 
@@ -53,6 +55,11 @@ all:
 ${HACL_HOME}:
 	mkdir -p "${HACL_HOME}"
 	git clone --depth 1 https://github.com/hacl-star/hacl-star.git "${HACL_HOME}"
+
+# If no any F* file is detected, we run hax
+ifeq "$(wildcard *.fst *fsti)" ""
+$(shell cargo hax into fstar)
+endif
 
 # By default, we process all the files in the current directory
 ROOTS = $(wildcard *.fst *fsti)
@@ -95,17 +102,17 @@ export FINDLIBS
 
 FSTAR_INCLUDE_DIRS = $(HACL_HOME)/lib $(shell bash -c "$$FINDLIBS")
 
-FSTAR_FLAGS = --cmi \
-  --warn_error -331 \
+FSTAR_FLAGS = \
+  --warn_error '-331 -321 -274' \
   --cache_checked_modules --cache_dir $(CACHE_DIR) \
-  --already_cached "+Prims+FStar+LowStar+C+Spec.Loops+TestLib" \
   $(addprefix --include ,$(FSTAR_INCLUDE_DIRS))
+  # --already_cached "+Prims+FStar+LowStar+C+Spec.Loops+TestLib" \
 
 FSTAR = $(FSTAR_BIN) $(FSTAR_FLAGS)
 
 .depend: $(HINT_DIR) $(CACHE_DIR) $(ROOTS) $(HACL_HOME)
 	$(info $(ROOTS))
-	$(FSTAR) --cmi --dep full $(ROOTS) --extract '* -Prims -LowStar -FStar' > $@
+	$(FSTAR) --dep full $(ROOTS) --extract '* -Prims -LowStar -FStar' > $@
 
 include .depend
 
@@ -115,10 +122,10 @@ $(HINT_DIR):
 $(CACHE_DIR):
 	mkdir -p $@
 
-$(CACHE_DIR)/%.checked: | .depend $(HINT_DIR) $(CACHE_DIR) $(HACL_HOME)
+$(CACHE_DIR)/%.checked: | enforce_proof_libs .depend $(HINT_DIR) $(CACHE_DIR) $(HACL_HOME)
 	$(FSTAR) $(OTHERFLAGS) $< $(ENABLE_HINTS) --hint_file $(HINT_DIR)/$(notdir $*).hints
 
-verify: $(addsuffix .checked, $(addprefix $(CACHE_DIR)/,$(ROOTS)))
+verify: enforce_proof_libs $(addsuffix .checked, $(addprefix $(CACHE_DIR)/,$(ROOTS))) $(HACL_HOME)
 
 # Targets for interactive mode
 
@@ -130,6 +137,16 @@ verify: $(addsuffix .checked, $(addprefix $(CACHE_DIR)/,$(ROOTS)))
 	$(info $(FSTAR_FLAGS) \
 	  $(ENABLE_HINTS) --hint_file $(HINT_DIR)/$(basename $@).fsti.hints)
 
+hax.fst.config.json: enforce_proof_libs
+	@echo "$(FSTAR_INCLUDE_DIRS)" | jq --arg fstar "$(FSTAR_BIN)" -R 'split(" ") | {fstar_exe: $$fstar, includes: .}' > $@
+
+vscode: hax.fst.config.json
+
+enforce_proof_libs:
+	@if echo "$(FSTAR_INCLUDE_DIRS)" | grep 'proof-libs/fstar' > /dev/null; then :; else \
+printf '\n\033[1m\033[31mError: could not detect `proof-libs`!\033[0m\n  > Do you have `hax-lib` in your `Cargo.toml` as a **git** dependency?\n  \033[34m> Tip: you may want to run `cargo add --git https://github.com/hacspec/hax hax-lib`\033[0m\n\n' ; \
+false ; \
+fi
 
 # Clean targets
 
@@ -138,4 +155,3 @@ SHELL=bash
 clean:
 	rm -rf $(CACHE_DIR)/*
 	rm *.fst
-
