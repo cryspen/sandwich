@@ -13,7 +13,7 @@ path = "lib.rs"
 
 [dependencies]
 protobuf = "^3.3.0"
-
+protobuf-shim.workspace = true
 
 [build-dependencies]
 bazelisk = { path = "../bazelisk-rs" }

@@ -63,3 +63,12 @@ First error:
   - Module Alloc.Borrow does not belong to the list of modules in scope, namely:
   ...
 ```
+
+# Add definitions to `protobuf-shim`
+The process is the following:
+ 1. run `make` on, e.g. `./proofs/fstar/extraction`
+ 2. we get an F* error of the shape `Identifier not found: [Protobuf.somemodule.some_definition]`
+ 3. find some information about `some_definition`, looking on https://docs.rs/protobuf/latest/protobuf/
+ 4. define a shim for `some_definition` (you can use `unimplemented!()` in functions for instance) in `./protobuf-shim/src/somemodule.rs`
+ 5. run `./hax.sh extract-shim`
+ 6. go to step 1

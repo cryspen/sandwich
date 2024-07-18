@@ -51,13 +51,24 @@ function extract_interfaces() {
     echo "$FLAGS" > FLAGS.backup
 }
 
+function extract_shim() {
+    (
+        cd ./protobuf-shim
+        cargo hax into fstar --interfaces '+**'
+        cd proofs/fstar/extraction
+        ./link_shim.sh
+    )
+}
+
 case $1 in
     extract) extract;;
+    extract-shim) extract_shim;;
     extract-interfaces) extract_interfaces;;
     *)
         echo 'usage:'
         echo '  hax.sh extract             Extract `sandwich::tunnel::tls` as F*'
         echo '  hax.sh extract-interfaces  Extract interfaces for dependencies as F*'
+        echo '  hax.sh extract-shim        Extract `protobuf-shim`'
         exit 1
     ;;
 esac
