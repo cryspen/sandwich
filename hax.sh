@@ -56,7 +56,6 @@ function extract_shim() {
         cd ./protobuf-shim
         cargo hax into fstar --interfaces '+**'
         cd proofs/fstar/extraction
-        ./link_shim.sh
     )
 }
 

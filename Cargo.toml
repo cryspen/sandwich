@@ -50,7 +50,7 @@ tracing-proto = { path = "rust_vendor/tracing_proto"}
 hax-lib = { git = "https://github.com/hacspec/hax", branch = "cryspen-sandwich" }
 
 [workspace.dependencies]
-protobuf-shim = { path = "protobuf-shim" }
+protobuf-shim = { path = "protobuf-shim", package = "protobuf" }
 
 [dev-dependencies]
 testdata = { path = "rust_vendor/testdata" }
