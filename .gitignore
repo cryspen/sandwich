@@ -81,3 +81,12 @@ Sessionx.vim
 # VSCode #
 ##########
 .vscode/*
+
+#########
+# FSTAR #
+#########
+**/.cache
+FLAGS.backup
+**/.depend
+**/dep.graph
+**/bazelisk
