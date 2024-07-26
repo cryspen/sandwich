@@ -3,7 +3,6 @@ module Sandwich_api_proto.Verifiers
 open Core
 open FStar.Mul
 
-
 type t_EmptyVerifier = { f_special_fields:Protobuf.Special.t_SpecialFields }
 
 type t_SANMatcher = {
@@ -16,11 +15,10 @@ type t_SANVerifier = {
   f_special_fields:Protobuf.Special.t_SpecialFields
 }
 
-val t_TunnelVerifier: Type0
-// type t_TunnelVerifier = {
-//   f_verifier:Core.Option.t_Option Sandwich_api_proto.Verifiers.Tunnel_verifier.t_Verifier;
-//   f_special_fields:Protobuf.Special.t_SpecialFields
-// }
+type t_TunnelVerifier = {
+  f_verifier:Core.Option.t_Option Sandwich_api_proto.Verifiers.Tunnel_verifier.t_Verifier;
+  f_special_fields:Protobuf.Special.t_SpecialFields
+}
 
 type t_X509Verifier = {
   f_trusted_cas:Alloc.Vec.t_Vec Sandwich_api_proto.Certificate.t_Certificate Alloc.Alloc.t_Global;

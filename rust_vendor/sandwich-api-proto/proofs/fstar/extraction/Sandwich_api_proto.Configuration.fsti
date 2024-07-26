@@ -3,7 +3,11 @@ module Sandwich_api_proto.Configuration
 open Core
 open FStar.Mul
 
-val t_Configuration: Type0
+type t_Implementation =
+  | Implementation_IMPL_UNSPECIFIED : t_Implementation
+  | Implementation_IMPL_OPENSSL1_1_1_OQS : t_Implementation
+  | Implementation_IMPL_BORINGSSL_OQS : t_Implementation
+  | Implementation_IMPL_OPENSSL3_OQS_PROVIDER : t_Implementation
 
 type t_ClientOptions = {
   f_opts:Core.Option.t_Option Sandwich_api_proto.Configuration.Client_options.t_Opts;
@@ -15,8 +19,8 @@ type t_ServerOptions = {
   f_special_fields:Protobuf.Special.t_SpecialFields
 }
 
-// type t_Configuration = {
-//   f_impl___:Protobuf.Enum_or_unknown.t_EnumOrUnknown t_Implementation;
-//   f_opts:Core.Option.t_Option Sandwich_api_proto.Configuration.Configuration.t_Opts;
-//   f_special_fields:Protobuf.Special.t_SpecialFields
-// }
+type t_Configuration = {
+  f_impl___:Protobuf.Enum_or_unknown.t_EnumOrUnknown t_Implementation;
+  f_opts:Core.Option.t_Option Sandwich_api_proto.Configuration.Configuration.t_Opts;
+  f_special_fields:Protobuf.Special.t_SpecialFields
+}

@@ -4,7 +4,7 @@ open Core
 open FStar.Mul
 
 type t_DataSource = {
-  f_specifier:Core.Option.t_Option (*Sandwich_api_proto.Data_source.Data_source.t_Specifier*) unit;
+  f_specifier:Core.Option.t_Option Sandwich_api_proto.Data_source.Data_source.t_Specifier;
   f_special_fields:Protobuf.Special.t_SpecialFields
 }
 

@@ -15,6 +15,12 @@ type t_TLSv13Config = {
   f_special_fields:Protobuf.Special.t_SpecialFields
 }
 
+type t_X509Identity = {
+  f_certificate:Protobuf.Message_field.t_MessageField Sandwich_api_proto.Certificate.t_Certificate;
+  f_private_key:Protobuf.Message_field.t_MessageField Sandwich_api_proto.Private_key.t_PrivateKey;
+  f_special_fields:Protobuf.Special.t_SpecialFields
+}
+
 type t_TLSOptions = {
   f_tls12:Protobuf.Message_field.t_MessageField t_TLSv12Config;
   f_tls13:Protobuf.Message_field.t_MessageField t_TLSv13Config;

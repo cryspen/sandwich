@@ -15,7 +15,7 @@ type t_San =
   | San_IpAddress : Alloc.String.t_String -> t_San
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl:Protobuf.Oneof.t_Oneof #t_San
+val impl:Protobuf.Oneof.t_Oneof t_San
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_1:Protobuf.Oneof_full.t_OneofFull #t_San
+val impl_1:Protobuf.Oneof_full.t_OneofFull t_San
