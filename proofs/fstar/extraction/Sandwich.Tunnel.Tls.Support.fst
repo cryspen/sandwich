@@ -56,6 +56,7 @@ let configuration_read_certificate (cert: Sandwich_api_proto.Certificate.t_Certi
             let _:Prims.unit = temp_0_ in
             Core.Convert.f_into #Sandwich_proto.Errors.t_DataSourceError
               #Sandwich.Error.t_Error
+              #FStar.Tactics.Typeclasses.solve
               (Sandwich_proto.Errors.DataSourceError_DATASOURCEERROR_EMPTY
                 <:
                 Sandwich_proto.Errors.t_DataSourceError)
@@ -85,6 +86,7 @@ let configuration_read_certificate (cert: Sandwich_api_proto.Certificate.t_Certi
                         let _:Prims.unit = temp_0_ in
                         Core.Convert.f_into #Sandwich_proto.Errors.t_DataSourceError
                           #Sandwich.Error.t_Error
+                          #FStar.Tactics.Typeclasses.solve
                           (Sandwich_proto.Errors.DataSourceError_DATASOURCEERROR_EMPTY
                             <:
                             Sandwich_proto.Errors.t_DataSourceError)
@@ -114,6 +116,7 @@ let configuration_read_certificate (cert: Sandwich_api_proto.Certificate.t_Certi
                           let _:i32 = temp_0_ in
                           Core.Convert.f_into #Sandwich_proto.Errors.t_ASN1Error
                             #Sandwich.Error.t_Error
+                            #FStar.Tactics.Typeclasses.solve
                             (Sandwich_proto.Errors.ASN1Error_ASN1ERROR_INVALID_FORMAT
                               <:
                               Sandwich_proto.Errors.t_ASN1Error)
@@ -140,6 +143,7 @@ let configuration_read_certificate (cert: Sandwich_api_proto.Certificate.t_Certi
           Core.Result.Result_Err
           (Core.Convert.f_into #Sandwich_proto.Errors.t_DataSourceError
               #Sandwich.Error.t_Error
+              #FStar.Tactics.Typeclasses.solve
               (Sandwich_proto.Errors.DataSourceError_DATASOURCEERROR_EMPTY
                 <:
                 Sandwich_proto.Errors.t_DataSourceError)
@@ -165,6 +169,7 @@ let configuration_read_private_key (private_key: Sandwich_api_proto.Private_key.
             let _:Prims.unit = temp_0_ in
             Core.Convert.f_into #Sandwich_proto.Errors.t_DataSourceError
               #Sandwich.Error.t_Error
+              #FStar.Tactics.Typeclasses.solve
               (Sandwich_proto.Errors.DataSourceError_DATASOURCEERROR_EMPTY
                 <:
                 Sandwich_proto.Errors.t_DataSourceError)
@@ -194,6 +199,7 @@ let configuration_read_private_key (private_key: Sandwich_api_proto.Private_key.
                         let _:Prims.unit = temp_0_ in
                         Core.Convert.f_into #Sandwich_proto.Errors.t_DataSourceError
                           #Sandwich.Error.t_Error
+                          #FStar.Tactics.Typeclasses.solve
                           (Sandwich_proto.Errors.DataSourceError_DATASOURCEERROR_EMPTY
                             <:
                             Sandwich_proto.Errors.t_DataSourceError)
@@ -223,6 +229,7 @@ let configuration_read_private_key (private_key: Sandwich_api_proto.Private_key.
                           let _:i32 = temp_0_ in
                           Core.Convert.f_into #Sandwich_proto.Errors.t_ASN1Error
                             #Sandwich.Error.t_Error
+                            #FStar.Tactics.Typeclasses.solve
                             (Sandwich_proto.Errors.ASN1Error_ASN1ERROR_INVALID_FORMAT
                               <:
                               Sandwich_proto.Errors.t_ASN1Error)
@@ -249,6 +256,7 @@ let configuration_read_private_key (private_key: Sandwich_api_proto.Private_key.
           Core.Result.Result_Err
           (Core.Convert.f_into #Sandwich_proto.Errors.t_DataSourceError
               #Sandwich.Error.t_Error
+              #FStar.Tactics.Typeclasses.solve
               (Sandwich_proto.Errors.DataSourceError_DATASOURCEERROR_EMPTY
                 <:
                 Sandwich_proto.Errors.t_DataSourceError)
@@ -371,6 +379,7 @@ let configuration_get_mode_and_options
       Core.Option.t_Option (Sandwich.Tunnel.Context.t_Mode & Sandwich_api_proto.Tls.t_TLSOptions))
     (Core.Convert.f_into #Sandwich_proto.Errors.t_TLSConfigurationError
         #Sandwich.Error.t_Error
+        #FStar.Tactics.Typeclasses.solve
         (Sandwich_proto.Errors.TLSConfigurationError_TLSCONFIGURATIONERROR_EMPTY
           <:
           Sandwich_proto.Errors.t_TLSConfigurationError)
@@ -389,6 +398,7 @@ let tls_options_get_x509_verifier (tls_options: Sandwich_api_proto.Tls.t_TLSOpti
           Core.Option.t_Option Sandwich_api_proto.Tls.Tlsoptions.t_Peer_verifier)
         (Core.Convert.f_into #(Sandwich_proto.Errors.t_TLSConfigurationError & string)
             #Sandwich.Error.t_Error
+            #FStar.Tactics.Typeclasses.solve
             ((Sandwich_proto.Errors.TLSConfigurationError_TLSCONFIGURATIONERROR_EMPTY
                 <:
                 Sandwich_proto.Errors.t_TLSConfigurationError),
@@ -441,6 +451,7 @@ let x509_verifier_verify_emptiness
       Core.Result.Result_Err
       (Core.Convert.f_into #(Sandwich_proto.Errors.t_TLSConfigurationError & string)
           #Sandwich.Error.t_Error
+          #FStar.Tactics.Typeclasses.solve
           ((Sandwich_proto.Errors.TLSConfigurationError_TLSCONFIGURATIONERROR_EMPTY
               <:
               Sandwich_proto.Errors.t_TLSConfigurationError),
@@ -474,7 +485,12 @@ let build_ciphersuites_list
   let output:Alloc.String.t_String = Alloc.String.impl__String__new () in
   let output:Alloc.String.t_String =
     Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #i3.f_IntoIter
-          (Core.Iter.Traits.Collect.f_into_iter #impl_995885649_ ciphers <: i3.f_IntoIter)
+          #FStar.Tactics.Typeclasses.solve
+          (Core.Iter.Traits.Collect.f_into_iter #impl_995885649_
+              #FStar.Tactics.Typeclasses.solve
+              ciphers
+            <:
+            i3.f_IntoIter)
         <:
         i3.f_IntoIter)
       output
@@ -483,7 +499,12 @@ let build_ciphersuites_list
           let c:v_S = c in
           let! _:Prims.unit =
             if
-              Sandwich.Support.contains_any_of (Core.Convert.f_as_ref #v_S #string c <: string)
+              Sandwich.Support.contains_any_of (Core.Convert.f_as_ref #v_S
+                    #string
+                    #FStar.Tactics.Typeclasses.solve
+                    c
+                  <:
+                  string)
                 invalid_chars
             then
               let! hoist2:Rust_primitives.Hax.t_Never =
@@ -491,6 +512,7 @@ let build_ciphersuites_list
                 (Core.Result.Result_Err
                   (Core.Convert.f_into #Sandwich_proto.Errors.t_TLSConfigurationError
                       #Sandwich.Error.t_Error
+                      #FStar.Tactics.Typeclasses.solve
                       (Sandwich_proto.Errors.TLSConfigurationError_TLSCONFIGURATIONERROR_UNSUPPORTED_CONTROL_CHARACTERS
                         <:
                         Sandwich_proto.Errors.t_TLSConfigurationError))
@@ -514,7 +536,7 @@ let build_ciphersuites_list
           Core.Ops.Control_flow.ControlFlow_Continue
           (let output:Alloc.String.t_String =
               Alloc.String.impl__String__push_str output
-                (Core.Convert.f_as_ref #v_S #string c <: string)
+                (Core.Convert.f_as_ref #v_S #string #FStar.Tactics.Typeclasses.solve c <: string)
             in
             let output:Alloc.String.t_String = Alloc.String.impl__String__push output ':' in
             output)

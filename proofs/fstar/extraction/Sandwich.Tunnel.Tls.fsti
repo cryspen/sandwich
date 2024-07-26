@@ -23,7 +23,7 @@ val t_TlsVersion_cast_to_repr (x: t_TlsVersion)
 /// described in a given verifier `V`.
 /// A sanitizer check for security requirements described in a given verifier
 /// `V`.
-class t_VerifierSanitizer (#v_Self: Type0) (#v_V: Type0) = {
+class t_VerifierSanitizer (v_Self: Type0) (v_V: Type0) = {
   f_run_sanitizer_checks_pre:v_Self -> v_V -> bool;
   f_run_sanitizer_checks_post:
       v_Self ->
@@ -84,8 +84,8 @@ type t_TunnelSecurityRequirements = { f_allow_expired_certificate:bool }
 
 /// Instantiates a [`TunnelSecurityRequirements`] from a [`pb_api::X509Verifier`].
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl: Core.Convert.t_From #t_TunnelSecurityRequirements
-  #Sandwich_api_proto.Verifiers.t_X509Verifier =
+let impl: Core.Convert.t_From t_TunnelSecurityRequirements
+  Sandwich_api_proto.Verifiers.t_X509Verifier =
   {
     f_from_pre = (fun (x509_verifier: Sandwich_api_proto.Verifiers.t_X509Verifier) -> true);
     f_from_post
@@ -113,7 +113,7 @@ val impl__TunnelSecurityRequirements__new: Prims.unit
 
 /// Implements [`Default`] for [`TunnelSecurityRequirements`].
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1: Core.Default.t_Default #t_TunnelSecurityRequirements =
+let impl_1: Core.Default.t_Default t_TunnelSecurityRequirements =
   {
     f_default_pre = (fun (_: Prims.unit) -> true);
     f_default_post = (fun (_: Prims.unit) (out: t_TunnelSecurityRequirements) -> true);
@@ -135,8 +135,8 @@ val impl__TunnelSecurityRequirements__openssl3_assess_x509_store_error
 /// Implements [`VerifierSanitizer`] for [`TunnelSecurityRequirements`]
 /// with the [`pb_api::SANVerifier`] verifier.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_3: t_VerifierSanitizer #t_TunnelSecurityRequirements
-  #Sandwich_api_proto.Verifiers.t_SANVerifier =
+let impl_3: t_VerifierSanitizer t_TunnelSecurityRequirements
+  Sandwich_api_proto.Verifiers.t_SANVerifier =
   {
     f_run_sanitizer_checks_pre
     =
@@ -170,6 +170,7 @@ let impl_3: t_VerifierSanitizer #t_TunnelSecurityRequirements
                 (Core.Result.Result_Err
                   (Core.Convert.f_into #(Sandwich_proto.Errors.t_TunnelError & string)
                       #Sandwich.Error.t_Error
+                      #FStar.Tactics.Typeclasses.solve
                       ((Sandwich_proto.Errors.TunnelError_TUNNELERROR_VERIFIER
                           <:
                           Sandwich_proto.Errors.t_TunnelError),
@@ -199,11 +200,14 @@ let impl_3: t_VerifierSanitizer #t_TunnelSecurityRequirements
             let has_email, has_ip:(bool & bool) =
               Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(Core.Iter.Adapters.Enumerate.t_Enumerate
                       (Core.Slice.Iter.t_Iter Sandwich_api_proto.Verifiers.t_SANMatcher))
+                    #FStar.Tactics.Typeclasses.solve
                     (Core.Iter.Traits.Iterator.f_enumerate #(Core.Slice.Iter.t_Iter
                           Sandwich_api_proto.Verifiers.t_SANMatcher)
+                        #FStar.Tactics.Typeclasses.solve
                         (Core.Slice.impl__iter #Sandwich_api_proto.Verifiers.t_SANMatcher
                             (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec
                                     Sandwich_api_proto.Verifiers.t_SANMatcher Alloc.Alloc.t_Global)
+                                #FStar.Tactics.Typeclasses.solve
                                 verifier.Sandwich_api_proto.Verifiers.f_alt_names
                               <:
                               t_Slice Sandwich_api_proto.Verifiers.t_SANMatcher)
@@ -241,6 +245,7 @@ let impl_3: t_VerifierSanitizer #t_TunnelSecurityRequirements
                           (Core.Result.Result_Err
                             (Core.Convert.f_into #(Sandwich_proto.Errors.t_TunnelError & string)
                                 #Sandwich.Error.Code.t_ErrorCode
+                                #FStar.Tactics.Typeclasses.solve
                                 ((Sandwich_proto.Errors.TunnelError_TUNNELERROR_VERIFIER
                                     <:
                                     Sandwich_proto.Errors.t_TunnelError),
@@ -269,6 +274,7 @@ let impl_3: t_VerifierSanitizer #t_TunnelSecurityRequirements
                           (Core.Result.Result_Err
                             (Core.Convert.f_into #(Sandwich_proto.Errors.t_TunnelError & string)
                                 #Sandwich.Error.Code.t_ErrorCode
+                                #FStar.Tactics.Typeclasses.solve
                                 ((Sandwich_proto.Errors.TunnelError_TUNNELERROR_VERIFIER
                                     <:
                                     Sandwich_proto.Errors.t_TunnelError),
@@ -291,31 +297,24 @@ let impl_3: t_VerifierSanitizer #t_TunnelSecurityRequirements
                             Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode)
                       | Core.Option.Option_Some t ->
                         let res:Alloc.String.t_String =
-                          Alloc.Fmt.format (Core.Fmt.impl_2__new_v1 (Rust_primitives.unsize (let
-                                      list =
-                                        ["unsupported SAN type '"; "' at position "]
-                                      in
-                                      FStar.Pervasives.assert_norm
-                                      (Prims.eq2 (List.Tot.length list) 2);
-                                      Rust_primitives.Hax.array_of_list 2 list)
-                                  <:
-                                  t_Slice string)
-                                (Rust_primitives.unsize (let list =
-                                        [
-                                          Core.Fmt.Rt.impl_1__new_debug #Sandwich_api_proto.Verifiers.Sanmatcher.t_San
-                                            t
-                                          <:
-                                          Core.Fmt.Rt.t_Argument;
-                                          Core.Fmt.Rt.impl_1__new_display #usize i
-                                          <:
-                                          Core.Fmt.Rt.t_Argument
-                                        ]
-                                      in
-                                      FStar.Pervasives.assert_norm
-                                      (Prims.eq2 (List.Tot.length list) 2);
-                                      Rust_primitives.Hax.array_of_list 2 list)
-                                  <:
-                                  t_Slice Core.Fmt.Rt.t_Argument)
+                          Alloc.Fmt.format (Core.Fmt.impl_2__new_v1 (sz 2)
+                                (sz 2)
+                                (let list = ["unsupported SAN type '"; "' at position "] in
+                                  FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
+                                  Rust_primitives.Hax.array_of_list 2 list)
+                                (let list =
+                                    [
+                                      Core.Fmt.Rt.impl_1__new_debug #Sandwich_api_proto.Verifiers.Sanmatcher.t_San
+                                        t
+                                      <:
+                                      Core.Fmt.Rt.t_Argument;
+                                      Core.Fmt.Rt.impl_1__new_display #usize i
+                                      <:
+                                      Core.Fmt.Rt.t_Argument
+                                    ]
+                                  in
+                                  FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
+                                  Rust_primitives.Hax.array_of_list 2 list)
                               <:
                               Core.Fmt.t_Arguments)
                         in
@@ -324,6 +323,7 @@ let impl_3: t_VerifierSanitizer #t_TunnelSecurityRequirements
                           (Core.Convert.f_into #(Sandwich_proto.Errors.t_TunnelError &
                                 Alloc.String.t_String)
                               #Sandwich.Error.Code.t_ErrorCode
+                              #FStar.Tactics.Typeclasses.solve
                               ((Sandwich_proto.Errors.TunnelError_TUNNELERROR_VERIFIER
                                   <:
                                   Sandwich_proto.Errors.t_TunnelError),
@@ -337,27 +337,20 @@ let impl_3: t_VerifierSanitizer #t_TunnelSecurityRequirements
                           Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode)
                       | Core.Option.Option_None  ->
                         let res:Alloc.String.t_String =
-                          Alloc.Fmt.format (Core.Fmt.impl_2__new_v1 (Rust_primitives.unsize (let
-                                      list =
-                                        ["empty SANMatcher at position "]
-                                      in
-                                      FStar.Pervasives.assert_norm
-                                      (Prims.eq2 (List.Tot.length list) 1);
-                                      Rust_primitives.Hax.array_of_list 1 list)
-                                  <:
-                                  t_Slice string)
-                                (Rust_primitives.unsize (let list =
-                                        [
-                                          Core.Fmt.Rt.impl_1__new_display #usize i
-                                          <:
-                                          Core.Fmt.Rt.t_Argument
-                                        ]
-                                      in
-                                      FStar.Pervasives.assert_norm
-                                      (Prims.eq2 (List.Tot.length list) 1);
-                                      Rust_primitives.Hax.array_of_list 1 list)
-                                  <:
-                                  t_Slice Core.Fmt.Rt.t_Argument)
+                          Alloc.Fmt.format (Core.Fmt.impl_2__new_v1 (sz 1)
+                                (sz 1)
+                                (let list = ["empty SANMatcher at position "] in
+                                  FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
+                                  Rust_primitives.Hax.array_of_list 1 list)
+                                (let list =
+                                    [
+                                      Core.Fmt.Rt.impl_1__new_display #usize i
+                                      <:
+                                      Core.Fmt.Rt.t_Argument
+                                    ]
+                                  in
+                                  FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
+                                  Rust_primitives.Hax.array_of_list 1 list)
                               <:
                               Core.Fmt.t_Arguments)
                         in
@@ -366,6 +359,7 @@ let impl_3: t_VerifierSanitizer #t_TunnelSecurityRequirements
                           (Core.Convert.f_into #(Sandwich_proto.Errors.t_TunnelError &
                                 Alloc.String.t_String)
                               #Sandwich.Error.Code.t_ErrorCode
+                              #FStar.Tactics.Typeclasses.solve
                               ((Sandwich_proto.Errors.TunnelError_TUNNELERROR_VERIFIER
                                   <:
                                   Sandwich_proto.Errors.t_TunnelError),
@@ -388,7 +382,8 @@ let impl_3: t_VerifierSanitizer #t_TunnelSecurityRequirements
                     | Core.Result.Result_Err err ->
                       let! _:Prims.unit =
                         Core.Ops.Control_flow.ControlFlow_Break
-                        (Core.Result.Result_Err (Core.Convert.f_from err)
+                        (Core.Result.Result_Err
+                          (Core.Convert.f_from #FStar.Tactics.Typeclasses.solve err)
                           <:
                           Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
                         <:
@@ -413,8 +408,8 @@ let impl_3: t_VerifierSanitizer #t_TunnelSecurityRequirements
 /// Implements [`VerifierSanitizer`] for [`TunnelSecurityRequirements`]
 /// with the [`pb_api::TunnelVerifier`] verifier.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_4: t_VerifierSanitizer #t_TunnelSecurityRequirements
-  #Sandwich_api_proto.Verifiers.t_TunnelVerifier =
+let impl_4: t_VerifierSanitizer t_TunnelSecurityRequirements
+  Sandwich_api_proto.Verifiers.t_TunnelVerifier =
   {
     f_run_sanitizer_checks_pre
     =
@@ -445,6 +440,7 @@ let impl_4: t_VerifierSanitizer #t_TunnelSecurityRequirements
         (Sandwich_api_proto.Verifiers.Tunnel_verifier.Verifier_SanVerifier san_verifier) ->
         f_run_sanitizer_checks #t_TunnelSecurityRequirements
           #Sandwich_api_proto.Verifiers.t_SANVerifier
+          #FStar.Tactics.Typeclasses.solve
           self
           san_verifier
       | Core.Option.Option_Some
@@ -461,6 +457,7 @@ let impl_4: t_VerifierSanitizer #t_TunnelSecurityRequirements
         Core.Result.Result_Err
         (Core.Convert.f_into #(Sandwich_proto.Errors.t_TunnelError & string)
             #Sandwich.Error.t_Error
+            #FStar.Tactics.Typeclasses.solve
             ((Sandwich_proto.Errors.TunnelError_TUNNELERROR_VERIFIER
                 <:
                 Sandwich_proto.Errors.t_TunnelError),

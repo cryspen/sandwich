@@ -34,8 +34,7 @@ type t_KESettings =
 
 /// Implements [`From`] for [`BitStrength`].
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl: Core.Convert.t_From #t_BitStrength
-  #Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits =
+let impl: Core.Convert.t_From t_BitStrength Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits =
   {
     f_from_pre
     =
@@ -61,7 +60,7 @@ let impl: Core.Convert.t_From #t_BitStrength
 
 /// Implements [`TryFrom`] for [`KESettings`].
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1: Core.Convert.t_TryFrom #t_KESettings #string =
+let impl_1: Core.Convert.t_TryFrom t_KESettings string =
   {
     f_Error = Sandwich.Error.t_Error;
     f_try_from_pre = (fun (alg: string) -> true);
@@ -367,6 +366,7 @@ let impl_1: Core.Convert.t_TryFrom #t_KESettings #string =
         Core.Result.Result_Err
         (Core.Convert.f_into #Sandwich_proto.Errors.t_TLSConfigurationError
             #Sandwich.Error.t_Error
+            #FStar.Tactics.Typeclasses.solve
             (Sandwich_proto.Errors.TLSConfigurationError_TLSCONFIGURATIONERROR_INVALID_CASE
               <:
               Sandwich_proto.Errors.t_TLSConfigurationError))

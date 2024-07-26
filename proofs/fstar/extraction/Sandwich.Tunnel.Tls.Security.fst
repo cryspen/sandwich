@@ -34,6 +34,7 @@ let assert_tls13_ke_compliance
   let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
     Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(Core.Slice.Iter.t_Iter
             impl_488124255_)
+          #FStar.Tactics.Typeclasses.solve
           kes
         <:
         Core.Slice.Iter.t_Iter impl_488124255_)
@@ -46,7 +47,10 @@ let assert_tls13_ke_compliance
             (match
                 Core.Convert.f_try_from #t_KESettings
                   #string
-                  (Core.Convert.f_as_ref #impl_488124255_ #string k <: string)
+                  #FStar.Tactics.Typeclasses.solve
+                  (Core.Convert.f_as_ref #impl_488124255_ #string #FStar.Tactics.Typeclasses.solve k
+                    <:
+                    string)
                 <:
                 Core.Result.t_Result t_KESettings Sandwich.Error.t_Error
               with
@@ -77,7 +81,8 @@ let assert_tls13_ke_compliance
                             (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit
                         | Core.Result.Result_Err err ->
                           Core.Ops.Control_flow.ControlFlow_Break
-                          (Core.Result.Result_Err (Core.Convert.f_from err)
+                          (Core.Result.Result_Err
+                            (Core.Convert.f_from #FStar.Tactics.Typeclasses.solve err)
                             <:
                             Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
                           <:
@@ -117,7 +122,8 @@ let assert_tls13_ke_compliance
                             (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit
                         | Core.Result.Result_Err err ->
                           Core.Ops.Control_flow.ControlFlow_Break
-                          (Core.Result.Result_Err (Core.Convert.f_from err)
+                          (Core.Result.Result_Err
+                            (Core.Convert.f_from #FStar.Tactics.Typeclasses.solve err)
                             <:
                             Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
                           <:
@@ -157,7 +163,8 @@ let assert_tls13_ke_compliance
                             (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit
                         | Core.Result.Result_Err err ->
                           Core.Ops.Control_flow.ControlFlow_Break
-                          (Core.Result.Result_Err (Core.Convert.f_from err)
+                          (Core.Result.Result_Err
+                            (Core.Convert.f_from #FStar.Tactics.Typeclasses.solve err)
                             <:
                             Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
                           <:
@@ -179,6 +186,7 @@ let assert_tls13_ke_compliance
                     bit_strength <.
                     (Core.Convert.f_from #t_BitStrength
                         #Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits
+                        #FStar.Tactics.Typeclasses.solve
                         desired_strength
                       <:
                       t_BitStrength)
@@ -187,6 +195,7 @@ let assert_tls13_ke_compliance
                       Core.Result.Result_Err
                       (Core.Convert.f_into #Sandwich_proto.Errors.t_TLSConfigurationError
                           #Sandwich.Error.t_Error
+                          #FStar.Tactics.Typeclasses.solve
                           (Sandwich_proto.Errors.TLSConfigurationError_TLSCONFIGURATIONERROR_INVALID_CASE
                             <:
                             Sandwich_proto.Errors.t_TLSConfigurationError))
@@ -254,7 +263,9 @@ let assert_tls13_compliance (tls13_config: Sandwich_api_proto.Tls.t_TLSv13Config
   match
     assert_tls13_ke_compliance #Alloc.String.t_String
       (Core.Slice.impl__iter #Alloc.String.t_String
-          (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec Alloc.String.t_String Alloc.Alloc.t_Global) kes
+          (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec Alloc.String.t_String Alloc.Alloc.t_Global)
+              #FStar.Tactics.Typeclasses.solve
+              kes
             <:
             t_Slice Alloc.String.t_String)
         <:
