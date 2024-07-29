@@ -9,8 +9,8 @@ let _ =
   let open Protobuf.Enums in
   ()
 
-class t_EnumFull (#v_Self: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_14911585333008767414:Protobuf.Enums.t_Enum #v_Self;
+class t_EnumFull (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_14911585333008767414:Protobuf.Enums.t_Enum v_Self;
   f_descriptor_pre:v_Self -> bool;
   f_descriptor_post:v_Self -> Protobuf.Reflect.t_EnumValueDescriptor -> bool;
   f_descriptor:x0: v_Self

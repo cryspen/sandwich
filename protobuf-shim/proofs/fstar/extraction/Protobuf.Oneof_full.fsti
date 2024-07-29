@@ -10,8 +10,8 @@ let _ =
   ()
 
 /// Implemented by all oneof types when lite runtime is not enabled.
-class t_OneofFull (#v_Self: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_17062659898687969672:Protobuf.Oneof.t_Oneof #v_Self;
+class t_OneofFull (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_17062659898687969672:Protobuf.Oneof.t_Oneof v_Self;
   f_descriptor_pre:Prims.unit -> bool;
   f_descriptor_post:Prims.unit -> Protobuf.Reflect.t_OneofDescriptor -> bool;
   f_descriptor:x0: Prims.unit

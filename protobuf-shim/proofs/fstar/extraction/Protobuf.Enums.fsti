@@ -6,7 +6,7 @@ open FStar.Mul
 /// Trait implemented by all protobuf enum types.
 /// Additionally, generated enums also implement [`EnumFull`](crate::EnumFull) trait,
 /// which provides access to reflection.
-class t_Enum (#v_Self: Type0) = {
+class t_Enum (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_11581440318597584651:Core.Marker.t_Copy v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_11603873402755071380:Core.Fmt.t_Debug v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_3331601577671695699:Core.Default.t_Default v_Self;

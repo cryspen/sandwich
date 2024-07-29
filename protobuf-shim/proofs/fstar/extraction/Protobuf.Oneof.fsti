@@ -3,4 +3,4 @@ module Protobuf.Oneof
 open Core
 open FStar.Mul
 
-class t_Oneof (#v_Self: Type0) = { __marker_trait_t_Oneof:Prims.unit }
+class t_Oneof (v_Self: Type0) = { __marker_trait_t_Oneof:Prims.unit }

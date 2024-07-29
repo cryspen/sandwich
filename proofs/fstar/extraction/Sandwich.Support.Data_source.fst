@@ -6,7 +6,7 @@ open FStar.Mul
 (* item error backend: (reject_RawOrMutPointer) ExplicitRejection { reason: "a node of kind [Raw_pointer] have been found in the AST" }
 Last available AST for this item:
 
-/** Get the raw void pointer to the data held by the `DataSource`.*//***//** **WARNING**: because the returned value is a raw pointer, we cannot*//** enforce `DataSource` to outlive this returned pointer.*/#[allow(unused_imports)]#[allow(dead_code)]#[deny(bare_trait_objects)]#[feature(register_tool)]#[register_tool(_hax)]impl <'data: 'unk, Anonymous: 'unk>core::convert::t_From<raw_pointer!(),&sandwich::support::data_source::t_DataSource<lifetime!(something)>> for raw_pointer!(){fn f_from<Anonymous: 'unk>(ds: &sandwich::support::data_source::t_DataSource<lifetime!(something)>) -> raw_pointer!(){rust_primitives::hax::dropped_body}}
+/** Get the raw void pointer to the data held by the `DataSource`.*//***//** **WARNING**: because the returned value is a raw pointer, we cannot*//** enforce `DataSource` to outlive this returned pointer.*/#[allow(unused_imports)]#[allow(dead_code)]#[deny(bare_trait_objects)]#[feature(register_tool)]#[register_tool(_hax)]impl <'data: 'unk, Anonymous: 'unk>core::convert::t_From<raw_pointer!(),&sandwich::support::data_source::t_DataSource<lifetime!(something)>> for raw_pointer!(){#[allow(unused_imports)]#[allow(dead_code)]#[deny(bare_trait_objects)]#[feature(register_tool)]#[register_tool(_hax)]fn f_from<Anonymous: 'unk>(ds: &sandwich::support::data_source::t_DataSource<lifetime!(something)>) -> raw_pointer!(){rust_primitives::hax::dropped_body}}
 
 Last AST:
 

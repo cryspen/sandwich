@@ -3,8 +3,8 @@ module Protobuf.Reflect
 open Core
 open FStar.Mul
 
-type t_EnumDescriptor = { f_hax_placeholder:Prims.unit }
+type t_EnumDescriptor = { f__hax_placeholder:Prims.unit }
 
-type t_EnumValueDescriptor = { f_hax_placeholder:Prims.unit }
+type t_EnumValueDescriptor = { f__hax_placeholder:Prims.unit }
 
-type t_OneofDescriptor = { f_hax_placeholder:Prims.unit }
+type t_OneofDescriptor = { f__hax_placeholder:Prims.unit }
