@@ -84,16 +84,6 @@ impl<'data> std::fmt::Debug for DataSource<'data> {
     }
 }
 
-/// Get the raw void pointer to the data held by the `DataSource`.
-///
-/// **WARNING**: because the returned value is a raw pointer, we cannot
-/// enforce `DataSource` to outlive this returned pointer.
-impl<'data> From<&DataSource<'data>> for *const std::ffi::c_void {
-    fn from(ds: &DataSource<'data>) -> Self {
-        (unsafe { ds.as_raw() }) as Self
-    }
-}
-
 /// Implements [`DataSource`].
 impl<'data> DataSource<'data> {
     /// Returns the len of the data.
