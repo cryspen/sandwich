@@ -1,3 +1,15 @@
+
+
+pub mod message {
+    /// Trait which is implemented by all generated message.
+    ///
+    /// Note, by default all generated messages also implement [`MessageFull`](crate::MessageFull)
+    /// trait which provides access to reflection and features which depend on reflection
+    /// (text format and JSON serialization).
+    pub trait Message: Default + Clone + Send + Sync + Sized + PartialEq + 'static {}
+}
+
+
 pub mod enums {
     use core::fmt;
     /// Trait implemented by all protobuf enum types.
