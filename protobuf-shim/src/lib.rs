@@ -115,6 +115,26 @@ pub mod reflect {
     pub struct EnumDescriptor {
         _hax_placeholder: (),
     }
+
+    pub struct MessageDescriptor {
+        _hax_placeholder: (),
+    }
+
+    pub mod runtime_types {
+        pub enum RuntimeType {
+            I32,
+            I64,
+            U32,
+            U64,
+            F32,
+            F64,
+            Bool,
+            String,
+            VecU8,
+            Enum(super::EnumDescriptor),
+            Message(super::MessageDescriptor),
+        }
+    }
 }
 
 pub mod marker {
