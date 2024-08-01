@@ -179,6 +179,10 @@ pub mod reflect {
     pub struct SpecialFields {
         _hax_placeholder: (),
     }
+
+    pub mod value {
+        const _HAX_PLACEHOLDER: () = ();
+    }
 }
 
 pub mod marker {
