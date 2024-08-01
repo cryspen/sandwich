@@ -20,19 +20,6 @@ type t_OneofDescriptor = { f__hax_placeholder:Prims.unit }
 
 type t_SpecialFields = { f__hax_placeholder:Prims.unit }
 
-type t_Value = {
-  f_kind:Core.Option.t_Option t_Kind;
-  f_special_fields:t_SpecialFields
-}
-
-
-type t_Struct = {
-  f_fields:Std.Collections.Hash.Map.t_HashMap Alloc.String.t_String
-    t_Value
-    Std.Hash.Random.t_RandomState;
-  f_special_fields:t_SpecialFields
-}
-
 type t_Kind =
   | Kind_NullValue : Protobuf.Enum_or_unknown.t_EnumOrUnknown t_NullValue -> t_Kind
   | Kind_NumberValue : u64 -> t_Kind
@@ -41,7 +28,19 @@ type t_Kind =
   | Kind_StructValue : t_Struct -> t_Kind
   | Kind_ListValue : t_ListValue -> t_Kind
 
-type t_ListValue = {
+and t_ListValue = {
   f_values:Alloc.Vec.t_Vec t_Value Alloc.Alloc.t_Global;
+  f_special_fields:t_SpecialFields
+}
+
+and t_Struct = {
+  f_fields:Std.Collections.Hash.Map.t_HashMap Alloc.String.t_String
+    t_Value
+    Std.Hash.Random.t_RandomState;
+  f_special_fields:t_SpecialFields
+}
+
+and t_Value = {
+  f_kind:Core.Option.t_Option t_Kind;
   f_special_fields:t_SpecialFields
 }
