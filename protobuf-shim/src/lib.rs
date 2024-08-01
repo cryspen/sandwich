@@ -147,6 +147,38 @@ pub mod reflect {
             Message(super::MessageDescriptor),
         }
     }
+
+    pub struct Value {
+        pub kind: Option<Kind>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct Struct {
+        pub fields: std::collections::HashMap<String, Value>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub enum Kind {
+        NullValue(super::enum_or_unknown::EnumOrUnknown<NullValue>),
+        NumberValue(u64), // should be f64 but hax doesn't implement Fstar float yet.
+        StringValue(String),
+        BoolValue(bool),
+        StructValue(Struct),
+        ListValue(ListValue),
+    }
+
+    pub enum NullValue {
+        NULL_VALUE = 0,
+    }
+
+    pub struct ListValue {
+        pub values: Vec<Value>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct SpecialFields {
+        _hax_placeholder: (),
+    }
 }
 
 pub mod marker {
