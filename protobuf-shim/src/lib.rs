@@ -9,6 +9,32 @@ pub mod message {
     pub trait Message: Default + Clone + Send + Sync + Sized + PartialEq + 'static {}
 }
 
+pub mod message_full {
+    use std::fmt;
+    use crate::message::Message;
+    use crate::reflect::value::ProtobufValue;
+
+    /// Trait implemented for all the generated messages, except when lite runtime is enabled.
+    ///
+    /// When lite runtime is enabled, only `MessageLite` is implemented.
+    ///
+    /// * Generated messages are generated from `.proto` files
+    /// * Dynamic messages can be created without code generation using only parsed proto files
+    ///   (see [FileDescriptor::new_dynamic](crate::reflect::FileDescriptor::new_dynamic)).
+    ///
+    /// Also, generated messages implement `Default + PartialEq`
+    ///
+    /// This trait is sized, there's accompanying [`MessageDyn`](crate::MessageDyn) trait
+    /// which is implemented for all messages which can be used in functions
+    /// without making message a function type parameter.
+    ///
+    /// ## `Display`
+    ///
+    /// [`Display`](fmt::Display) implementation for messages does protobuf text format.
+    /// See [`text_format`](crate::text_format) for more details.
+    pub trait MessageFull: Message + ProtobufValue + fmt::Debug + fmt::Display {}
+}
+
 
 pub mod enums {
     use core::fmt;
@@ -181,7 +207,7 @@ pub mod reflect {
     }
 
     pub mod value {
-        const _HAX_PLACEHOLDER: () = ();
+        pub trait ProtobufValue: Clone + Default + std::fmt::Debug + Send + Sync + Sized + 'static {}
     }
 }
 
