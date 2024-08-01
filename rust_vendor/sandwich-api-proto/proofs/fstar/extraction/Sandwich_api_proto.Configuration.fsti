@@ -19,12 +19,12 @@ type t_ServerOptions = {
   f_special_fields:Protobuf.Special.t_SpecialFields
 }
 
-type t_Configuration = {
-  f_impl___:Protobuf.Enum_or_unknown.t_EnumOrUnknown t_Implementation;
-  f_opts:Core.Option.t_Option Sandwich_api_proto.Configuration.Configuration.t_Opts;
-  f_special_fields:Protobuf.Special.t_SpecialFields
-}
-
 type t_Opts =
   | Opts_Client : Sandwich_api_proto.Configuration.t_ClientOptions -> t_Opts
   | Opts_Server : Sandwich_api_proto.Configuration.t_ServerOptions -> t_Opts
+
+type t_Configuration = {
+  f_impl___:Protobuf.Enum_or_unknown.t_EnumOrUnknown t_Implementation;
+  f_opts:Core.Option.t_Option t_Opts;
+  f_special_fields:Protobuf.Special.t_SpecialFields
+}
