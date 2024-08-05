@@ -81,24 +81,25 @@ fn get_tls13_config(cfg: &pb_api::Configuration) -> Option<&pb_api::TLSv13Config
         pb_configuration::Opts::Client(c) => {
             let opts = c.opts.as_ref()?;
             match opts {
-                pb_api::configuration::client_options::Opts::Tls(tls) => {
-                    tls.common_options.as_ref()
-                }
+                pb_api::configuration::client_options::Opts::Tls(tls) => tls
+                    .common_options
+                    .as_ref()
+                    .and_then(|opt| opt.tls13.as_ref()),
                 _ => unreachable!(),
             }
         }
         pb_configuration::Opts::Server(c) => {
             let opts = c.opts.as_ref()?;
             match opts {
-                pb_api::configuration::server_options::Opts::Tls(tls) => {
-                    tls.common_options.as_ref()
-                }
+                pb_api::configuration::server_options::Opts::Tls(tls) => tls
+                    .common_options
+                    .as_ref()
+                    .and_then(|opt| opt.tls13.as_ref()),
                 _ => unreachable!(),
             }
         }
         _ => unreachable!(),
     }
-    .and_then(|common_options| common_options.tls13.as_ref())
 }
 
 /// A set of security requirements that can be updated with new requirements
@@ -178,13 +179,8 @@ impl TunnelSecurityRequirements {
     /// that there is a security issue here.
     #[cfg(feature = "openssl3")]
     pub(crate) fn openssl3_assess_x509_store_error(&self, error: std::ffi::c_int) -> bool {
-        if self.allow_expired_certificate
+        self.allow_expired_certificate
             && error == (openssl3::X509_V_ERR_CERT_HAS_EXPIRED as std::ffi::c_int)
-        {
-            return true;
-        }
-
-        false
     }
 }
 
@@ -204,46 +200,51 @@ impl VerifierSanitizer<pb_api::SANVerifier> for TunnelSecurityRequirements {
 
         let mut has_email = false;
         let mut has_ip = false;
+        let mut result = Ok(());
         for (i, san) in verifier.alt_names.iter().enumerate() {
-            match san.san.as_ref() {
-                Some(San::Dns(_)) => Ok::<(), crate::error::ErrorCode>(()),
-                Some(San::Email(_)) => {
-                    if has_email {
-                        Err((
+            if result.is_ok() {
+                match san.san.as_ref() {
+                    Some(San::Dns(_)) => (),
+                    Some(San::Email(_)) => {
+                        if has_email {
+                            result = Err((
+                                TunnelError::TUNNELERROR_VERIFIER,
+                                "cannot have multiple email addresses as SANs",
+                            )
+                                .into())
+                        } else {
+                            has_email = true
+                        }
+                    }
+                    Some(San::IpAddress(_)) => {
+                        if has_ip {
+                            result = Err((
+                                TunnelError::TUNNELERROR_VERIFIER,
+                                "cannot have multiple IP addresses as SANs",
+                            )
+                                .into())
+                        } else {
+                            has_ip = true
+                        }
+                    }
+                    Some(t) => {
+                        result = Err((
                             TunnelError::TUNNELERROR_VERIFIER,
-                            "cannot have multiple email addresses as SANs",
+                            format!("unsupported SAN type '{t:?}' at position {i}"),
                         )
                             .into())
-                    } else {
-                        has_email = true;
-                        Ok(())
                     }
-                }
-                Some(San::IpAddress(_)) => {
-                    if has_ip {
-                        Err((
+                    None => {
+                        result = Err((
                             TunnelError::TUNNELERROR_VERIFIER,
-                            "cannot have multiple IP addresses as SANs",
+                            format!("empty SANMatcher at position {i}"),
                         )
                             .into())
-                    } else {
-                        has_ip = true;
-                        Ok(())
                     }
-                }
-                Some(t) => Err((
-                    TunnelError::TUNNELERROR_VERIFIER,
-                    format!("unsupported SAN type '{t:?}' at position {i}"),
-                )
-                    .into()),
-                None => Err((
-                    TunnelError::TUNNELERROR_VERIFIER,
-                    format!("empty SANMatcher at position {i}"),
-                )
-                    .into()),
-            }?;
+                };
+            }
         }
-        Ok(())
+        result
     }
 }
 
