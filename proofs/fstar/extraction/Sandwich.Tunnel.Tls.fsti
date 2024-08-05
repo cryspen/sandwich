@@ -165,7 +165,7 @@ let impl_3: t_VerifierSanitizer t_TunnelSecurityRequirements
                 #Alloc.Alloc.t_Global
                 verifier.Sandwich_api_proto.Verifiers.f_alt_names
             then
-              let! hoist4:Rust_primitives.Hax.t_Never =
+              let! hoist2:Rust_primitives.Hax.t_Never =
                 Core.Ops.Control_flow.ControlFlow_Break
                 (Core.Result.Result_Err
                   (Core.Convert.f_into #(Sandwich_proto.Errors.t_TunnelError & string)
@@ -184,7 +184,7 @@ let impl_3: t_VerifierSanitizer t_TunnelSecurityRequirements
                   (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
                   Rust_primitives.Hax.t_Never
               in
-              Core.Ops.Control_flow.ControlFlow_Continue (Rust_primitives.Hax.never_to_any hoist4)
+              Core.Ops.Control_flow.ControlFlow_Continue (Rust_primitives.Hax.never_to_any hoist2)
               <:
               Core.Ops.Control_flow.t_ControlFlow
                 (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit
@@ -197,7 +197,13 @@ let impl_3: t_VerifierSanitizer t_TunnelSecurityRequirements
           Core.Ops.Control_flow.ControlFlow_Continue
           (let has_email:bool = false in
             let has_ip:bool = false in
-            let has_email, has_ip:(bool & bool) =
+            let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
+              Core.Result.Result_Ok (() <: Prims.unit)
+              <:
+              Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+            in
+            let has_email, has_ip, result:(bool & bool &
+              Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) =
               Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(Core.Iter.Adapters.Enumerate.t_Enumerate
                       (Core.Slice.Iter.t_Iter Sandwich_api_proto.Verifiers.t_SANMatcher))
                     #FStar.Tactics.Typeclasses.solve
@@ -219,186 +225,166 @@ let impl_3: t_VerifierSanitizer t_TunnelSecurityRequirements
                   <:
                   Core.Iter.Adapters.Enumerate.t_Enumerate
                   (Core.Slice.Iter.t_Iter Sandwich_api_proto.Verifiers.t_SANMatcher))
-                (has_email, has_ip <: (bool & bool))
+                (has_email, has_ip, result
+                  <:
+                  (bool & bool & Core.Result.t_Result Prims.unit Sandwich.Error.t_Error))
                 (fun temp_0_ temp_1_ ->
-                    let has_email, has_ip:(bool & bool) = temp_0_ in
-                    let i, san:(usize & Sandwich_api_proto.Verifiers.t_SANMatcher) = temp_1_ in
-                    let (has_email, has_ip), hoist5:((bool & bool) &
-                      Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode) =
-                      match
-                        Core.Option.impl__as_ref #Sandwich_api_proto.Verifiers.Sanmatcher.t_San
-                          san.Sandwich_api_proto.Verifiers.f_san
-                      with
-                      | Core.Option.Option_Some (Sandwich_api_proto.Verifiers.Sanmatcher.San_Dns _) ->
-                        (has_email, has_ip <: (bool & bool)),
-                        (Core.Result.Result_Ok (() <: Prims.unit)
-                          <:
-                          Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode)
-                        <:
-                        ((bool & bool) &
-                          Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode)
-                      | Core.Option.Option_Some
-                        (Sandwich_api_proto.Verifiers.Sanmatcher.San_Email _) ->
-                        if has_email
-                        then
-                          (has_email, has_ip <: (bool & bool)),
-                          (Core.Result.Result_Err
-                            (Core.Convert.f_into #(Sandwich_proto.Errors.t_TunnelError & string)
-                                #Sandwich.Error.Code.t_ErrorCode
-                                #FStar.Tactics.Typeclasses.solve
-                                ((Sandwich_proto.Errors.TunnelError_TUNNELERROR_VERIFIER
-                                    <:
-                                    Sandwich_proto.Errors.t_TunnelError),
-                                  "cannot have multiple email addresses as SANs"
-                                  <:
-                                  (Sandwich_proto.Errors.t_TunnelError & string)))
-                            <:
-                            Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode)
-                          <:
-                          ((bool & bool) &
-                            Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode)
-                        else
-                          let has_email:bool = true in
-                          (has_email, has_ip <: (bool & bool)),
-                          (Core.Result.Result_Ok (() <: Prims.unit)
-                            <:
-                            Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode)
-                          <:
-                          ((bool & bool) &
-                            Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode)
-                      | Core.Option.Option_Some
-                        (Sandwich_api_proto.Verifiers.Sanmatcher.San_IpAddress _) ->
-                        if has_ip
-                        then
-                          (has_email, has_ip <: (bool & bool)),
-                          (Core.Result.Result_Err
-                            (Core.Convert.f_into #(Sandwich_proto.Errors.t_TunnelError & string)
-                                #Sandwich.Error.Code.t_ErrorCode
-                                #FStar.Tactics.Typeclasses.solve
-                                ((Sandwich_proto.Errors.TunnelError_TUNNELERROR_VERIFIER
-                                    <:
-                                    Sandwich_proto.Errors.t_TunnelError),
-                                  "cannot have multiple IP addresses as SANs"
-                                  <:
-                                  (Sandwich_proto.Errors.t_TunnelError & string)))
-                            <:
-                            Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode)
-                          <:
-                          ((bool & bool) &
-                            Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode)
-                        else
-                          let has_ip:bool = true in
-                          (has_email, has_ip <: (bool & bool)),
-                          (Core.Result.Result_Ok (() <: Prims.unit)
-                            <:
-                            Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode)
-                          <:
-                          ((bool & bool) &
-                            Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode)
-                      | Core.Option.Option_Some t ->
-                        let res:Alloc.String.t_String =
-                          Alloc.Fmt.format (Core.Fmt.impl_2__new_v1 (sz 2)
-                                (sz 2)
-                                (let list = ["unsupported SAN type '"; "' at position "] in
-                                  FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
-                                  Rust_primitives.Hax.array_of_list 2 list)
-                                (let list =
-                                    [
-                                      Core.Fmt.Rt.impl_1__new_debug #Sandwich_api_proto.Verifiers.Sanmatcher.t_San
-                                        t
-                                      <:
-                                      Core.Fmt.Rt.t_Argument;
-                                      Core.Fmt.Rt.impl_1__new_display #usize i
-                                      <:
-                                      Core.Fmt.Rt.t_Argument
-                                    ]
-                                  in
-                                  FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
-                                  Rust_primitives.Hax.array_of_list 2 list)
-                              <:
-                              Core.Fmt.t_Arguments)
-                        in
-                        (has_email, has_ip <: (bool & bool)),
-                        (Core.Result.Result_Err
-                          (Core.Convert.f_into #(Sandwich_proto.Errors.t_TunnelError &
-                                Alloc.String.t_String)
-                              #Sandwich.Error.Code.t_ErrorCode
-                              #FStar.Tactics.Typeclasses.solve
-                              ((Sandwich_proto.Errors.TunnelError_TUNNELERROR_VERIFIER
-                                  <:
-                                  Sandwich_proto.Errors.t_TunnelError),
-                                res
-                                <:
-                                (Sandwich_proto.Errors.t_TunnelError & Alloc.String.t_String)))
-                          <:
-                          Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode)
-                        <:
-                        ((bool & bool) &
-                          Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode)
-                      | Core.Option.Option_None  ->
-                        let res:Alloc.String.t_String =
-                          Alloc.Fmt.format (Core.Fmt.impl_2__new_v1 (sz 1)
-                                (sz 1)
-                                (let list = ["empty SANMatcher at position "] in
-                                  FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
-                                  Rust_primitives.Hax.array_of_list 1 list)
-                                (let list =
-                                    [
-                                      Core.Fmt.Rt.impl_1__new_display #usize i
-                                      <:
-                                      Core.Fmt.Rt.t_Argument
-                                    ]
-                                  in
-                                  FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
-                                  Rust_primitives.Hax.array_of_list 1 list)
-                              <:
-                              Core.Fmt.t_Arguments)
-                        in
-                        (has_email, has_ip <: (bool & bool)),
-                        (Core.Result.Result_Err
-                          (Core.Convert.f_into #(Sandwich_proto.Errors.t_TunnelError &
-                                Alloc.String.t_String)
-                              #Sandwich.Error.Code.t_ErrorCode
-                              #FStar.Tactics.Typeclasses.solve
-                              ((Sandwich_proto.Errors.TunnelError_TUNNELERROR_VERIFIER
-                                  <:
-                                  Sandwich_proto.Errors.t_TunnelError),
-                                res
-                                <:
-                                (Sandwich_proto.Errors.t_TunnelError & Alloc.String.t_String)))
-                          <:
-                          Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode)
-                        <:
-                        ((bool & bool) &
-                          Core.Result.t_Result Prims.unit Sandwich.Error.Code.t_ErrorCode)
+                    let has_email, has_ip, result:(bool & bool &
+                      Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) =
+                      temp_0_
                     in
-                    match hoist5 with
-                    | Core.Result.Result_Ok ok ->
-                      Core.Ops.Control_flow.ControlFlow_Continue
-                      (has_email, has_ip <: (bool & bool))
-                      <:
-                      Core.Ops.Control_flow.t_ControlFlow
-                        (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) (bool & bool)
-                    | Core.Result.Result_Err err ->
-                      let! _:Prims.unit =
-                        Core.Ops.Control_flow.ControlFlow_Break
-                        (Core.Result.Result_Err
-                          (Core.Convert.f_from #FStar.Tactics.Typeclasses.solve err)
+                    let i, san:(usize & Sandwich_api_proto.Verifiers.t_SANMatcher) = temp_1_ in
+                    if Core.Result.impl__is_ok #Prims.unit #Sandwich.Error.t_Error result <: bool
+                    then
+                      let has_email, has_ip, result:(bool & bool &
+                        Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) =
+                        match
+                          Core.Option.impl__as_ref #Sandwich_api_proto.Verifiers.Sanmatcher.t_San
+                            san.Sandwich_api_proto.Verifiers.f_san
+                        with
+                        | Core.Option.Option_Some
+                          (Sandwich_api_proto.Verifiers.Sanmatcher.San_Dns _) ->
+                          has_email, has_ip, result
                           <:
-                          Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
-                        <:
-                        Core.Ops.Control_flow.t_ControlFlow
-                          (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit
+                          (bool & bool & Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+                        | Core.Option.Option_Some
+                          (Sandwich_api_proto.Verifiers.Sanmatcher.San_Email _) ->
+                          if has_email
+                          then
+                            has_email,
+                            has_ip,
+                            (Core.Result.Result_Err
+                              (Core.Convert.f_into #(Sandwich_proto.Errors.t_TunnelError & string)
+                                  #Sandwich.Error.t_Error
+                                  #FStar.Tactics.Typeclasses.solve
+                                  ((Sandwich_proto.Errors.TunnelError_TUNNELERROR_VERIFIER
+                                      <:
+                                      Sandwich_proto.Errors.t_TunnelError),
+                                    "cannot have multiple email addresses as SANs"
+                                    <:
+                                    (Sandwich_proto.Errors.t_TunnelError & string)))
+                              <:
+                              Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+                            <:
+                            (bool & bool & Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+                          else
+                            true, has_ip, result
+                            <:
+                            (bool & bool & Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+                        | Core.Option.Option_Some
+                          (Sandwich_api_proto.Verifiers.Sanmatcher.San_IpAddress _) ->
+                          if has_ip
+                          then
+                            has_email,
+                            has_ip,
+                            (Core.Result.Result_Err
+                              (Core.Convert.f_into #(Sandwich_proto.Errors.t_TunnelError & string)
+                                  #Sandwich.Error.t_Error
+                                  #FStar.Tactics.Typeclasses.solve
+                                  ((Sandwich_proto.Errors.TunnelError_TUNNELERROR_VERIFIER
+                                      <:
+                                      Sandwich_proto.Errors.t_TunnelError),
+                                    "cannot have multiple IP addresses as SANs"
+                                    <:
+                                    (Sandwich_proto.Errors.t_TunnelError & string)))
+                              <:
+                              Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+                            <:
+                            (bool & bool & Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+                          else
+                            has_email, true, result
+                            <:
+                            (bool & bool & Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+                        | Core.Option.Option_Some t ->
+                          let res:Alloc.String.t_String =
+                            Alloc.Fmt.format (Core.Fmt.impl_2__new_v1 (sz 2)
+                                  (sz 2)
+                                  (let list = ["unsupported SAN type '"; "' at position "] in
+                                    FStar.Pervasives.assert_norm
+                                    (Prims.eq2 (List.Tot.length list) 2);
+                                    Rust_primitives.Hax.array_of_list 2 list)
+                                  (let list =
+                                      [
+                                        Core.Fmt.Rt.impl_1__new_debug #Sandwich_api_proto.Verifiers.Sanmatcher.t_San
+                                          t
+                                        <:
+                                        Core.Fmt.Rt.t_Argument;
+                                        Core.Fmt.Rt.impl_1__new_display #usize i
+                                        <:
+                                        Core.Fmt.Rt.t_Argument
+                                      ]
+                                    in
+                                    FStar.Pervasives.assert_norm
+                                    (Prims.eq2 (List.Tot.length list) 2);
+                                    Rust_primitives.Hax.array_of_list 2 list)
+                                <:
+                                Core.Fmt.t_Arguments)
+                          in
+                          has_email,
+                          has_ip,
+                          (Core.Result.Result_Err
+                            (Core.Convert.f_into #(Sandwich_proto.Errors.t_TunnelError &
+                                  Alloc.String.t_String)
+                                #Sandwich.Error.t_Error
+                                #FStar.Tactics.Typeclasses.solve
+                                ((Sandwich_proto.Errors.TunnelError_TUNNELERROR_VERIFIER
+                                    <:
+                                    Sandwich_proto.Errors.t_TunnelError),
+                                  res
+                                  <:
+                                  (Sandwich_proto.Errors.t_TunnelError & Alloc.String.t_String)))
+                            <:
+                            Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+                          <:
+                          (bool & bool & Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+                        | Core.Option.Option_None  ->
+                          let res:Alloc.String.t_String =
+                            Alloc.Fmt.format (Core.Fmt.impl_2__new_v1 (sz 1)
+                                  (sz 1)
+                                  (let list = ["empty SANMatcher at position "] in
+                                    FStar.Pervasives.assert_norm
+                                    (Prims.eq2 (List.Tot.length list) 1);
+                                    Rust_primitives.Hax.array_of_list 1 list)
+                                  (let list =
+                                      [
+                                        Core.Fmt.Rt.impl_1__new_display #usize i
+                                        <:
+                                        Core.Fmt.Rt.t_Argument
+                                      ]
+                                    in
+                                    FStar.Pervasives.assert_norm
+                                    (Prims.eq2 (List.Tot.length list) 1);
+                                    Rust_primitives.Hax.array_of_list 1 list)
+                                <:
+                                Core.Fmt.t_Arguments)
+                          in
+                          has_email,
+                          has_ip,
+                          (Core.Result.Result_Err
+                            (Core.Convert.f_into #(Sandwich_proto.Errors.t_TunnelError &
+                                  Alloc.String.t_String)
+                                #Sandwich.Error.t_Error
+                                #FStar.Tactics.Typeclasses.solve
+                                ((Sandwich_proto.Errors.TunnelError_TUNNELERROR_VERIFIER
+                                    <:
+                                    Sandwich_proto.Errors.t_TunnelError),
+                                  res
+                                  <:
+                                  (Sandwich_proto.Errors.t_TunnelError & Alloc.String.t_String)))
+                            <:
+                            Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+                          <:
+                          (bool & bool & Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
                       in
-                      Core.Ops.Control_flow.ControlFlow_Continue
-                      (has_email, has_ip <: (bool & bool))
+                      has_email, has_ip, result
                       <:
-                      Core.Ops.Control_flow.t_ControlFlow
-                        (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) (bool & bool))
+                      (bool & bool & Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+                    else
+                      has_email, has_ip, result
+                      <:
+                      (bool & bool & Core.Result.t_Result Prims.unit Sandwich.Error.t_Error))
             in
-            Core.Result.Result_Ok (() <: Prims.unit)
-            <:
-            Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+            result)
           <:
           Core.Ops.Control_flow.t_ControlFlow
             (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
@@ -433,18 +419,18 @@ let impl_4: t_VerifierSanitizer t_TunnelSecurityRequirements
       (verifier: Sandwich_api_proto.Verifiers.t_TunnelVerifier)
       ->
       match
-        Core.Option.impl__as_ref #Sandwich_api_proto.Verifiers.t_Verifier
+        Core.Option.impl__as_ref #Sandwich_api_proto.Verifiers.Tunnel_verifier.t_Verifier
           verifier.Sandwich_api_proto.Verifiers.f_verifier
       with
       | Core.Option.Option_Some
-        (Sandwich_api_proto.Verifiers.Verifier_SanVerifier san_verifier) ->
+        (Sandwich_api_proto.Verifiers.Tunnel_verifier.Verifier_SanVerifier san_verifier) ->
         f_run_sanitizer_checks #t_TunnelSecurityRequirements
           #Sandwich_api_proto.Verifiers.t_SANVerifier
           #FStar.Tactics.Typeclasses.solve
           self
           san_verifier
       | Core.Option.Option_Some
-        (Sandwich_api_proto.Verifiers.Verifier_EmptyVerifier _) ->
+        (Sandwich_api_proto.Verifiers.Tunnel_verifier.Verifier_EmptyVerifier _) ->
         Core.Result.Result_Ok (() <: Prims.unit)
         <:
         Core.Result.t_Result Prims.unit Sandwich.Error.t_Error

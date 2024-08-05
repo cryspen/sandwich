@@ -507,7 +507,7 @@ let build_ciphersuites_list
                   string)
                 invalid_chars
             then
-              let! hoist2:Rust_primitives.Hax.t_Never =
+              let! hoist1:Rust_primitives.Hax.t_Never =
                 Core.Ops.Control_flow.ControlFlow_Break
                 (Core.Result.Result_Err
                   (Core.Convert.f_into #Sandwich_proto.Errors.t_TLSConfigurationError
@@ -523,7 +523,7 @@ let build_ciphersuites_list
                   (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error)
                   Rust_primitives.Hax.t_Never
               in
-              Core.Ops.Control_flow.ControlFlow_Continue (Rust_primitives.Hax.never_to_any hoist2)
+              Core.Ops.Control_flow.ControlFlow_Continue (Rust_primitives.Hax.never_to_any hoist1)
               <:
               Core.Ops.Control_flow.t_ControlFlow
                 (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error) Prims.unit

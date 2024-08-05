@@ -54,9 +54,9 @@ let assert_tls13_ke_compliance
                 <:
                 Core.Result.t_Result t_KESettings Sandwich.Error.t_Error
               with
-              | Core.Result.Result_Ok hoist6 ->
+              | Core.Result.Result_Ok hoist3 ->
                 let! bit_strength:t_BitStrength =
-                  match hoist6 with
+                  match hoist3 with
                   | KESettings_Hybrid hybrid_bit_strength ->
                     let! _:Prims.unit =
                       if
