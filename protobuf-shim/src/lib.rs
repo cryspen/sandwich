@@ -117,6 +117,12 @@ pub mod unknown_fields {
 
 pub mod message_field {
     pub struct MessageField<T>(pub Option<Box<T>>);
+
+    impl<T> MessageField<T> {
+        pub fn as_ref(&self) -> Option<&T> {
+            self.0.as_ref().map(|v| &**v)
+        }
+    }
 }
 
 pub mod enum_or_unknown {

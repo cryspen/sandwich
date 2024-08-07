@@ -6,3 +6,6 @@ open FStar.Mul
 type t_MessageField (v_T: Type0) =
   | MessageField : Core.Option.t_Option (Alloc.Boxed.t_Box v_T Alloc.Alloc.t_Global)
     -> t_MessageField v_T
+
+val impl__as_ref (#v_T: Type0) (self: t_MessageField v_T)
+    : Prims.Pure (Core.Option.t_Option v_T) Prims.l_True (fun _ -> Prims.l_True)
