@@ -147,28 +147,34 @@ fn assert_tls13_ke_compliance(
 ) -> crate::Result<()> {
     let mut result = Ok(());
     for k in kes {
-        if let Ok(_) = result {
-            let bit_strength = match KESettings::try_from(k.as_ref())? {
-                Hybrid(hybrid_bit_strength) => {
+        if result.is_ok() {
+            let bit_strength = match KESettings::try_from(k.as_ref()) {
+                Ok(Hybrid(hybrid_bit_strength)) => {
                     if hybrid_choice == pb_api::HybridAlgoChoice::HYBRID_ALGORITHMS_FORBID {
-                        Err(TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID_CASE)?
+                        result = Err(TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID_CASE.into());
                     }
                     hybrid_bit_strength
                 }
-                Classical(classical_bit_strength) => {
+                Ok(Classical(classical_bit_strength)) => {
                     if classical_choice == pb_api::ClassicalAlgoChoice::CLASSICAL_ALGORITHMS_FORBID
                     {
-                        Err(TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID_CASE)?
+                        result = Err(TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID_CASE.into());
                     }
                     classical_bit_strength
                 }
-                QuantumSafe(quantum_bit_strength) => {
+                Ok(QuantumSafe(quantum_bit_strength)) => {
                     if quantum_safe_choice
                         == pb_api::QuantumSafeAlgoChoice::QUANTUM_SAFE_ALGORITHMS_FORBID
                     {
-                        Err(TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID_CASE)?
+                        result = Err(TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID_CASE.into());
                     }
                     quantum_bit_strength
+                }
+                // We do it that way to prevent early returns which hax doesn't handle.
+                Err(err) => {
+                  result = Err(err);
+                  // Need to return something, so we arbitrarily choose `desired_strength`
+                  BitStrength::from(desired_strength)
                 }
             };
 

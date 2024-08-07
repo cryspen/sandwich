@@ -42,154 +42,25 @@ let assert_tls13_ke_compliance
       (fun result k ->
           let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error = result in
           let k:impl_488124255_ = k in
-          match result with
-          | Core.Result.Result_Ok _ ->
-            (match
+          if Core.Result.impl__is_ok #Prims.unit #Sandwich.Error.t_Error result <: bool
+          then
+            let result, bit_strength:(Core.Result.t_Result Prims.unit Sandwich.Error.t_Error &
+              t_BitStrength) =
+              match
                 Core.Convert.f_try_from #t_KESettings
                   #string
                   #FStar.Tactics.Typeclasses.solve
                   (Core.Convert.f_as_ref #impl_488124255_ #string #FStar.Tactics.Typeclasses.solve k
                     <:
                     string)
-                <:
-                Core.Result.t_Result t_KESettings Sandwich.Error.t_Error
               with
-              | Core.Result.Result_Ok hoist3 ->
-                let! bit_strength:t_BitStrength =
-                  match hoist3 with
-                  | KESettings_Hybrid hybrid_bit_strength ->
-                    let! _:Prims.unit =
-                      if
-                        hybrid_choice =.
-                        (Sandwich_api_proto.Compliance.HybridAlgoChoice_HYBRID_ALGORITHMS_FORBID
-                          <:
-                          Sandwich_api_proto.Compliance.t_HybridAlgoChoice)
-                      then
-                        match
-                          Core.Result.Result_Err
-                          (Sandwich_proto.Errors.TLSConfigurationError_TLSCONFIGURATIONERROR_INVALID_CASE
-                            <:
-                            Sandwich_proto.Errors.t_TLSConfigurationError)
-                          <:
-                          Core.Result.t_Result Prims.unit
-                            Sandwich_proto.Errors.t_TLSConfigurationError
-                        with
-                        | Core.Result.Result_Ok ok ->
-                          Core.Ops.Control_flow.ControlFlow_Continue ok
-                          <:
-                          Core.Ops.Control_flow.t_ControlFlow
-                            (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit
-                        | Core.Result.Result_Err err ->
-                          Core.Ops.Control_flow.ControlFlow_Break
-                          (Core.Result.Result_Err
-                            (Core.Convert.f_from #FStar.Tactics.Typeclasses.solve err)
-                            <:
-                            Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
-                          <:
-                          Core.Ops.Control_flow.t_ControlFlow
-                            (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit
-                      else
-                        Core.Ops.Control_flow.ControlFlow_Continue ()
-                        <:
-                        Core.Ops.Control_flow.t_ControlFlow
-                          (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit
-                    in
-                    Core.Ops.Control_flow.ControlFlow_Continue hybrid_bit_strength
-                    <:
-                    Core.Ops.Control_flow.t_ControlFlow
-                      (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) t_BitStrength
-                  | KESettings_Classical classical_bit_strength ->
-                    let! _:Prims.unit =
-                      if
-                        classical_choice =.
-                        (Sandwich_api_proto.Compliance.ClassicalAlgoChoice_CLASSICAL_ALGORITHMS_FORBID
-                          <:
-                          Sandwich_api_proto.Compliance.t_ClassicalAlgoChoice)
-                      then
-                        match
-                          Core.Result.Result_Err
-                          (Sandwich_proto.Errors.TLSConfigurationError_TLSCONFIGURATIONERROR_INVALID_CASE
-                            <:
-                            Sandwich_proto.Errors.t_TLSConfigurationError)
-                          <:
-                          Core.Result.t_Result Prims.unit
-                            Sandwich_proto.Errors.t_TLSConfigurationError
-                        with
-                        | Core.Result.Result_Ok ok ->
-                          Core.Ops.Control_flow.ControlFlow_Continue ok
-                          <:
-                          Core.Ops.Control_flow.t_ControlFlow
-                            (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit
-                        | Core.Result.Result_Err err ->
-                          Core.Ops.Control_flow.ControlFlow_Break
-                          (Core.Result.Result_Err
-                            (Core.Convert.f_from #FStar.Tactics.Typeclasses.solve err)
-                            <:
-                            Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
-                          <:
-                          Core.Ops.Control_flow.t_ControlFlow
-                            (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit
-                      else
-                        Core.Ops.Control_flow.ControlFlow_Continue ()
-                        <:
-                        Core.Ops.Control_flow.t_ControlFlow
-                          (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit
-                    in
-                    Core.Ops.Control_flow.ControlFlow_Continue classical_bit_strength
-                    <:
-                    Core.Ops.Control_flow.t_ControlFlow
-                      (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) t_BitStrength
-                  | KESettings_QuantumSafe quantum_bit_strength ->
-                    let! _:Prims.unit =
-                      if
-                        quantum_safe_choice =.
-                        (Sandwich_api_proto.Compliance.QuantumSafeAlgoChoice_QUANTUM_SAFE_ALGORITHMS_FORBID
-                          <:
-                          Sandwich_api_proto.Compliance.t_QuantumSafeAlgoChoice)
-                      then
-                        match
-                          Core.Result.Result_Err
-                          (Sandwich_proto.Errors.TLSConfigurationError_TLSCONFIGURATIONERROR_INVALID_CASE
-                            <:
-                            Sandwich_proto.Errors.t_TLSConfigurationError)
-                          <:
-                          Core.Result.t_Result Prims.unit
-                            Sandwich_proto.Errors.t_TLSConfigurationError
-                        with
-                        | Core.Result.Result_Ok ok ->
-                          Core.Ops.Control_flow.ControlFlow_Continue ok
-                          <:
-                          Core.Ops.Control_flow.t_ControlFlow
-                            (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit
-                        | Core.Result.Result_Err err ->
-                          Core.Ops.Control_flow.ControlFlow_Break
-                          (Core.Result.Result_Err
-                            (Core.Convert.f_from #FStar.Tactics.Typeclasses.solve err)
-                            <:
-                            Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
-                          <:
-                          Core.Ops.Control_flow.t_ControlFlow
-                            (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit
-                      else
-                        Core.Ops.Control_flow.ControlFlow_Continue ()
-                        <:
-                        Core.Ops.Control_flow.t_ControlFlow
-                          (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit
-                    in
-                    Core.Ops.Control_flow.ControlFlow_Continue quantum_bit_strength
-                    <:
-                    Core.Ops.Control_flow.t_ControlFlow
-                      (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) t_BitStrength
-                in
-                Core.Ops.Control_flow.ControlFlow_Continue
-                (if
-                    bit_strength <.
-                    (Core.Convert.f_from #t_BitStrength
-                        #Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits
-                        #FStar.Tactics.Typeclasses.solve
-                        desired_strength
+              | Core.Result.Result_Ok (KESettings_Hybrid hybrid_bit_strength) ->
+                let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
+                  if
+                    hybrid_choice =.
+                    (Sandwich_api_proto.Compliance.HybridAlgoChoice_HYBRID_ALGORITHMS_FORBID
                       <:
-                      t_BitStrength)
+                      Sandwich_api_proto.Compliance.t_HybridAlgoChoice)
                   then
                     let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
                       Core.Result.Result_Err
@@ -203,32 +74,98 @@ let assert_tls13_ke_compliance
                       Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
                     in
                     result
-                  else result)
-                <:
-                Core.Ops.Control_flow.t_ControlFlow
-                  (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
-                  (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
-              | Core.Result.Result_Err err ->
-                let! _:Prims.unit =
-                  Core.Ops.Control_flow.ControlFlow_Break
-                  (Core.Result.Result_Err err
-                    <:
-                    Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
-                  <:
-                  Core.Ops.Control_flow.t_ControlFlow
-                    (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit
+                  else result
                 in
-                Core.Ops.Control_flow.ControlFlow_Continue result
+                result, hybrid_bit_strength
                 <:
-                Core.Ops.Control_flow.t_ControlFlow
-                  (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
-                  (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error))
-          | _ ->
-            Core.Ops.Control_flow.ControlFlow_Continue result
-            <:
-            Core.Ops.Control_flow.t_ControlFlow
-              (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
-              (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error))
+                (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error & t_BitStrength)
+              | Core.Result.Result_Ok (KESettings_Classical classical_bit_strength) ->
+                let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
+                  if
+                    classical_choice =.
+                    (Sandwich_api_proto.Compliance.ClassicalAlgoChoice_CLASSICAL_ALGORITHMS_FORBID
+                      <:
+                      Sandwich_api_proto.Compliance.t_ClassicalAlgoChoice)
+                  then
+                    let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
+                      Core.Result.Result_Err
+                      (Core.Convert.f_into #Sandwich_proto.Errors.t_TLSConfigurationError
+                          #Sandwich.Error.t_Error
+                          #FStar.Tactics.Typeclasses.solve
+                          (Sandwich_proto.Errors.TLSConfigurationError_TLSCONFIGURATIONERROR_INVALID_CASE
+                            <:
+                            Sandwich_proto.Errors.t_TLSConfigurationError))
+                      <:
+                      Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+                    in
+                    result
+                  else result
+                in
+                result, classical_bit_strength
+                <:
+                (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error & t_BitStrength)
+              | Core.Result.Result_Ok (KESettings_QuantumSafe quantum_bit_strength) ->
+                let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
+                  if
+                    quantum_safe_choice =.
+                    (Sandwich_api_proto.Compliance.QuantumSafeAlgoChoice_QUANTUM_SAFE_ALGORITHMS_FORBID
+                      <:
+                      Sandwich_api_proto.Compliance.t_QuantumSafeAlgoChoice)
+                  then
+                    let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
+                      Core.Result.Result_Err
+                      (Core.Convert.f_into #Sandwich_proto.Errors.t_TLSConfigurationError
+                          #Sandwich.Error.t_Error
+                          #FStar.Tactics.Typeclasses.solve
+                          (Sandwich_proto.Errors.TLSConfigurationError_TLSCONFIGURATIONERROR_INVALID_CASE
+                            <:
+                            Sandwich_proto.Errors.t_TLSConfigurationError))
+                      <:
+                      Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+                    in
+                    result
+                  else result
+                in
+                result, quantum_bit_strength
+                <:
+                (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error & t_BitStrength)
+              | Core.Result.Result_Err err ->
+                let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
+                  Core.Result.Result_Err err
+                  <:
+                  Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+                in
+                result,
+                Core.Convert.f_from #t_BitStrength
+                  #Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits
+                  #FStar.Tactics.Typeclasses.solve
+                  desired_strength
+                <:
+                (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error & t_BitStrength)
+            in
+            if
+              bit_strength <.
+              (Core.Convert.f_from #t_BitStrength
+                  #Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits
+                  #FStar.Tactics.Typeclasses.solve
+                  desired_strength
+                <:
+                t_BitStrength)
+            then
+              let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
+                Core.Result.Result_Err
+                (Core.Convert.f_into #Sandwich_proto.Errors.t_TLSConfigurationError
+                    #Sandwich.Error.t_Error
+                    #FStar.Tactics.Typeclasses.solve
+                    (Sandwich_proto.Errors.TLSConfigurationError_TLSCONFIGURATIONERROR_INVALID_CASE
+                      <:
+                      Sandwich_proto.Errors.t_TLSConfigurationError))
+                <:
+                Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+              in
+              result
+            else result
+          else result)
   in
   result
 
@@ -245,19 +182,19 @@ let assert_tls13_compliance (tls13_config: Sandwich_api_proto.Tls.t_TLSv13Config
         Core.Option.t_Option Sandwich_api_proto.Compliance.t_Compliance)
   in
   let hybrid_choice:Sandwich_api_proto.Compliance.t_HybridAlgoChoice =
-    Protobuf.Enum_or_unknown.impl__enum_value_or_default #Sandwich_api_proto.Compliance.t_HybridAlgoChoice
+    Protobuf.Enum_or_unknown.impl_1__enum_value_or_default #Sandwich_api_proto.Compliance.t_HybridAlgoChoice
       compliance.Sandwich_api_proto.Compliance.f_hybrid_choice
   in
   let classical_choice:Sandwich_api_proto.Compliance.t_ClassicalAlgoChoice =
-    Protobuf.Enum_or_unknown.impl__enum_value_or_default #Sandwich_api_proto.Compliance.t_ClassicalAlgoChoice
+    Protobuf.Enum_or_unknown.impl_1__enum_value_or_default #Sandwich_api_proto.Compliance.t_ClassicalAlgoChoice
       compliance.Sandwich_api_proto.Compliance.f_classical_choice
   in
   let quantum_safe_choice:Sandwich_api_proto.Compliance.t_QuantumSafeAlgoChoice =
-    Protobuf.Enum_or_unknown.impl__enum_value_or_default #Sandwich_api_proto.Compliance.t_QuantumSafeAlgoChoice
+    Protobuf.Enum_or_unknown.impl_1__enum_value_or_default #Sandwich_api_proto.Compliance.t_QuantumSafeAlgoChoice
       compliance.Sandwich_api_proto.Compliance.f_quantum_safe_choice
   in
   let desired_strength:Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits =
-    Protobuf.Enum_or_unknown.impl__enum_value_or_default #Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits
+    Protobuf.Enum_or_unknown.impl_1__enum_value_or_default #Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits
       compliance.Sandwich_api_proto.Compliance.f_bit_strength_choice
   in
   match
