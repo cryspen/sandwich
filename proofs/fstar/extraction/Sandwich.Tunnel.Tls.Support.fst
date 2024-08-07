@@ -107,7 +107,7 @@ let configuration_read_certificate (cert: Sandwich_api_proto.Certificate.t_Certi
                   (Core.Result.impl__map_err #Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat
                       #i32
                       #Sandwich.Error.t_Error
-                      (Protobuf.Enum_or_unknown.impl_1__enum_value #Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat
+                      (Protobuf.Enum_or_unknown.impl__enum_value #Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat
                           asn1ds.Sandwich_api_proto.Data_source.f_format
                         <:
                         Core.Result.t_Result Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat
@@ -220,7 +220,7 @@ let configuration_read_private_key (private_key: Sandwich_api_proto.Private_key.
                   (Core.Result.impl__map_err #Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat
                       #i32
                       #Sandwich.Error.t_Error
-                      (Protobuf.Enum_or_unknown.impl_1__enum_value #Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat
+                      (Protobuf.Enum_or_unknown.impl__enum_value #Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat
                           asn1ds.Sandwich_api_proto.Data_source.f_format
                         <:
                         Core.Result.t_Result Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat

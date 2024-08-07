@@ -245,19 +245,19 @@ let assert_tls13_compliance (tls13_config: Sandwich_api_proto.Tls.t_TLSv13Config
         Core.Option.t_Option Sandwich_api_proto.Compliance.t_Compliance)
   in
   let hybrid_choice:Sandwich_api_proto.Compliance.t_HybridAlgoChoice =
-    Protobuf.Enum_or_unknown.impl_1__enum_value_or_default #Sandwich_api_proto.Compliance.t_HybridAlgoChoice
+    Protobuf.Enum_or_unknown.impl__enum_value_or_default #Sandwich_api_proto.Compliance.t_HybridAlgoChoice
       compliance.Sandwich_api_proto.Compliance.f_hybrid_choice
   in
   let classical_choice:Sandwich_api_proto.Compliance.t_ClassicalAlgoChoice =
-    Protobuf.Enum_or_unknown.impl_1__enum_value_or_default #Sandwich_api_proto.Compliance.t_ClassicalAlgoChoice
+    Protobuf.Enum_or_unknown.impl__enum_value_or_default #Sandwich_api_proto.Compliance.t_ClassicalAlgoChoice
       compliance.Sandwich_api_proto.Compliance.f_classical_choice
   in
   let quantum_safe_choice:Sandwich_api_proto.Compliance.t_QuantumSafeAlgoChoice =
-    Protobuf.Enum_or_unknown.impl_1__enum_value_or_default #Sandwich_api_proto.Compliance.t_QuantumSafeAlgoChoice
+    Protobuf.Enum_or_unknown.impl__enum_value_or_default #Sandwich_api_proto.Compliance.t_QuantumSafeAlgoChoice
       compliance.Sandwich_api_proto.Compliance.f_quantum_safe_choice
   in
   let desired_strength:Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits =
-    Protobuf.Enum_or_unknown.impl_1__enum_value_or_default #Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits
+    Protobuf.Enum_or_unknown.impl__enum_value_or_default #Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits
       compliance.Sandwich_api_proto.Compliance.f_bit_strength_choice
   in
   match
