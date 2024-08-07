@@ -133,6 +133,10 @@ pub mod enum_or_unknown {
         phantom: std::marker::PhantomData<E>,
     }
 
+    impl<E> EnumOrUnknown<E> {
+        const _HAX_PLACEHOLDER: () = ();
+    }
+
     impl<E: Enum> EnumOrUnknown<E> {
         pub fn enum_value(&self) -> Result<E, i32> {
             E::from_i32(self.value).ok_or(self.value)

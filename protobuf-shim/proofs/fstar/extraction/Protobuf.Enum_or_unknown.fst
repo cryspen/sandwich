@@ -9,7 +9,7 @@ let _ =
   let open Protobuf.Enums in
   ()
 
-let impl__enum_value
+let impl_1__enum_value
       (#v_E: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Protobuf.Enums.t_Enum v_E)
       (self: t_EnumOrUnknown v_E)
@@ -21,11 +21,11 @@ let impl__enum_value
       Core.Option.t_Option v_E)
     self.f_value
 
-let impl__enum_value_or_default
+let impl_1__enum_value_or_default
       (#v_E: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Protobuf.Enums.t_Enum v_E)
       (self: t_EnumOrUnknown v_E)
      =
   Core.Result.impl__unwrap_or_default #v_E
     #i32
-    (impl__enum_value #v_E self <: Core.Result.t_Result v_E i32)
+    (impl_1__enum_value #v_E self <: Core.Result.t_Result v_E i32)
