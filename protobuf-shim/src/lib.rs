@@ -126,8 +126,21 @@ pub mod message_field {
 }
 
 pub mod enum_or_unknown {
+    use crate::enums::*;
+
     pub struct EnumOrUnknown<E> {
+        value: i32,
         phantom: std::marker::PhantomData<E>,
+    }
+
+    impl<E: Enum> EnumOrUnknown<E> {
+        pub fn enum_value(&self) -> Result<E, i32> {
+            E::from_i32(self.value).ok_or(self.value)
+        }
+
+        pub fn enum_value_or_default(&self) -> E {
+            self.enum_value().unwrap_or_default()
+        }
     }
 }
 
