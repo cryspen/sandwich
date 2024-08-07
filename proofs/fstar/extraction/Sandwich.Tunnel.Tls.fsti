@@ -115,9 +115,7 @@ val impl__TunnelSecurityRequirements__new: Prims.unit
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_1: Core.Default.t_Default t_TunnelSecurityRequirements =
   {
-    f_default_pre = (fun (_: Prims.unit) -> true);
-    f_default_post = (fun (_: Prims.unit) (out: t_TunnelSecurityRequirements) -> true);
-    f_default = fun (_: Prims.unit) -> impl__TunnelSecurityRequirements__new ()
+    v_default = fun (_: Prims.unit) -> impl__TunnelSecurityRequirements__new ()
   }
 
 /// Assesses an error returned by a X.509 trusted store.
