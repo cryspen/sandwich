@@ -44,12 +44,15 @@ let assert_tls13_ke_compliance
     Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
   in
   let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
-    Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(Core.Slice.Iter.t_Iter
-            impl_488124255_)
+    Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #i3.f_IntoIter
           #FStar.Tactics.Typeclasses.solve
-          kes
+          (Core.Iter.Traits.Collect.f_into_iter #impl_145962886_
+              #FStar.Tactics.Typeclasses.solve
+              kes
+            <:
+            i3.f_IntoIter)
         <:
-        Core.Slice.Iter.t_Iter impl_488124255_)
+        i3.f_IntoIter)
       result
       (fun result k ->
           let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error = result in
@@ -211,6 +214,7 @@ let assert_tls13_compliance (tls13_config: Sandwich_api_proto.Tls.t_TLSv13Config
   in
   match
     assert_tls13_ke_compliance #Alloc.String.t_String
+      #(Core.Slice.Iter.t_Iter Alloc.String.t_String)
       (Core.Slice.impl__iter #Alloc.String.t_String
           (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec Alloc.String.t_String Alloc.Alloc.t_Global)
               #FStar.Tactics.Typeclasses.solve

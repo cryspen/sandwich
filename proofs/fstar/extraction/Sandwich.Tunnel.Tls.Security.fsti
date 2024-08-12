@@ -40,7 +40,8 @@ type t_KESettings =
 
 /// Implements [`From`] for [`BitStrength`].
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl: Core.Convert.t_From t_BitStrength Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits =
+let impl_1: Core.Convert.t_From t_BitStrength
+  Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits =
   {
     f_from_pre
     =
@@ -382,9 +383,10 @@ let impl_2: Core.Convert.t_TryFrom t_KESettings string =
 
 /// Checks if the TLS 1.3 Key Exchange (KE) are satified the compliance
 val assert_tls13_ke_compliance
-      (#impl_488124255_: Type0)
-      {| i1: Core.Convert.t_AsRef impl_488124255_ string |}
-      (kes: Core.Slice.Iter.t_Iter impl_488124255_)
+      (#impl_488124255_ #impl_145962886_: Type0)
+      {| i2: Core.Convert.t_AsRef impl_488124255_ string |}
+      {| i3: Core.Iter.Traits.Collect.t_IntoIterator impl_145962886_ |}
+      (kes: impl_145962886_)
       (classical_choice: Sandwich_api_proto.Compliance.t_ClassicalAlgoChoice)
       (hybrid_choice: Sandwich_api_proto.Compliance.t_HybridAlgoChoice)
       (quantum_safe_choice: Sandwich_api_proto.Compliance.t_QuantumSafeAlgoChoice)
