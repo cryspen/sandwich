@@ -21,6 +21,12 @@ type t_BitStrength =
   | BitStrength_Bits192 : t_BitStrength
   | BitStrength_Bits256 : t_BitStrength
 
+val impl__BitStrength__as_u32 (self: t_BitStrength)
+    : Prims.Pure u32 Prims.l_True (fun _ -> Prims.l_True)
+
+val impl__BitStrength__complies_with (self expected_strength: t_BitStrength)
+    : Prims.Pure bool Prims.l_True (fun _ -> Prims.l_True)
+
 let discriminant_BitStrength_Bits256: isize = isz 256
 
 val t_BitStrength_cast_to_repr (x: t_BitStrength)
@@ -60,7 +66,7 @@ let impl: Core.Convert.t_From t_BitStrength Sandwich_api_proto.Compliance.t_NIST
 
 /// Implements [`TryFrom`] for [`KESettings`].
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1: Core.Convert.t_TryFrom t_KESettings string =
+let impl_2: Core.Convert.t_TryFrom t_KESettings string =
   {
     f_Error = Sandwich.Error.t_Error;
     f_try_from_pre = (fun (alg: string) -> true);

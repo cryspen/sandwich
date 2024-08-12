@@ -11,6 +11,15 @@ let _ =
   let open Sandwich_api_proto.Compliance in
   ()
 
+let impl__BitStrength__as_u32 (self: t_BitStrength) =
+  match self with
+  | BitStrength_Bits128  -> 128ul
+  | BitStrength_Bits192  -> 192ul
+  | BitStrength_Bits256  -> 256ul
+
+let impl__BitStrength__complies_with (self expected_strength: t_BitStrength) =
+  (impl__BitStrength__as_u32 self <: u32) >=. (impl__BitStrength__as_u32 expected_strength <: u32)
+
 let t_BitStrength_cast_to_repr (x: t_BitStrength) =
   match x with
   | BitStrength_Bits128  -> discriminant_BitStrength_Bits128
@@ -18,9 +27,12 @@ let t_BitStrength_cast_to_repr (x: t_BitStrength) =
   | BitStrength_Bits256  -> discriminant_BitStrength_Bits256
 
 let assert_tls13_ke_compliance
-      (#impl_488124255_: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Convert.t_AsRef impl_488124255_ string)
-      (kes: Core.Slice.Iter.t_Iter impl_488124255_)
+      (#impl_488124255_ #impl_145962886_: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core.Convert.t_AsRef impl_488124255_ string)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i3:
+          Core.Iter.Traits.Collect.t_IntoIterator impl_145962886_)
+      (kes: impl_145962886_)
       (classical_choice: Sandwich_api_proto.Compliance.t_ClassicalAlgoChoice)
       (hybrid_choice: Sandwich_api_proto.Compliance.t_HybridAlgoChoice)
       (quantum_safe_choice: Sandwich_api_proto.Compliance.t_QuantumSafeAlgoChoice)
@@ -144,13 +156,13 @@ let assert_tls13_ke_compliance
                 (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error & t_BitStrength)
             in
             if
-              bit_strength <.
-              (Core.Convert.f_from #t_BitStrength
-                  #Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits
-                  #FStar.Tactics.Typeclasses.solve
-                  desired_strength
-                <:
-                t_BitStrength)
+              impl__BitStrength__complies_with bit_strength
+                (Core.Convert.f_into #Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits
+                    #t_BitStrength
+                    #FStar.Tactics.Typeclasses.solve
+                    desired_strength
+                  <:
+                  t_BitStrength)
             then
               let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
                 Core.Result.Result_Err

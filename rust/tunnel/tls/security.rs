@@ -14,11 +14,25 @@ use pb_api::compliance::{
 use pb_api::tls::TLSv13Config;
 
 /// Represents the AES bit size equivalent hardness of breaking an algorithm.
-#[derive(PartialEq, PartialOrd, Eq)]
+#[derive(Clone, Copy, PartialEq)]
 enum BitStrength {
     Bits128 = 128, // AES-128
     Bits192 = 192, // AES-192
     Bits256 = 256, // AES-256
+}
+
+impl BitStrength {
+    fn as_u32(&self) -> &u32 {
+        match self {
+            Bits128 => &128,
+            Bits192 => &192,
+            Bits256 => &256,
+        }
+    }
+
+    pub(crate) fn complies_with(&self, expected_strength: &Self) -> bool {
+        self.as_u32() >= expected_strength.as_u32()
+    }
 }
 
 /// Implements [`From`] for [`BitStrength`].
@@ -139,14 +153,14 @@ impl TryFrom<&str> for KESettings {
 
 /// Checks if the TLS 1.3 Key Exchange (KE) are satified the compliance
 fn assert_tls13_ke_compliance(
-    kes: std::slice::Iter<'_, impl AsRef<str>>,
+    kes: impl IntoIterator<Item = impl AsRef<str>>,
     classical_choice: ClassicalAlgoChoice,
     hybrid_choice: HybridAlgoChoice,
     quantum_safe_choice: QuantumSafeAlgoChoice,
     desired_strength: NISTSecurityStrengthBits,
 ) -> crate::Result<()> {
     let mut result = Ok(());
-    for k in kes {
+    for k in kes.into_iter() {
         if result.is_ok() {
             let bit_strength = match KESettings::try_from(k.as_ref()) {
                 Ok(Hybrid(hybrid_bit_strength)) => {
@@ -178,7 +192,7 @@ fn assert_tls13_ke_compliance(
                 }
             };
 
-            if bit_strength < BitStrength::from(desired_strength) {
+            if bit_strength.complies_with(&desired_strength.into()) {
                 result = Err(TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID_CASE.into());
             }
         }
