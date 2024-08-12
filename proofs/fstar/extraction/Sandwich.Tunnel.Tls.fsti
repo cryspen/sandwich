@@ -24,12 +24,12 @@ val t_TlsVersion_cast_to_repr (x: t_TlsVersion)
 /// A sanitizer check for security requirements described in a given verifier
 /// `V`.
 class t_VerifierSanitizer (v_Self: Type0) (v_V: Type0) = {
-  f_run_sanitizer_checks_pre:v_Self -> v_V -> bool;
+  f_run_sanitizer_checks_pre:v_Self -> v_V -> Type0;
   f_run_sanitizer_checks_post:
       v_Self ->
       v_V ->
       Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
-    -> bool;
+    -> Type0;
   f_run_sanitizer_checks:x0: v_Self -> x1: v_V
     -> Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
         (f_run_sanitizer_checks_pre x0 x1)
@@ -419,18 +419,18 @@ let impl_4: t_VerifierSanitizer t_TunnelSecurityRequirements
       (verifier: Sandwich_api_proto.Verifiers.t_TunnelVerifier)
       ->
       match
-        Core.Option.impl__as_ref #Sandwich_api_proto.Verifiers.t_Verifier
+        Core.Option.impl__as_ref #Sandwich_api_proto.Verifiers.Tunnel_verifier.t_Verifier
           verifier.Sandwich_api_proto.Verifiers.f_verifier
       with
       | Core.Option.Option_Some
-        (Sandwich_api_proto.Verifiers.Verifier_SanVerifier san_verifier) ->
+        (Sandwich_api_proto.Verifiers.Tunnel_verifier.Verifier_SanVerifier san_verifier) ->
         f_run_sanitizer_checks #t_TunnelSecurityRequirements
           #Sandwich_api_proto.Verifiers.t_SANVerifier
           #FStar.Tactics.Typeclasses.solve
           self
           san_verifier
       | Core.Option.Option_Some
-        (Sandwich_api_proto.Verifiers.Verifier_EmptyVerifier _) ->
+        (Sandwich_api_proto.Verifiers.Tunnel_verifier.Verifier_EmptyVerifier _) ->
         Core.Result.Result_Ok (() <: Prims.unit)
         <:
         Core.Result.t_Result Prims.unit Sandwich.Error.t_Error

@@ -15,8 +15,9 @@ pub(crate) use data_source::DataSource;
 pub(crate) use pimpl::Pimpl;
 
 /// Checks if a given string contains any of the characters from another string.
-pub(crate) fn contains_any_of(string: &str, invalid_chars: &str) -> bool {
-    string.chars().any(|c| invalid_chars.contains(c))
+/// NOTE: renamed the input "string" to "s" to avoid a type name clash in F*
+pub(crate) fn contains_any_of(s: &str, invalid_chars: &str) -> bool {
+    s.chars().any(|c| invalid_chars.contains(c))
 }
 
 /// Joins the strings together with the delimiter in between each string.
