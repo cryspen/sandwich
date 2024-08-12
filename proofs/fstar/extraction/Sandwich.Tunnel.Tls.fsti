@@ -426,18 +426,18 @@ let impl_4: t_VerifierSanitizer t_TunnelSecurityRequirements
       (verifier: Sandwich_api_proto.Verifiers.t_TunnelVerifier)
       ->
       match
-        Core.Option.impl__as_ref #Sandwich_api_proto.Verifiers.Tunnel_verifier.t_Verifier
+        Core.Option.impl__as_ref #Sandwich_api_proto.Verifiers.t_Verifier
           verifier.Sandwich_api_proto.Verifiers.f_verifier
       with
       | Core.Option.Option_Some
-        (Sandwich_api_proto.Verifiers.Tunnel_verifier.Verifier_SanVerifier san_verifier) ->
+        (Sandwich_api_proto.Verifiers.Verifier_SanVerifier san_verifier) ->
         f_run_sanitizer_checks #t_TunnelSecurityRequirements
           #Sandwich_api_proto.Verifiers.t_SANVerifier
           #FStar.Tactics.Typeclasses.solve
           self
           san_verifier
       | Core.Option.Option_Some
-        (Sandwich_api_proto.Verifiers.Tunnel_verifier.Verifier_EmptyVerifier _) ->
+        (Sandwich_api_proto.Verifiers.Verifier_EmptyVerifier _) ->
         Core.Result.Result_Ok (() <: Prims.unit)
         <:
         Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
