@@ -91,3 +91,4 @@ FLAGS.backup
 **/dep.graph
 **/bazelisk
 hax.fst.config.json
+.fstar-cache

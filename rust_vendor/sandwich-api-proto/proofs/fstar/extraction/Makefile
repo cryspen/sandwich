@@ -37,8 +37,9 @@ HACL_HOME      ?= $(HOME)/.hax/hacl_home
 FSTAR_BIN_DETECT := $(if $(shell command -v fstar.exe), fstar.exe, $(FSTAR_HOME)/bin/fstar.exe)
 FSTAR_BIN      ?= $(FSTAR_BIN_DETECT)
 
-CACHE_DIR      ?= .cache
-HINT_DIR       ?= .hints
+GIT_ROOT_DIR   := $(shell git rev-parse --show-toplevel)/
+CACHE_DIR      ?= ${GIT_ROOT_DIR}.fstar-cache/checked
+HINT_DIR       ?= ${GIT_ROOT_DIR}.fstar-cache/hints
 
 # Makes command quiet by default
 Q ?= @
@@ -164,12 +165,8 @@ FSTAR := $(FSTAR_BIN) $(FSTAR_FLAGS)
 
 include .depend
 
-$(HINT_DIR):
+$(HINT_DIR) $(CACHE_DIR):
 	$(Q)mkdir -p $@
-
-$(CACHE_DIR):
-	$(Q)mkdir -p $@
-
 
 define HELPMESSAGE
 echo "hax' default Makefile for F*"
