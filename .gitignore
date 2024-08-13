@@ -90,3 +90,4 @@ FLAGS.backup
 **/.depend
 **/dep.graph
 **/bazelisk
+hax.fst.config.json
