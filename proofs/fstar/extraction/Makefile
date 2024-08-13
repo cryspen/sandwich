@@ -33,7 +33,8 @@
 
 HACL_HOME      ?= $(HOME)/.hax/hacl_home
 # Expand variable FSTAR_BIN_DETECT now, so that we don't run this over and over
-FSTAR_BIN_DETECT ::= $(shell command -v fstar.exe &> /dev/null && echo "fstar.exe" || echo "$(FSTAR_HOME)/bin/fstar.exe")
+
+FSTAR_BIN_DETECT := $(if $(shell command -v fstar.exe), fstar.exe, $(FSTAR_HOME)/bin/fstar.exe)
 FSTAR_BIN      ?= $(FSTAR_BIN_DETECT)
 
 CACHE_DIR      ?= .cache
@@ -106,11 +107,11 @@ FSTAR_INCLUDE_DIRS = $(HACL_HOME)/lib $(FINDLIBS_OUTPUT)
 ifneq (,$(findstring proof-libs/fstar,$(FSTAR_INCLUDE_DIRS)))
 else
 	K += $(info )
-	ERROR ::= $(shell printf '${ANSI_COLOR_RED}Error: could not detect `proof-libs`!${ANSI_COLOR_RESET}')
+	ERROR := $(shell printf '${ANSI_COLOR_RED}Error: could not detect `proof-libs`!${ANSI_COLOR_RESET}')
 	K += $(info ${ERROR})
-	ERROR ::= $(shell printf '  > Do you have `${ANSI_COLOR_BLUE}hax-lib${ANSI_COLOR_RESET}` in your `${ANSI_COLOR_BLUE}Cargo.toml${ANSI_COLOR_RESET}` as a ${ANSI_COLOR_BLUE}git${ANSI_COLOR_RESET} or ${ANSI_COLOR_BLUE}path${ANSI_COLOR_RESET} dependency?')
+	ERROR := $(shell printf '  > Do you have `${ANSI_COLOR_BLUE}hax-lib${ANSI_COLOR_RESET}` in your `${ANSI_COLOR_BLUE}Cargo.toml${ANSI_COLOR_RESET}` as a ${ANSI_COLOR_BLUE}git${ANSI_COLOR_RESET} or ${ANSI_COLOR_BLUE}path${ANSI_COLOR_RESET} dependency?')
 	K += $(info ${ERROR})
-	ERROR ::= $(shell printf '  ${ANSI_COLOR_BLUE}> Tip: you may want to run `cargo add --git https://github.com/hacspec/hax hax-lib`${ANSI_COLOR_RESET}')
+	ERROR := $(shell printf '  ${ANSI_COLOR_BLUE}> Tip: you may want to run `cargo add --git https://github.com/hacspec/hax hax-lib`${ANSI_COLOR_RESET}')
 	K += $(info ${ERROR})
 	K += $(info )
 	K += $(error Fatal error: `proof-libs` is required.)
@@ -120,7 +121,7 @@ endif
 
 all:
 	$(Q)rm -f .depend
-	$(Q)$(MAKE) vscode verify
+	$(Q)$(MAKE) .depend vscode verify
 
 all-keep-going:
 	$(Q)rm -f .depend
@@ -156,7 +157,7 @@ FSTAR_FLAGS = \
   --already_cached "+Prims+FStar+LowStar+C+Spec.Loops+TestLib" \
   $(addprefix --include ,$(FSTAR_INCLUDE_DIRS))
 
-FSTAR ::= $(FSTAR_BIN) $(FSTAR_FLAGS)
+FSTAR := $(FSTAR_BIN) $(FSTAR_FLAGS)
 
 .depend: $(HINT_DIR) $(CACHE_DIR) $(ROOTS) $(HACL_HOME)
 	@$(FSTAR) --dep full $(ROOTS) --extract '* -Prims -LowStar -FStar' > $@
