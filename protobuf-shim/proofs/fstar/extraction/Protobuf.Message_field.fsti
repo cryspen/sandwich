@@ -9,3 +9,6 @@ type t_MessageField (v_T: Type0) =
 
 val impl__as_ref (#v_T: Type0) (self: t_MessageField v_T)
     : Prims.Pure (Core.Option.t_Option v_T) Prims.l_True (fun _ -> Prims.l_True)
+
+val impl__is_some (#v_T: Type0) (self: t_MessageField v_T)
+    : Prims.Pure bool Prims.l_True (fun _ -> Prims.l_True)

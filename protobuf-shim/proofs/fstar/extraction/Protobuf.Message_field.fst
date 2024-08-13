@@ -10,3 +10,6 @@ let impl__as_ref (#v_T: Type0) (self: t_MessageField v_T) =
       <:
       Core.Option.t_Option (Alloc.Boxed.t_Box v_T Alloc.Alloc.t_Global))
     (fun v -> v)
+
+let impl__is_some (#v_T: Type0) (self: t_MessageField v_T) =
+  Core.Option.impl__is_some #(Alloc.Boxed.t_Box v_T Alloc.Alloc.t_Global) self._0

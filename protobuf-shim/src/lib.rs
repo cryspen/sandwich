@@ -122,6 +122,9 @@ pub mod message_field {
         pub fn as_ref(&self) -> Option<&T> {
             self.0.as_ref().map(|v| &**v)
         }
+        pub fn is_some(&self) -> bool {
+            self.0.is_some()
+        }
     }
 }
 

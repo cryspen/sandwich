@@ -95,7 +95,7 @@ let configuration_read_certificate (cert: Sandwich_api_proto.Certificate.t_Certi
                   <:
                   Core.Result.t_Result Sandwich_api_proto.Data_source.t_DataSource
                     Sandwich.Error.t_Error)
-                Core.Convert.TryFrom.try_from
+                Core.Convert.t_TryFrom.try_from
               <:
               Core.Result.t_Result Sandwich.Support.Data_source.t_DataSource Sandwich.Error.t_Error)
             (fun ds ->

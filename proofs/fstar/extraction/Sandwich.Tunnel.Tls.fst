@@ -24,12 +24,12 @@ let t_VerifyMode_cast_to_repr (x: t_VerifyMode) =
 
 let get_tls13_config (cfg: Sandwich_api_proto.Configuration.t_Configuration) =
   match
-    Core.Option.impl__as_ref #Sandwich_api_proto.Configuration.Configuration.t_Opts
+    Core.Option.impl__as_ref #Sandwich_api_proto.Configuration.t_Opts
       cfg.Sandwich_api_proto.Configuration.f_opts
   with
   | Core.Option.Option_Some opts ->
     (match opts with
-      | Sandwich_api_proto.Configuration.Configuration.Opts_Client c ->
+      | Sandwich_api_proto.Configuration.Opts_Client c ->
         (match
             Core.Option.impl__as_ref #Sandwich_api_proto.Configuration.Client_options.t_Opts
               c.Sandwich_api_proto.Configuration.f_opts
@@ -56,7 +56,7 @@ let get_tls13_config (cfg: Sandwich_api_proto.Configuration.t_Configuration) =
                     Rust_primitives.Hax.t_Never))
           | Core.Option.Option_None  ->
             Core.Option.Option_None <: Core.Option.t_Option Sandwich_api_proto.Tls.t_TLSv13Config)
-      | Sandwich_api_proto.Configuration.Configuration.Opts_Server c ->
+      | Sandwich_api_proto.Configuration.Opts_Server c ->
         (match
             Core.Option.impl__as_ref #Sandwich_api_proto.Configuration.Server_options.t_Opts
               c.Sandwich_api_proto.Configuration.f_opts
