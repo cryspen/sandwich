@@ -134,6 +134,13 @@ val impl__TunnelSecurityRequirements__openssl3_assess_x509_store_error
 
 /// Implements [`VerifierSanitizer`] for [`TunnelSecurityRequirements`]
 /// with the [`pb_api::SANVerifier`] verifier.
+
+(*
+* Error 228 at Sandwich.Tunnel.Tls.fsti(138,0-392,3):
+  - Typeclass resolution failed.
+  - Could not solve constraint Type0
+  - See also FStar.Tactics.Typeclasses.fst(302,6-306,7)
+*)
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_3: t_VerifierSanitizer t_TunnelSecurityRequirements
   Sandwich_api_proto.Verifiers.t_SANVerifier =

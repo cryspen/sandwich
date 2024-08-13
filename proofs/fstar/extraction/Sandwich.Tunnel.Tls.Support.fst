@@ -95,7 +95,7 @@ let configuration_read_certificate (cert: Sandwich_api_proto.Certificate.t_Certi
                   <:
                   Core.Result.t_Result Sandwich_api_proto.Data_source.t_DataSource
                     Sandwich.Error.t_Error)
-                Core.Convert.t_TryFrom.try_from
+                Sandwich.Support.Data_source.impl.f_try_from
               <:
               Core.Result.t_Result Sandwich.Support.Data_source.t_DataSource Sandwich.Error.t_Error)
             (fun ds ->
@@ -107,6 +107,14 @@ let configuration_read_certificate (cert: Sandwich_api_proto.Certificate.t_Certi
                   (Core.Result.impl__map_err #Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat
                       #i32
                       #Sandwich.Error.t_Error
+                      (*
+                      * Error 228 at Sandwich.Tunnel.Tls.Support.fst(110,48-110,66):
+  - Typeclass resolution failed.
+  - Could not solve constraint
+      Protobuf.Enums.t_Enum Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat
+
+  - See also FStar.Tactics.Typeclasses.fst(302,6-306,7)
+                      *)
                       (Protobuf.Enum_or_unknown.impl_1__enum_value #Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat
                           asn1ds.Sandwich_api_proto.Data_source.f_format
                         <:
@@ -208,7 +216,7 @@ let configuration_read_private_key (private_key: Sandwich_api_proto.Private_key.
                   <:
                   Core.Result.t_Result Sandwich_api_proto.Data_source.t_DataSource
                     Sandwich.Error.t_Error)
-                Core.Convert.TryFrom.try_from
+                Sandwich.Support.Data_source.impl.f_try_from
               <:
               Core.Result.t_Result Sandwich.Support.Data_source.t_DataSource Sandwich.Error.t_Error)
             (fun ds ->
@@ -220,6 +228,14 @@ let configuration_read_private_key (private_key: Sandwich_api_proto.Private_key.
                   (Core.Result.impl__map_err #Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat
                       #i32
                       #Sandwich.Error.t_Error
+                      (*
+                      * Error 228 at Sandwich.Tunnel.Tls.Support.fst(226,48-226,66):
+  - Typeclass resolution failed.
+  - Could not solve constraint
+      Protobuf.Enums.t_Enum Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat
+
+  - See also FStar.Tactics.Typeclasses.fst(302,6-306,7)
+                      *)
                       (Protobuf.Enum_or_unknown.impl_1__enum_value #Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat
                           asn1ds.Sandwich_api_proto.Data_source.f_format
                         <:
@@ -272,16 +288,16 @@ let configuration_get_mode_and_options
      =
   Core.Option.impl__ok_or #(Sandwich.Tunnel.Context.t_Mode & Sandwich_api_proto.Tls.t_TLSOptions)
     #Sandwich.Error.t_Error
-    (Core.Option.impl__and_then #Sandwich_api_proto.Configuration.Configuration.t_Opts
+    (Core.Option.impl__and_then #Sandwich_api_proto.Configuration.t_Opts
         #(Sandwich.Tunnel.Context.t_Mode & Sandwich_api_proto.Tls.t_TLSOptions)
-        (Core.Option.impl__as_ref #Sandwich_api_proto.Configuration.Configuration.t_Opts
+        (Core.Option.impl__as_ref #Sandwich_api_proto.Configuration.t_Opts
             configuration.Sandwich_api_proto.Configuration.f_opts
           <:
-          Core.Option.t_Option Sandwich_api_proto.Configuration.Configuration.t_Opts)
+          Core.Option.t_Option Sandwich_api_proto.Configuration.t_Opts)
         (fun opts ->
-            let opts:Sandwich_api_proto.Configuration.Configuration.t_Opts = opts in
+            let opts:Sandwich_api_proto.Configuration.t_Opts = opts in
             match opts with
-            | Sandwich_api_proto.Configuration.Configuration.Opts_Client opt ->
+            | Sandwich_api_proto.Configuration.Opts_Client opt ->
               Core.Option.impl__map #Sandwich_api_proto.Tls.t_TLSOptions
                 #(Sandwich.Tunnel.Context.t_Mode & Sandwich_api_proto.Tls.t_TLSOptions)
                 (Core.Option.impl__and_then #Sandwich_api_proto.Tls.t_TLSClientOptions
@@ -324,7 +340,7 @@ let configuration_get_mode_and_options
               <:
               Core.Option.t_Option
               (Sandwich.Tunnel.Context.t_Mode & Sandwich_api_proto.Tls.t_TLSOptions)
-            | Sandwich_api_proto.Configuration.Configuration.Opts_Server opt ->
+            | Sandwich_api_proto.Configuration.Opts_Server opt ->
               Core.Option.impl__map #Sandwich_api_proto.Tls.t_TLSOptions
                 #(Sandwich.Tunnel.Context.t_Mode & Sandwich_api_proto.Tls.t_TLSOptions)
                 (Core.Option.impl__and_then #Sandwich_api_proto.Tls.t_TLSServerOptions
@@ -497,6 +513,12 @@ let build_ciphersuites_list
       (fun output c ->
           let output:Alloc.String.t_String = output in
           let c:v_S = c in
+          (*
+          * Error 54 at Sandwich.Tunnel.Tls.Support.fst(505,10-551,33):
+  - Core.Ops.Control_flow.t_ControlFlow (Core.Result.t_Result Alloc.String.t_String
+          Sandwich.Error.t_Error)
+      Alloc.String.t_String is not a subtype of the expected type Alloc.String.t_String
+          *)
           let! _:Prims.unit =
             if
               Sandwich.Support.contains_any_of (Core.Convert.f_as_ref #v_S
@@ -545,9 +567,9 @@ let build_ciphersuites_list
             (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error)
             Alloc.String.t_String)
   in
-  let tmp0, out:(Alloc.String.t_String & Core.Option.t_Option char) =
+  let tmp0, out:(Alloc.String.t_String & Core.Option.t_Option FStar.Char.char) =
     Alloc.String.impl__String__pop output
   in
   let output:Alloc.String.t_String = tmp0 in
-  let _:Core.Option.t_Option char = out in
+  let _:Core.Option.t_Option FStar.Char.char = out in
   Core.Result.Result_Ok output <: Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error
