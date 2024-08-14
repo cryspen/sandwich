@@ -211,9 +211,11 @@ let impl_3: t_VerifierSanitizer t_TunnelSecurityRequirements
             in
             let has_email, has_ip, result:(bool & bool &
               Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) =
-              Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(Core.Iter.Adapters.Enumerate.t_Enumerate
+              (* The commented code under fails type class resolution.
+                 Removing it is a valid workaround as in this cas f_into_iter is the identity. *)
+              Core.Iter.Traits.Iterator.f_fold ((* Core.Iter.Traits.Collect.f_into_iter #(Core.Iter.Adapters.Enumerate.t_Enumerate
                       (Core.Slice.Iter.t_Iter Sandwich_api_proto.Verifiers.t_SANMatcher))
-                    #FStar.Tactics.Typeclasses.solve
+                    #FStar.Tactics.Typeclasses.solve *)
                     (Core.Iter.Traits.Iterator.f_enumerate #(Core.Slice.Iter.t_Iter
                           Sandwich_api_proto.Verifiers.t_SANMatcher)
                         #FStar.Tactics.Typeclasses.solve
