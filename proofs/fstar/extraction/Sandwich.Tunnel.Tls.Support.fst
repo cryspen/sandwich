@@ -95,7 +95,7 @@ let configuration_read_certificate (cert: Sandwich_api_proto.Certificate.t_Certi
                   <:
                   Core.Result.t_Result Sandwich_api_proto.Data_source.t_DataSource
                     Sandwich.Error.t_Error)
-                Sandwich.Support.Data_source.impl.f_try_from
+                Core.Convert.TryFrom.try_from
               <:
               Core.Result.t_Result Sandwich.Support.Data_source.t_DataSource Sandwich.Error.t_Error)
             (fun ds ->
@@ -208,7 +208,7 @@ let configuration_read_private_key (private_key: Sandwich_api_proto.Private_key.
                   <:
                   Core.Result.t_Result Sandwich_api_proto.Data_source.t_DataSource
                     Sandwich.Error.t_Error)
-                Sandwich.Support.Data_source.impl.f_try_from
+                Core.Convert.TryFrom.try_from
               <:
               Core.Result.t_Result Sandwich.Support.Data_source.t_DataSource Sandwich.Error.t_Error)
             (fun ds ->
@@ -272,16 +272,16 @@ let configuration_get_mode_and_options
      =
   Core.Option.impl__ok_or #(Sandwich.Tunnel.Context.t_Mode & Sandwich_api_proto.Tls.t_TLSOptions)
     #Sandwich.Error.t_Error
-    (Core.Option.impl__and_then #Sandwich_api_proto.Configuration.t_Opts
+    (Core.Option.impl__and_then #Sandwich_api_proto.Configuration.Configuration.t_Opts
         #(Sandwich.Tunnel.Context.t_Mode & Sandwich_api_proto.Tls.t_TLSOptions)
-        (Core.Option.impl__as_ref #Sandwich_api_proto.Configuration.t_Opts
+        (Core.Option.impl__as_ref #Sandwich_api_proto.Configuration.Configuration.t_Opts
             configuration.Sandwich_api_proto.Configuration.f_opts
           <:
-          Core.Option.t_Option Sandwich_api_proto.Configuration.t_Opts)
+          Core.Option.t_Option Sandwich_api_proto.Configuration.Configuration.t_Opts)
         (fun opts ->
-            let opts:Sandwich_api_proto.Configuration.t_Opts = opts in
+            let opts:Sandwich_api_proto.Configuration.Configuration.t_Opts = opts in
             match opts with
-            | Sandwich_api_proto.Configuration.Opts_Client opt ->
+            | Sandwich_api_proto.Configuration.Configuration.Opts_Client opt ->
               Core.Option.impl__map #Sandwich_api_proto.Tls.t_TLSOptions
                 #(Sandwich.Tunnel.Context.t_Mode & Sandwich_api_proto.Tls.t_TLSOptions)
                 (Core.Option.impl__and_then #Sandwich_api_proto.Tls.t_TLSClientOptions
@@ -324,7 +324,7 @@ let configuration_get_mode_and_options
               <:
               Core.Option.t_Option
               (Sandwich.Tunnel.Context.t_Mode & Sandwich_api_proto.Tls.t_TLSOptions)
-            | Sandwich_api_proto.Configuration.Opts_Server opt ->
+            | Sandwich_api_proto.Configuration.Configuration.Opts_Server opt ->
               Core.Option.impl__map #Sandwich_api_proto.Tls.t_TLSOptions
                 #(Sandwich.Tunnel.Context.t_Mode & Sandwich_api_proto.Tls.t_TLSOptions)
                 (Core.Option.impl__and_then #Sandwich_api_proto.Tls.t_TLSServerOptions
@@ -483,7 +483,15 @@ let build_ciphersuites_list
       (invalid_chars: string)
      =
   let output:Alloc.String.t_String = Alloc.String.impl__String__new () in
-  let output:Alloc.String.t_String =
+  let error:Core.Option.t_Option (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error)
+  =
+    Core.Option.Option_None
+    <:
+    Core.Option.t_Option (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error)
+  in
+  let error, output:(Core.Option.t_Option
+    (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error) &
+    Alloc.String.t_String) =
     Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #i3.f_IntoIter
           #FStar.Tactics.Typeclasses.solve
           (Core.Iter.Traits.Collect.f_into_iter #impl_995885649_
@@ -493,17 +501,24 @@ let build_ciphersuites_list
             i3.f_IntoIter)
         <:
         i3.f_IntoIter)
-      output
-      (fun output c ->
-          let output:Alloc.String.t_String = output in
+      (error, output
+        <:
+        (Core.Option.t_Option (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error) &
+          Alloc.String.t_String))
+      (fun temp_0_ c ->
+          let error, output:(Core.Option.t_Option
+            (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error) &
+            Alloc.String.t_String) =
+            temp_0_
+          in
           let c:v_S = c in
-          (*
-          * Error 54 at Sandwich.Tunnel.Tls.Support.fst(505,10-551,33):
-  - Core.Ops.Control_flow.t_ControlFlow (Core.Result.t_Result Alloc.String.t_String
-          Sandwich.Error.t_Error)
-      Alloc.String.t_String is not a subtype of the expected type Alloc.String.t_String
-          *)
-          let! _:Prims.unit =
+          if
+            Core.Option.impl__is_none #(Core.Result.t_Result Alloc.String.t_String
+                  Sandwich.Error.t_Error)
+              error
+            <:
+            bool
+          then
             if
               Sandwich.Support.contains_any_of (Core.Convert.f_as_ref #v_S
                     #string
@@ -512,48 +527,54 @@ let build_ciphersuites_list
                   <:
                   string)
                 invalid_chars
+              <:
+              bool
             then
-              let! hoist1:Rust_primitives.Hax.t_Never =
-                Core.Ops.Control_flow.ControlFlow_Break
+              (Core.Option.Option_Some
                 (Core.Result.Result_Err
                   (Core.Convert.f_into #Sandwich_proto.Errors.t_TLSConfigurationError
                       #Sandwich.Error.t_Error
                       #FStar.Tactics.Typeclasses.solve
                       (Sandwich_proto.Errors.TLSConfigurationError_TLSCONFIGURATIONERROR_UNSUPPORTED_CONTROL_CHARACTERS
                         <:
-                        Sandwich_proto.Errors.t_TLSConfigurationError))
+                        Sandwich_proto.Errors.t_TLSConfigurationError)
+                    <:
+                    Sandwich.Error.t_Error)
                   <:
                   Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error)
                 <:
-                Core.Ops.Control_flow.t_ControlFlow
-                  (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error)
-                  Rust_primitives.Hax.t_Never
-              in
-              Core.Ops.Control_flow.ControlFlow_Continue (Rust_primitives.Hax.never_to_any hoist1)
+                Core.Option.t_Option
+                (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error)),
+              output
               <:
-              Core.Ops.Control_flow.t_ControlFlow
-                (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error) Prims.unit
+              (Core.Option.t_Option
+                (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error) &
+                Alloc.String.t_String)
             else
-              Core.Ops.Control_flow.ControlFlow_Continue ()
+              let output:Alloc.String.t_String =
+                Alloc.String.impl__String__push_str output
+                  (Core.Convert.f_as_ref #v_S #string #FStar.Tactics.Typeclasses.solve c <: string)
+              in
+              let output:Alloc.String.t_String = Alloc.String.impl__String__push output ':' in
+              error, output
               <:
-              Core.Ops.Control_flow.t_ControlFlow
-                (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error) Prims.unit
-          in
-          Core.Ops.Control_flow.ControlFlow_Continue
-          (let output:Alloc.String.t_String =
-              Alloc.String.impl__String__push_str output
-                (Core.Convert.f_as_ref #v_S #string #FStar.Tactics.Typeclasses.solve c <: string)
-            in
-            let output:Alloc.String.t_String = Alloc.String.impl__String__push output ':' in
-            output)
-          <:
-          Core.Ops.Control_flow.t_ControlFlow
-            (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error)
-            Alloc.String.t_String)
+              (Core.Option.t_Option
+                (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error) &
+                Alloc.String.t_String)
+          else
+            error, output
+            <:
+            (Core.Option.t_Option
+              (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error) &
+              Alloc.String.t_String))
   in
-  let tmp0, out:(Alloc.String.t_String & Core.Option.t_Option FStar.Char.char) =
+  let tmp0, out:(Alloc.String.t_String & Core.Option.t_Option char) =
     Alloc.String.impl__String__pop output
   in
   let output:Alloc.String.t_String = tmp0 in
-  let _:Core.Option.t_Option FStar.Char.char = out in
-  Core.Result.Result_Ok output <: Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error
+  let _:Core.Option.t_Option char = out in
+  Core.Option.impl__unwrap_or #(Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error)
+    error
+    (Core.Result.Result_Ok output
+      <:
+      Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error)

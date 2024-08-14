@@ -157,18 +157,22 @@ where
     S: AsRef<str>,
 {
     let mut output = String::new();
+    let mut error = None; // We add this to remove nested returns that hax doesn't support.
     for c in ciphers.into_iter() {
-        if crate::support::contains_any_of(c.as_ref(), invalid_chars) {
-            return Err(
-                pb::TLSConfigurationError::TLSCONFIGURATIONERROR_UNSUPPORTED_CONTROL_CHARACTERS
-                    .into(),
-            );
+        if error.is_none() {
+            if crate::support::contains_any_of(c.as_ref(), invalid_chars) {
+                error = Some(Err(
+                    pb::TLSConfigurationError::TLSCONFIGURATIONERROR_UNSUPPORTED_CONTROL_CHARACTERS
+                        .into()
+                ))
+            } else {
+                output.push_str(c.as_ref());
+                output.push(':');
+            }
         }
-        output.push_str(c.as_ref());
-        output.push(':');
     }
     output.pop();
-    Ok(output)
+    error.unwrap_or(Ok(output))
 }
 
 #[cfg(test)]
