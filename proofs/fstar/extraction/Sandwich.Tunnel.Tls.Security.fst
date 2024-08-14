@@ -44,19 +44,13 @@ let assert_tls13_ke_compliance
     Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
   in
   let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
-
-  (*
-  * Error 228 at Sandwich.Tunnel.Tls.Security.fst(47,30-47,36):
-  - Typeclass resolution failed.
-  - Could not solve constraint Core.Iter.Traits.Iterator.iterator i3.f_IntoIter
-  - See also FStar.Tactics.Typeclasses.fst(302,6-306,7)
-
-   1 error was reported (see above)
-  *)
-    Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #i3.f_IntoIter
-          #FStar.Tactics.Typeclasses.solve
+    Core.Iter.Traits.Iterator.f_fold 
+      #i3.f_IntoIter
+      #i3.f_IntoIter_Iterator
+      (Core.Iter.Traits.Collect.f_into_iter #i3.f_IntoIter
+          #i3
           (Core.Iter.Traits.Collect.f_into_iter #impl_145962886_
-              #FStar.Tactics.Typeclasses.solve
+              #i3
               kes
             <:
             i3.f_IntoIter)
@@ -224,6 +218,8 @@ let assert_tls13_compliance (tls13_config: Sandwich_api_proto.Tls.t_TLSv13Config
   match
     assert_tls13_ke_compliance #Alloc.String.t_String
       #(Core.Slice.Iter.t_Iter Alloc.String.t_String)
+      #FStar.Tactics.Typeclasses.solve
+      #(Core.Iter.Traits.Collect.impl (Core.Slice.Iter.t_Iter Alloc.String.t_String) #(Core.Iter.iterator_slice Alloc.String.t_String))
       (Core.Slice.impl__iter #Alloc.String.t_String
           (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec Alloc.String.t_String Alloc.Alloc.t_Global)
               #FStar.Tactics.Typeclasses.solve
