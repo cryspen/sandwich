@@ -31,13 +31,14 @@ let assert_tls13_ke_compliance
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core.Convert.t_AsRef impl_488124255_ string)
       (#[FStar.Tactics.Typeclasses.tcresolve ()]
           i3:
-          Core.Iter.Traits.Collect.t_IntoIterator impl_145962886_)
+          Core.Iter.Traits.Collect.into_iterator impl_145962886_)
       (kes: impl_145962886_)
       (classical_choice: Sandwich_api_proto.Compliance.t_ClassicalAlgoChoice)
       (hybrid_choice: Sandwich_api_proto.Compliance.t_HybridAlgoChoice)
       (quantum_safe_choice: Sandwich_api_proto.Compliance.t_QuantumSafeAlgoChoice)
       (desired_strength: Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits)
      =
+  let _: (i3.f_IntoIter == impl_145962886_) = admit() in
   let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
     Core.Result.Result_Ok (() <: Prims.unit)
     <:

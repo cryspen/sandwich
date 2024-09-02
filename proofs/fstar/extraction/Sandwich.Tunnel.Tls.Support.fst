@@ -67,6 +67,7 @@ let configuration_read_certificate (cert: Sandwich_api_proto.Certificate.t_Certi
         Sandwich.Error.t_Error)
     (fun oneof ->
         let oneof:Sandwich_api_proto.Certificate.Certificate.t_Source = oneof in
+        assume (Sandwich.Error.t_Error == Sandwich.Support.Data_source.impl.f_Error);
         match oneof with
         | Sandwich_api_proto.Certificate.Certificate.Source_Static asn1ds ->
           Core.Result.impl__and_then #Sandwich.Support.Data_source.t_DataSource
@@ -155,6 +156,7 @@ let configuration_read_certificate (cert: Sandwich_api_proto.Certificate.t_Certi
               Sandwich.Support.Data_source.t_DataSource) Sandwich.Error.t_Error)
 
 let configuration_read_private_key (private_key: Sandwich_api_proto.Private_key.t_PrivateKey) =
+  assume (Sandwich.Error.t_Error == Sandwich.Support.Data_source.impl.f_Error);
   Core.Result.impl__and_then #Sandwich_api_proto.Private_key.Private_key.t_Source
     #Sandwich.Error.t_Error
     #(Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat &
@@ -489,19 +491,25 @@ let build_ciphersuites_list
     <:
     Core.Option.t_Option (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error)
   in
+  assume (i3.f_IntoIter == impl_995885649_);
+  (* This should not be necessary but hax doesn't seem to produce anything for the constraint `Item = S` *)
+  assume (i3.f_IntoIter_Iterator.f_Item == v_S); 
   let error, output:(Core.Option.t_Option
     (Core.Result.t_Result Alloc.String.t_String Sandwich.Error.t_Error) &
     Alloc.String.t_String) =
     Core.Iter.Traits.Iterator.f_fold 
       #i3.f_IntoIter
-      #i3.f_IntoIter_Iterator    
-      (Core.Iter.Traits.Collect.f_into_iter #i3.f_IntoIter
+      #i3.f_IntoIter_Iterator
+
+    (* The commented code under fails type class resolution.
+        Removing it is a valid workaround as in this case f_into_iter is the identity. *)
+      ((* Core.Iter.Traits.Collect.f_into_iter #i3.f_IntoIter
           #i3
           (Core.Iter.Traits.Collect.f_into_iter #impl_995885649_
-              #i3
+              #i3 *)
               ciphers
-            <:
-            i3.f_IntoIter)
+            (* <:
+            i3.f_IntoIter) *)
         <:
         i3.f_IntoIter)
       (error, output

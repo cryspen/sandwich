@@ -47,7 +47,7 @@ sandwich-api-proto = { path = "rust_vendor/sandwich-api-proto" }
 sandwich-proto = { path = "rust_vendor/sandwich-proto" }
 tracing-proto = { path = "rust_vendor/tracing_proto"}
 
-hax-lib = { git = "https://github.com/hacspec/hax", branch = "cryspen-sandwich" }
+hax-lib = { path = "../hax-sandwich/hax-lib"}
 
 [workspace.dependencies]
 protobuf-shim = { path = "protobuf-shim", package = "protobuf" }
