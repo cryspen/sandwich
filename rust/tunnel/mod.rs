@@ -244,7 +244,16 @@ macro_rules! dispatch {
 impl Tunnel<'_> {
     /// Returns the state of the tunnel.
     pub fn state(&self) -> State {
-        dispatch!(self, state)
+        match self {
+            #[cfg(feature = "openssl1_1_1")]
+            Self::OpenSSL1_1_1(t) => t.0.state(),
+
+            #[cfg(feature = "boringssl")]
+            Self::BoringSSL(t) => t.0.state(),
+
+            #[cfg(feature = "openssl3")]
+            Self::OpenSSL3(t) => t.state(),
+        }
     }
 
     /// Performs the handshake.
@@ -252,28 +261,73 @@ impl Tunnel<'_> {
     /// Depending on the return value, this method may need to be called
     /// more than once.
     pub fn handshake(&mut self) -> crate::Result<HandshakeState> {
-        dispatch!(self, handshake)
+        match self {
+            #[cfg(feature = "openssl1_1_1")]
+            Self::OpenSSL1_1_1(t) => t.0.handshake(),
+
+            #[cfg(feature = "boringssl")]
+            Self::BoringSSL(t) => t.0.handshake(),
+
+            #[cfg(feature = "openssl3")]
+            Self::OpenSSL3(t) => t.handshake(),
+        }
     }
 
     /// Writes data to the tunnel.
     pub fn write(&mut self, buf: &[u8]) -> RecordResult<usize> {
-        dispatch!(self, write, buf)
+        match self {
+            #[cfg(feature = "openssl1_1_1")]
+            Self::OpenSSL1_1_1(t) => t.0.write(buf),
+
+            #[cfg(feature = "boringssl")]
+            Self::BoringSSL(t) => t.0.write(buf),
+
+            #[cfg(feature = "openssl3")]
+            Self::OpenSSL3(t) => t.write(buf),
+        }
     }
 
     /// Reads data from the tunnel.
     pub fn read(&mut self, buf: &mut [u8]) -> RecordResult<usize> {
-        dispatch!(self, read, buf)
+        match self {
+            #[cfg(feature = "openssl1_1_1")]
+            Self::OpenSSL1_1_1(t) => t.0.read(buf),
+
+            #[cfg(feature = "boringssl")]
+            Self::BoringSSL(t) => t.0.read(buf),
+
+            #[cfg(feature = "openssl3")]
+            Self::OpenSSL3(t) => t.read(buf),
+        }
     }
 
     /// Closes the tunnel.
     pub fn close(&mut self) -> RecordResult<()> {
-        dispatch!(self, close)
+        match self {
+            #[cfg(feature = "openssl1_1_1")]
+            Self::OpenSSL1_1_1(t) => t.0.close(),
+
+            #[cfg(feature = "boringssl")]
+            Self::BoringSSL(t) => t.0.close(),
+
+            #[cfg(feature = "openssl3")]
+            Self::OpenSSL3(t) => t.close(),
+        }
     }
 
     /// Adds tracer to tunnel.
     #[cfg(feature = "tracer")]
     pub fn add_tracer(&mut self, tracer: SandwichTracer) {
-        dispatch!(self, add_tracer, tracer)
+        match self {
+            #[cfg(feature = "openssl1_1_1")]
+            Self::OpenSSL1_1_1(t) => t.0.add_tracer(tracer),
+
+            #[cfg(feature = "boringssl")]
+            Self::BoringSSL(t) => t.0.add_tracer(tracer),
+
+            #[cfg(feature = "openssl3")]
+            Self::OpenSSL3(t) => t.add_tracer(tracer),
+        }
     }
 }
 

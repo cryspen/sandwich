@@ -2,8 +2,8 @@
 function extract() {
     # Extract the `sandwich` crate as F* code
     cargo hax -C -p sandwich \; \
-          into -i '-** +!sandwich::tunnel::tls::**' \
-          fstar --interfaces '+!** +sandwich::tunnel::tls::**'
+          into -i '-** +!sandwich::tunnel::** -sandwich::tunnel::ffi' \
+          fstar --interfaces '+!** +sandwich::tunnel::** -sandwich::tunnel::ffi'
 }
 
 function extract_interfaces() {
