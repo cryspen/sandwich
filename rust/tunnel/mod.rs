@@ -214,6 +214,20 @@ pub enum Tunnel<'a> {
     OpenSSL3(std::pin::Pin<Box<crate::ossl3::tunnel::Tunnel<'a>>>),
 }
 
+#[cfg(feature = "openssl3")]
+impl<'a> From<crate::ossl3::tunnel::Tunnel<'a>> for Tunnel<'a> {
+    fn from(inner: crate::ossl3::tunnel::Tunnel<'a>) -> Self {
+        Self::OpenSSL3(Box::pin(inner))
+    }
+}
+
+impl<'a> Tunnel<'a> {
+    fn rewrap<Inner, Other>((inner, other): (Inner, Other)) -> (Self, Other)
+        where Self: From<Inner> {
+            (inner.into(), other)
+        }
+}
+
 macro_rules! dispatch {
     ($self:ident, $func:ident, $($arg:tt) *) => {
         match $self {
@@ -260,7 +274,7 @@ impl Tunnel<'_> {
     ///
     /// Depending on the return value, this method may need to be called
     /// more than once.
-    pub fn handshake(&mut self) -> crate::Result<HandshakeState> {
+    pub fn handshake(self) -> (Self, crate::Result<HandshakeState>) {
         match self {
             #[cfg(feature = "openssl1_1_1")]
             Self::OpenSSL1_1_1(t) => t.0.handshake(),
@@ -269,12 +283,14 @@ impl Tunnel<'_> {
             Self::BoringSSL(t) => t.0.handshake(),
 
             #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(t) => t.handshake(),
+            Self::OpenSSL3(t) => {
+                Self::rewrap((*std::pin::Pin::into_inner(t)).handshake())
+            }
         }
     }
 
     /// Writes data to the tunnel.
-    pub fn write(&mut self, buf: &[u8]) -> RecordResult<usize> {
+    pub fn write(self, buf: &[u8]) -> (Self, RecordResult<usize>) {
         match self {
             #[cfg(feature = "openssl1_1_1")]
             Self::OpenSSL1_1_1(t) => t.0.write(buf),
@@ -283,12 +299,12 @@ impl Tunnel<'_> {
             Self::BoringSSL(t) => t.0.write(buf),
 
             #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(t) => t.write(buf),
+            Self::OpenSSL3(t) => Self::rewrap((*std::pin::Pin::into_inner(t)).write(buf)),
         }
     }
 
     /// Reads data from the tunnel.
-    pub fn read(&mut self, buf: &mut [u8]) -> RecordResult<usize> {
+    pub fn read(self, buf: &mut [u8]) -> (Self, RecordResult<usize>) {
         match self {
             #[cfg(feature = "openssl1_1_1")]
             Self::OpenSSL1_1_1(t) => t.0.read(buf),
@@ -297,12 +313,12 @@ impl Tunnel<'_> {
             Self::BoringSSL(t) => t.0.read(buf),
 
             #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(t) => t.read(buf),
+            Self::OpenSSL3(t) => Self::rewrap((*std::pin::Pin::into_inner(t)).read(buf)),
         }
     }
 
     /// Closes the tunnel.
-    pub fn close(&mut self) -> RecordResult<()> {
+    pub fn close(self) -> (Self, RecordResult<()>) {
         match self {
             #[cfg(feature = "openssl1_1_1")]
             Self::OpenSSL1_1_1(t) => t.0.close(),
@@ -311,13 +327,13 @@ impl Tunnel<'_> {
             Self::BoringSSL(t) => t.0.close(),
 
             #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(t) => t.close(),
+            Self::OpenSSL3(t) => Self::rewrap((*std::pin::Pin::into_inner(t)).close()),
         }
     }
 
     /// Adds tracer to tunnel.
     #[cfg(feature = "tracer")]
-    pub fn add_tracer(&mut self, tracer: SandwichTracer) {
+    pub fn add_tracer(self, tracer: SandwichTracer) -> Self {
         match self {
             #[cfg(feature = "openssl1_1_1")]
             Self::OpenSSL1_1_1(t) => t.0.add_tracer(tracer),
@@ -326,7 +342,7 @@ impl Tunnel<'_> {
             Self::BoringSSL(t) => t.0.add_tracer(tracer),
 
             #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(t) => t.add_tracer(tracer),
+            Self::OpenSSL3(t) => Self::rewrap(((*std::pin::Pin::into_inner(t))).add_tracer(tracer)),
         }
     }
 }

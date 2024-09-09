@@ -543,9 +543,9 @@ impl<'a> Tunnel<'a> {
         self.state.into()
     }
 
-    pub(crate) fn handshake(&mut self) -> Result<crate::tunnel::HandshakeState> {
+    pub(crate) fn handshake(mut self) -> (Self, Result<crate::tunnel::HandshakeState>) {
         if self.state == pb::State::STATE_HANDSHAKE_DONE {
-            return Ok(pb::HandshakeState::HANDSHAKESTATE_DONE.into());
+            return (self, Ok(pb::HandshakeState::HANDSHAKESTATE_DONE.into()));
         }
 
         let ssl_wrapped = Ssl(self.ssl.as_nonnull());
@@ -553,51 +553,51 @@ impl<'a> Tunnel<'a> {
         let state = ssl_wrapped.get_state();
         if state == pb::HandshakeState::HANDSHAKESTATE_DONE {
             self.state = pb::State::STATE_HANDSHAKE_DONE;
-            return Ok(state.into());
+            return (self, Ok(state.into()));
         }
 
         let (handshake_state, tunnel_state) = ssl_wrapped.do_handshake();
         if let Some(tunnel_state) = tunnel_state {
             self.state = tunnel_state;
         }
-        handshake_state.map(crate::tunnel::HandshakeState::from)
+        (self, handshake_state.map(crate::tunnel::HandshakeState::from))
     }
 
-    pub(crate) fn read(&mut self, buf: &mut [u8]) -> crate::tunnel::RecordResult<usize> {
+    pub(crate) fn read(mut self, buf: &mut [u8]) -> (Self, crate::tunnel::RecordResult<usize>) {
         let result = Ssl(self.ssl.as_nonnull()).read(buf);
         self.update_state();
         if self.state == pb::State::STATE_DISCONNECTED {
-            Err(pb::RecordError::RECORDERROR_CLOSED.into())
+            (self, Err(pb::RecordError::RECORDERROR_CLOSED.into()))
         } else {
-            result
+            (self, result)
         }
     }
 
-    pub(crate) fn write(&mut self, buf: &[u8]) -> crate::tunnel::RecordResult<usize> {
+    pub(crate) fn write(mut self, buf: &[u8]) -> (Self, crate::tunnel::RecordResult<usize>) {
         let result = Ssl(self.ssl.as_nonnull()).write(buf);
         self.update_state();
         if self.state == pb::State::STATE_DISCONNECTED {
-            Err(pb::RecordError::RECORDERROR_CLOSED.into())
+            (self, Err(pb::RecordError::RECORDERROR_CLOSED.into()))
         } else {
-            result
+            (self, result)
         }
     }
 
     #[cfg(feature = "tracer")]
-    pub(crate) fn add_tracer(&mut self, _tracer: crate::support::tracing::SandwichTracer) {
+    pub(crate) fn add_tracer(self, _tracer: crate::support::tracing::SandwichTracer) -> Self {
         unimplemented!("tracing is not supported with OpenSSL 3");
     }
 
-    pub(crate) fn close(&mut self) -> crate::tunnel::RecordResult<()> {
+    pub(crate) fn close(mut self) -> (Self, crate::tunnel::RecordResult<()>) {
         if self.state == pb::State::STATE_DISCONNECTED {
-            return Ok(());
+            return (self, Ok(()));
         }
         let result = Ssl(self.ssl.as_nonnull()).close();
         self.update_state();
         if self.state == pb::State::STATE_DISCONNECTED {
-            Ok(())
+            (self, Ok(()))
         } else {
-            result
+            (self, result)
         }
     }
 }
