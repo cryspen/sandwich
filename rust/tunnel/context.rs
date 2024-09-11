@@ -19,7 +19,7 @@ use crate::implementation::ossl;
 
 use super::Tunnel;
 
-use crate::tunnel::{tls, IO};
+use crate::tunnel::{tls, IO, BoxedIO};
 
 /// Mode for a [`Context`].
 ///
@@ -40,7 +40,7 @@ pub(crate) enum Mode {
 /// the tunnel.
 /// Returning the I/O interface in case of error allows the caller to re-use it
 /// without having to create a new one.
-pub type TunnelResult<'a> = Result<Tunnel<'a>, (crate::Error, Box<dyn IO>)>;
+pub type TunnelResult<'a> = Result<Tunnel<'a>, (crate::Error, BoxedIO)>;
 
 /// A Sandwich context.
 pub enum Context<'a> {
@@ -148,7 +148,7 @@ impl<'a> Context<'a> {
     /// If an error occured, the IO interface is returned to the user.
     pub fn new_tunnel(
         &self,
-        io: Box<dyn IO>,
+        io: BoxedIO,
         configuration: pb_api::TunnelConfiguration,
     ) -> TunnelResult<'_> {
         match self {
@@ -160,6 +160,7 @@ impl<'a> Context<'a> {
             Self::BoringSSL(c) => Ok(Tunnel::BoringSSL(ossl::boringssl::Tunnel(
                 c.0.new_tunnel(io, configuration)?,
             ))),
+            // (crate::Error, Box<dyn IO>) -> (crate::Error, BoxedIO)
             #[cfg(feature = "openssl3")]
             Self::OpenSSL3(c) => Ok(Tunnel::OpenSSL3(c.new_tunnel(io, configuration)?)),
         }

@@ -16,7 +16,7 @@ use crate::support::tracing::SandwichTracer;
 
 #[cfg(any(feature = "openssl1_1_1", feature = "boringssl"))]
 use crate::implementation::ossl;
-pub use io::IO;
+pub use io::{IO, BoxedIO};
 
 mod context;
 
@@ -174,23 +174,23 @@ impl std::fmt::Display for RecordError {
     }
 }
 
-impl From<RecordError> for std::io::Error {
-    fn from(re: RecordError) -> Self {
-        use std::io::ErrorKind;
-        std::io::Error::new(
-            match re.0 {
-                pb::RecordError::RECORDERROR_OK => ErrorKind::Other,
-                pb::RecordError::RECORDERROR_WANT_READ
-                | pb::RecordError::RECORDERROR_WANT_WRITE => ErrorKind::WouldBlock,
-                pb::RecordError::RECORDERROR_BEING_SHUTDOWN
-                | pb::RecordError::RECORDERROR_CLOSED => ErrorKind::BrokenPipe,
-                pb::RecordError::RECORDERROR_TOO_BIG => ErrorKind::OutOfMemory,
-                pb::RecordError::RECORDERROR_UNKNOWN => ErrorKind::Other,
-            },
-            re,
-        )
-    }
-}
+// impl From<RecordError> for std::io::Error {
+//     fn from(re: RecordError) -> Self {
+//         use std::io::ErrorKind;
+//         std::io::Error::new(
+//             match re.0 {
+//                 pb::RecordError::RECORDERROR_OK => ErrorKind::Other,
+//                 pb::RecordError::RECORDERROR_WANT_READ
+//                 | pb::RecordError::RECORDERROR_WANT_WRITE => ErrorKind::WouldBlock,
+//                 pb::RecordError::RECORDERROR_BEING_SHUTDOWN
+//                 | pb::RecordError::RECORDERROR_CLOSED => ErrorKind::BrokenPipe,
+//                 pb::RecordError::RECORDERROR_TOO_BIG => ErrorKind::OutOfMemory,
+//                 pb::RecordError::RECORDERROR_UNKNOWN => ErrorKind::Other,
+//             },
+//             re,
+//         )
+//     }
+// }
 
 impl std::error::Error for RecordError {}
 

@@ -17,6 +17,42 @@ pub trait IO: crate::IO {
     fn set_state(&mut self, _state: pb::State) {}
 }
 
+/// BoxedIO
+#[hax_lib::opaque_type]
+pub struct BoxedIO(pub Box<dyn IO>);
+
+impl IO for BoxedIO {
+    fn set_state(&mut self, _state: pb::State) {}
+}
+
+impl std::io::Read for BoxedIO {
+    fn read(&mut self, buf: &mut [u8]) -> Result<usize, std::io::Error> {
+        (self.0).read(buf)
+    }
+}
+
+impl std::io::Write for BoxedIO {
+    fn write(&mut self, buf: &[u8]) -> Result<usize, std::io::Error> {
+        (self.0).write(buf)
+    }
+
+    fn flush(&mut self) -> Result<(), std::io::Error> {
+        (self.0).flush()
+    }
+}
+
+// impl From<(crate::Error, Box<dyn IO>)> for (crate::Error, BoxedIO) {
+//     fn from(err: (crate::Error, Box<dyn IO>)) -> Self {
+//         unimplemented!()
+//     }
+// }
+
+impl From<Box<dyn IO>> for BoxedIO {
+    fn from(io: Box<dyn IO>) -> Self {
+        unimplemented!()
+    }
+}
+
 impl<'a> std::fmt::Debug for dyn IO + 'a {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "Box(tunnel::IO)")

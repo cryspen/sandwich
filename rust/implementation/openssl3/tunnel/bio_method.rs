@@ -13,6 +13,12 @@ use support::{NativeBio, NativeSsl};
 
 use super::Tunnel;
 
+use crate::tunnel::IO;
+
+use std::io::Read;
+use std::io::Write;
+
+
 /// A wrapper around a BIO.
 struct Bio(NonNull<NativeBio>);
 
@@ -104,16 +110,16 @@ impl Bio {
     fn read(&self, buffer: &mut [u8]) -> Result<usize, pb::IOError> {
         let tun = self.get_tunnel().ok_or(pb::IOError::IOERROR_SYSTEM_ERROR)?;
         self.synchronize_states(tun);
-        (tun.io).set_state(tun.state);
-        (tun.io).read(buffer).map_err(|e| e.into_io_error())
+        tun.io.set_state(tun.state);
+        tun.io.read(buffer).map_err(|e| e.into_io_error())
     }
 
     /// Writes data to the BIO.
     fn write(&self, buffer: &[u8]) -> Result<usize, pb::IOError> {
         let tun = self.get_tunnel().ok_or(pb::IOError::IOERROR_SYSTEM_ERROR)?;
         self.synchronize_states(tun);
-        (tun.io).set_state(tun.state);
-        (tun.io).write(buffer).map_err(|e| e.into_io_error())
+        tun.io.set_state(tun.state);
+        tun.io.write(buffer).map_err(|e| e.into_io_error())
     }
 
     /// Flushes data.
