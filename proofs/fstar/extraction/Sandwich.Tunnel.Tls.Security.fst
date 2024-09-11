@@ -31,27 +31,23 @@ let assert_tls13_ke_compliance
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core.Convert.t_AsRef impl_488124255_ string)
       (#[FStar.Tactics.Typeclasses.tcresolve ()]
           i3:
-          Core.Iter.Traits.Collect.into_iterator impl_145962886_)
+          Core.Iter.Traits.Collect.t_IntoIterator impl_145962886_)
       (kes: impl_145962886_)
       (classical_choice: Sandwich_api_proto.Compliance.t_ClassicalAlgoChoice)
       (hybrid_choice: Sandwich_api_proto.Compliance.t_HybridAlgoChoice)
       (quantum_safe_choice: Sandwich_api_proto.Compliance.t_QuantumSafeAlgoChoice)
       (desired_strength: Sandwich_api_proto.Compliance.t_NISTSecurityStrengthBits)
      =
-  let _: (i3.f_IntoIter == impl_145962886_) = admit() in
   let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
     Core.Result.Result_Ok (() <: Prims.unit)
     <:
     Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
   in
   let result:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
-    Core.Iter.Traits.Iterator.f_fold 
-      #i3.f_IntoIter
-      #i3.f_IntoIter_Iterator
-      (Core.Iter.Traits.Collect.f_into_iter #i3.f_IntoIter
-          #i3
+    Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #i3.f_IntoIter
+          #FStar.Tactics.Typeclasses.solve
           (Core.Iter.Traits.Collect.f_into_iter #impl_145962886_
-              #i3
+              #FStar.Tactics.Typeclasses.solve
               kes
             <:
             i3.f_IntoIter)
@@ -219,8 +215,6 @@ let assert_tls13_compliance (tls13_config: Sandwich_api_proto.Tls.t_TLSv13Config
   match
     assert_tls13_ke_compliance #Alloc.String.t_String
       #(Core.Slice.Iter.t_Iter Alloc.String.t_String)
-      #FStar.Tactics.Typeclasses.solve
-      #(Core.Iter.Traits.Collect.impl (Core.Slice.Iter.t_Iter Alloc.String.t_String) #(Core.Iter.iterator_slice Alloc.String.t_String))
       (Core.Slice.impl__iter #Alloc.String.t_String
           (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec Alloc.String.t_String Alloc.Alloc.t_Global)
               #FStar.Tactics.Typeclasses.solve
