@@ -168,6 +168,8 @@ pub mod oneof_full {
 }
 
 pub mod reflect {
+    pub mod enums {}
+
     pub struct OneofDescriptor {
         _hax_placeholder: (),
     }
