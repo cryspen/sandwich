@@ -3,4 +3,4 @@ module Protobuf.Reflect.Enums
 open Core
 open FStar.Mul
 
-let v__HAX_PLACEHOLDER: Prims.unit = () <: Prims.unit
+type t_EnumDescriptor = { f__hax_placeholder:Prims.unit }

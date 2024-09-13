@@ -169,7 +169,9 @@ pub mod oneof_full {
 
 pub mod reflect {
     pub mod enums {
-        const _HAX_PLACEHOLDER: () = ();
+        pub struct EnumDescriptor {
+            _hax_placeholder: (),
+        }
     }
 
     pub struct OneofDescriptor {
