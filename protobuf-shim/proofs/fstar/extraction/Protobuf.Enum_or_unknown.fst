@@ -12,6 +12,7 @@ let _ =
 let impl_1__enum_value
       (#v_E: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Protobuf.Enums.t_Enum v_E)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core.Clone.t_Clone v_E)
       (self: t_EnumOrUnknown v_E)
      =
   Core.Option.impl__ok_or #v_E
@@ -23,7 +24,8 @@ let impl_1__enum_value
 
 let impl_1__enum_value_or_default
       (#v_E: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Protobuf.Enums.t_Enum v_E)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i3: Protobuf.Enums.t_Enum v_E)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i3: Core.Clone.t_Clone v_E)
       (self: t_EnumOrUnknown v_E)
      =
   Core.Result.impl__unwrap_or_default #v_E

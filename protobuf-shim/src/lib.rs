@@ -68,6 +68,7 @@ pub mod enums {
 }
 
 pub mod special {
+    #[derive(Clone)]
     pub struct SpecialFields {
         unknown_fields: crate::unknown_fields::UnknownFields,
         cached_size: crate::cached_size::CachedSize,
@@ -81,7 +82,7 @@ pub mod cached_size {
     /// (Generated code can use `#[derive(Eq)]`).
     ///
     /// This type should rarely be used directly.
-    #[derive(Debug, Default)]
+    #[derive(Debug, Default, Clone)]
     pub struct CachedSize {
         size: (),
     }
@@ -116,9 +117,10 @@ pub mod unknown_fields {
 }
 
 pub mod message_field {
-    pub struct MessageField<T>(pub Option<Box<T>>);
+    #[derive(Clone)]
+    pub struct MessageField<T: Clone>(pub Option<Box<T>>);
 
-    impl<T> MessageField<T> {
+    impl<T: Clone> MessageField<T> {
         pub fn as_ref(&self) -> Option<&T> {
             self.0.as_ref().map(|v| &**v)
         }
@@ -131,16 +133,17 @@ pub mod message_field {
 pub mod enum_or_unknown {
     use crate::enums::*;
 
-    pub struct EnumOrUnknown<E> {
+    #[derive(Clone)]
+    pub struct EnumOrUnknown<E: Clone> {
         value: i32,
         phantom: std::marker::PhantomData<E>,
     }
 
-    impl<E> EnumOrUnknown<E> {
+    impl<E: Clone> EnumOrUnknown<E> {
         const _HAX_PLACEHOLDER: () = ();
     }
 
-    impl<E: Enum> EnumOrUnknown<E> {
+    impl<E: Enum + Clone> EnumOrUnknown<E> {
         pub fn enum_value(&self) -> Result<E, i32> {
             E::from_i32(self.value).ok_or(self.value)
         }
@@ -168,9 +171,18 @@ pub mod oneof_full {
 }
 
 pub mod reflect {
+    use crate::special::SpecialFields;
     pub mod enums {
         pub struct EnumDescriptor {
             _hax_placeholder: (),
+        }
+
+        impl EnumDescriptor {
+            pub fn new<T>(file_descriptor: T, index: usize) -> Self {
+                EnumDescriptor {
+                    _hax_placeholder: ()
+                }
+            } 
         }
     }
 
@@ -225,6 +237,7 @@ pub mod reflect {
         ListValue(ListValue),
     }
 
+    #[derive(Clone)]
     pub enum NullValue {
         NULL_VALUE = 0,
     }
@@ -234,20 +247,80 @@ pub mod reflect {
         pub special_fields: SpecialFields,
     }
 
-    pub struct SpecialFields {
-        _hax_placeholder: (),
-    }
-
     pub mod value {
         pub trait ProtobufValue: Clone + Default + std::fmt::Debug + Send + Sync + Sized + 'static {}
     }
 
     pub mod file {
+        use crate::reflect::file::index::FileDescriptorCommon;
+        use crate::descriptor::FileDescriptorProto;
 
-        pub struct FileDescriptor {
-            _hax_placeholder: (),
+        pub mod index {
+            use std::collections::HashMap;
+
+            #[derive(Clone)]
+            pub(crate) struct FileDescriptorCommon {
+                // /// Direct dependencies of this file.
+                // pub(crate) dependencies: Vec<FileDescriptor>,
+                // /// All messages in this file.
+                // pub(crate) messages: Vec<MessageIndices>,
+                // pub(crate) message_by_name_to_package: HashMap<String, usize>,
+                // pub(crate) top_level_messages: Vec<usize>,
+                // pub(crate) enums: Vec<EnumIndices>,
+                pub(crate) enums_by_name_to_package: HashMap<String, usize>,
+                // pub(crate) oneofs: Vec<OneofIndices>,
+                // pub(crate) services: Vec<ServiceIndex>,
+                // pub(crate) first_extension_field_index: usize,
+                // /// All fields followed by file-level extensions.
+                // pub(crate) fields: Vec<FieldIndex>,
+            }
         }
 
+        #[derive(Clone)]
+        pub(crate) struct DynamicFileDescriptor {
+            pub(crate) proto: FileDescriptorProto,
+            pub(crate) common: FileDescriptorCommon,
+        }
+
+        pub mod generated {
+            use crate::reflect::file::index::FileDescriptorCommon;
+
+            #[derive(Clone)]
+            pub struct GeneratedFileDescriptor {
+                pub(crate) common: FileDescriptorCommon,
+            }            
+        }
+
+        use crate::reflect::enums::EnumDescriptor;
+
+        #[derive(Clone)]
+        pub struct FileDescriptor {
+            pub imp: FileDescriptorImpl,
+        }
+
+        use crate::reflect::file::generated::GeneratedFileDescriptor;
+
+        #[derive(Clone)]
+        pub enum FileDescriptorImpl {
+            Generated(&'static GeneratedFileDescriptor),
+            Dynamic(&'static DynamicFileDescriptor),
+        }
+
+        impl FileDescriptor {
+            pub(crate) fn common(&self) -> &FileDescriptorCommon {
+                match &self.imp {
+                    FileDescriptorImpl::Generated(g) => &g.common,
+                    FileDescriptorImpl::Dynamic(d) => &d.common,
+                }
+            }
+
+            pub fn enum_by_package_relative_name(&self, name: &str) -> Option<EnumDescriptor> {
+                self.common()
+                    .enums_by_name_to_package
+                    .get(name)
+                    .map(|&index| EnumDescriptor::new(self.clone(), index))
+            }
+        }
     }
 }
 
@@ -280,6 +353,7 @@ pub mod descriptor {
     use super::message_field::MessageField;
     use super::enum_or_unknown::EnumOrUnknown;
 
+    #[derive(Clone)]
     pub struct FileDescriptorProto {
         pub name: Option<String>,
         pub package: Option<String>,
@@ -296,6 +370,7 @@ pub mod descriptor {
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct DescriptorProto {
         pub name: Option<String>,
         pub field: Vec<FieldDescriptorProto>,
@@ -310,6 +385,7 @@ pub mod descriptor {
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct FieldDescriptorProto {
         pub name: Option<String>,
         pub number: Option<i32>,
@@ -325,6 +401,7 @@ pub mod descriptor {
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct EnumDescriptorProto {
         pub name: Option<String>,
         pub value: Vec<EnumValueDescriptorProto>,
@@ -334,6 +411,7 @@ pub mod descriptor {
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct EnumValueDescriptorProto {
         pub name: Option<String>,
         pub number: Option<i32>,
@@ -341,6 +419,7 @@ pub mod descriptor {
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct EnumOptions {
         pub allow_alias: Option<bool>,
         pub deprecated: Option<bool>,
@@ -348,12 +427,14 @@ pub mod descriptor {
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct EnumValueOptions {
         pub deprecated: Option<bool>,
         pub uninterpreted_option: Vec<UninterpretedOption>,
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct UninterpretedOption {
         pub name: Vec<NamePart>,
         pub identifier_value: Option<String>,
@@ -365,12 +446,14 @@ pub mod descriptor {
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct NamePart {
         pub name_part: Option<String>,
         pub is_extension: Option<bool>,
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct MessageOptions {
         pub message_set_wire_format: Option<bool>,
         pub no_standard_descriptor_accessor: Option<bool>,
@@ -380,6 +463,7 @@ pub mod descriptor {
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct ServiceDescriptorProto {
         pub name: Option<String>,
         pub method: Vec<MethodDescriptorProto>,
@@ -387,17 +471,20 @@ pub mod descriptor {
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct ReservedRange {
         pub start: Option<i32>,
         pub end: Option<i32>,
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct SourceCodeInfo {
         pub location: Vec<Location>,
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct Location {
         pub path: Vec<i32>,
         pub span: Vec<i32>,
@@ -407,6 +494,7 @@ pub mod descriptor {
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct MethodDescriptorProto {
         pub name: Option<String>,
         pub input_type: Option<String>,
@@ -417,6 +505,7 @@ pub mod descriptor {
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct MethodOptions {
         pub deprecated: Option<bool>,
         pub idempotency_level: Option<EnumOrUnknown<IdempotencyLevel>>,
@@ -424,12 +513,14 @@ pub mod descriptor {
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub enum IdempotencyLevel {
         IDEMPOTENCY_UNKNOWN = 0,
         NO_SIDE_EFFECTS = 1,
         IDEMPOTENT = 2,
     }
 
+    #[derive(Clone)]
     pub enum Type {
         TYPE_DOUBLE = 1,
         TYPE_FLOAT = 2,
@@ -451,6 +542,7 @@ pub mod descriptor {
         TYPE_SINT64 = 18,
     }
 
+    #[derive(Clone)]
     pub struct FieldOptions {
         pub ctype: Option<EnumOrUnknown<CType>>,
         pub packed: Option<bool>,
@@ -462,30 +554,35 @@ pub mod descriptor {
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub enum CType {
         STRING = 0,
         CORD = 1,
         STRING_PIECE = 2,
     }
 
+    #[derive(Clone)]
     pub enum JSType {
         JS_NORMAL = 0,
         JS_STRING = 1,
         JS_NUMBER = 2,
     }
 
+    #[derive(Clone)]
     pub struct EnumReservedRange {
         pub start: Option<i32>,
         pub end: Option<i32>,
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct ServiceOptions {
         pub deprecated: Option<bool>,
         pub uninterpreted_option: Vec<UninterpretedOption>,
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct FileOptions {
 
         pub java_package: Option<String>,
@@ -512,12 +609,14 @@ pub mod descriptor {
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub enum OptimizeMode {
         SPEED = 1,
         CODE_SIZE = 2,
         LITE_RUNTIME = 3,
     }
 
+    #[derive(Clone)]
     pub struct ExtensionRange {
         pub start: Option<i32>,
         pub end: Option<i32>,
@@ -525,22 +624,26 @@ pub mod descriptor {
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct ExtensionRangeOptions {
         pub uninterpreted_option: Vec<UninterpretedOption>,
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct OneofDescriptorProto {
         pub name: Option<String>,
         pub options: MessageField<OneofOptions>,
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub struct OneofOptions {
         pub uninterpreted_option: Vec<UninterpretedOption>,
         pub special_fields: SpecialFields,
     }
 
+    #[derive(Clone)]
     pub enum Label {
         LABEL_OPTIONAL = 1,
         LABEL_REQUIRED = 2,
