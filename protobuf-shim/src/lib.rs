@@ -239,6 +239,14 @@ pub mod reflect {
     pub mod value {
         pub trait ProtobufValue: Clone + Default + std::fmt::Debug + Send + Sync + Sized + 'static {}
     }
+
+    pub mod file {
+
+        pub struct FileDescriptor {
+            _hax_placeholder: (),
+        }
+
+    }
 }
 
 pub mod marker {
