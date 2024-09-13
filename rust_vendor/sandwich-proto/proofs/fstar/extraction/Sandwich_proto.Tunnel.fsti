@@ -385,10 +385,6 @@ let impl: Protobuf.Enums.t_Enum t_State =
         Rust_primitives.Hax.array_of_list 7 list)
   }
 
-/// Generated files are compatible only with the same version
-/// of protobuf runtime.
-let v__PROTOBUF_VERSION_CHECK: Prims.unit = Rust_primitives.Hax.dropped_body
-
 /// `FileDescriptor` object which allows dynamic access to files
 val file_descriptor: Prims.unit
   -> Prims.Pure Protobuf.Reflect.File.t_FileDescriptor Prims.l_True (fun _ -> Prims.l_True)
