@@ -272,3 +272,276 @@ pub mod enum_full {
         fn enum_descriptor() -> EnumDescriptor;
     }
 }
+
+pub mod descriptor {
+    use super::special::SpecialFields;
+    use super::message_field::MessageField;
+    use super::enum_or_unknown::EnumOrUnknown;
+
+    pub struct FileDescriptorProto {
+        pub name: Option<String>,
+        pub package: Option<String>,
+        pub dependency: Vec<String>,
+        pub public_dependency: Vec<i32>,
+        pub weak_dependency: Vec<i32>,
+        pub message_type: Vec<DescriptorProto>,
+        pub enum_type: Vec<EnumDescriptorProto>,
+        pub service: Vec<ServiceDescriptorProto>,
+        pub extension: Vec<FieldDescriptorProto>,
+        pub options: MessageField<FileOptions>,
+        pub source_code_info: MessageField<SourceCodeInfo>,
+        pub syntax: Option<String>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct DescriptorProto {
+        pub name: Option<String>,
+        pub field: Vec<FieldDescriptorProto>,
+        pub extension: Vec<FieldDescriptorProto>,
+        pub nested_type: Vec<DescriptorProto>,
+        pub enum_type: Vec<EnumDescriptorProto>,
+        pub extension_range: Vec<ExtensionRange>,
+        pub oneof_decl: Vec<OneofDescriptorProto>,
+        pub options: MessageField<MessageOptions>,
+        pub reserved_range: Vec<ReservedRange>,
+        pub reserved_name: Vec<String>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct FieldDescriptorProto {
+        pub name: Option<String>,
+        pub number: Option<i32>,
+        pub label: Option<EnumOrUnknown<Label>>,
+        pub type_: Option<EnumOrUnknown<Type>>,
+        pub type_name: Option<String>,
+        pub extendee: Option<String>,
+        pub default_value: Option<String>,
+        pub oneof_index: Option<i32>,
+        pub json_name: Option<String>,
+        pub options: MessageField<FieldOptions>,
+        pub proto3_optional: Option<bool>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct EnumDescriptorProto {
+        pub name: Option<String>,
+        pub value: Vec<EnumValueDescriptorProto>,
+        pub options: MessageField<EnumOptions>,
+        pub reserved_range: Vec<EnumReservedRange>,
+        pub reserved_name: Vec<String>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct EnumValueDescriptorProto {
+        pub name: Option<String>,
+        pub number: Option<i32>,
+        pub options: MessageField<EnumValueOptions>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct EnumOptions {
+        pub allow_alias: Option<bool>,
+        pub deprecated: Option<bool>,
+        pub uninterpreted_option: Vec<UninterpretedOption>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct EnumValueOptions {
+        pub deprecated: Option<bool>,
+        pub uninterpreted_option: Vec<UninterpretedOption>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct UninterpretedOption {
+        pub name: Vec<NamePart>,
+        pub identifier_value: Option<String>,
+        pub positive_int_value: Option<u64>,
+        pub negative_int_value: Option<i64>,
+        pub double_value: Option<()>, // this should be f64, but it's not supported by fstar.
+        pub string_value: Option<Vec<u8>>,
+        pub aggregate_value: Option<String>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct NamePart {
+        pub name_part: Option<String>,
+        pub is_extension: Option<bool>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct MessageOptions {
+        pub message_set_wire_format: Option<bool>,
+        pub no_standard_descriptor_accessor: Option<bool>,
+        pub deprecated: Option<bool>,
+        pub map_entry: Option<bool>,
+        pub uninterpreted_option: Vec<UninterpretedOption>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct ServiceDescriptorProto {
+        pub name: Option<String>,
+        pub method: Vec<MethodDescriptorProto>,
+        pub options: MessageField<ServiceOptions>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct ReservedRange {
+        pub start: Option<i32>,
+        pub end: Option<i32>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct SourceCodeInfo {
+        pub location: Vec<Location>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct Location {
+        pub path: Vec<i32>,
+        pub span: Vec<i32>,
+        pub leading_comments: Option<String>,
+        pub trailing_comments: Option<String>,
+        pub leading_detached_comments: Vec<String>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct MethodDescriptorProto {
+        pub name: Option<String>,
+        pub input_type: Option<String>,
+        pub output_type: Option<String>,
+        pub options: MessageField<MethodOptions>,
+        pub client_streaming: Option<bool>,
+        pub server_streaming: Option<bool>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct MethodOptions {
+        pub deprecated: Option<bool>,
+        pub idempotency_level: Option<EnumOrUnknown<IdempotencyLevel>>,
+        pub uninterpreted_option: Vec<UninterpretedOption>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub enum IdempotencyLevel {
+        IDEMPOTENCY_UNKNOWN = 0,
+        NO_SIDE_EFFECTS = 1,
+        IDEMPOTENT = 2,
+    }
+
+    pub enum Type {
+        TYPE_DOUBLE = 1,
+        TYPE_FLOAT = 2,
+        TYPE_INT64 = 3,
+        TYPE_UINT64 = 4,
+        TYPE_INT32 = 5,
+        TYPE_FIXED64 = 6,
+        TYPE_FIXED32 = 7,
+        TYPE_BOOL = 8,
+        TYPE_STRING = 9,
+        TYPE_GROUP = 10,
+        TYPE_MESSAGE = 11,
+        TYPE_BYTES = 12,
+        TYPE_UINT32 = 13,
+        TYPE_ENUM = 14,
+        TYPE_SFIXED32 = 15,
+        TYPE_SFIXED64 = 16,
+        TYPE_SINT32 = 17,
+        TYPE_SINT64 = 18,
+    }
+
+    pub struct FieldOptions {
+        pub ctype: Option<EnumOrUnknown<CType>>,
+        pub packed: Option<bool>,
+        pub jstype: Option<EnumOrUnknown<JSType>>,
+        pub lazy: Option<bool>,
+        pub deprecated: Option<bool>,
+        pub weak: Option<bool>,
+        pub uninterpreted_option: Vec<UninterpretedOption>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub enum CType {
+        STRING = 0,
+        CORD = 1,
+        STRING_PIECE = 2,
+    }
+
+    pub enum JSType {
+        JS_NORMAL = 0,
+        JS_STRING = 1,
+        JS_NUMBER = 2,
+    }
+
+    pub struct EnumReservedRange {
+        pub start: Option<i32>,
+        pub end: Option<i32>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct ServiceOptions {
+        pub deprecated: Option<bool>,
+        pub uninterpreted_option: Vec<UninterpretedOption>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct FileOptions {
+
+        pub java_package: Option<String>,
+        pub java_outer_classname: Option<String>,
+        pub java_multiple_files: Option<bool>,
+        pub java_generate_equals_and_hash: Option<bool>,
+        pub java_string_check_utf8: Option<bool>,
+        pub optimize_for: Option<EnumOrUnknown<OptimizeMode>>,
+        pub go_package: Option<String>,
+        pub cc_generic_services: Option<bool>,
+        pub java_generic_services: Option<bool>,
+        pub py_generic_services: Option<bool>,
+        pub php_generic_services: Option<bool>,
+        pub deprecated: Option<bool>,
+        pub cc_enable_arenas: Option<bool>,
+        pub objc_class_prefix: Option<String>,
+        pub csharp_namespace: Option<String>,
+        pub swift_prefix: Option<String>,
+        pub php_class_prefix: Option<String>,
+        pub php_namespace: Option<String>,
+        pub php_metadata_namespace: Option<String>,
+        pub ruby_package: Option<String>,
+        pub uninterpreted_option: Vec<UninterpretedOption>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub enum OptimizeMode {
+        SPEED = 1,
+        CODE_SIZE = 2,
+        LITE_RUNTIME = 3,
+    }
+
+    pub struct ExtensionRange {
+        pub start: Option<i32>,
+        pub end: Option<i32>,
+        pub options: MessageField<ExtensionRangeOptions>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct ExtensionRangeOptions {
+        pub uninterpreted_option: Vec<UninterpretedOption>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct OneofDescriptorProto {
+        pub name: Option<String>,
+        pub options: MessageField<OneofOptions>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub struct OneofOptions {
+        pub uninterpreted_option: Vec<UninterpretedOption>,
+        pub special_fields: SpecialFields,
+    }
+
+    pub enum Label {
+        LABEL_OPTIONAL = 1,
+        LABEL_REQUIRED = 2,
+        LABEL_REPEATED = 3,
+    }
+}
