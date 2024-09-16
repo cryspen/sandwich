@@ -173,6 +173,8 @@ pub mod oneof_full {
 pub mod reflect {
     use crate::special::SpecialFields;
     pub mod enums {
+        use super::EnumValueDescriptor;
+
         pub struct EnumDescriptor {
             _hax_placeholder: (),
         }
@@ -183,6 +185,21 @@ pub mod reflect {
                     _hax_placeholder: ()
                 }
             } 
+            pub fn hax_new() -> Self {
+                EnumDescriptor {
+                    _hax_placeholder: ()
+                }
+            }
+            fn value_by_index(self, index: usize) -> EnumValueDescriptor {
+                EnumValueDescriptor {
+                    _hax_placeholder: ()
+                }
+            }
+        }
+        pub mod generated {
+            pub struct GeneratedEnumDescriptorData {
+                _hax_placeholder: (),
+            }
         }
     }
 

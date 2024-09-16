@@ -39,14 +39,14 @@ val t_HandshakeState_cast_to_repr (x: t_HandshakeState)
     : Prims.Pure isize Prims.l_True (fun _ -> Prims.l_True)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_Debug_Enum: Core.Fmt.t_Debug t_HandshakeState
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_4: Protobuf.Enums.t_Enum t_HandshakeState =
   {
-    _super_8099741844003281729 = FStar.Tactics.Typeclasses.solve;
     _super_11581440318597584651 = FStar.Tactics.Typeclasses.solve;
     _super_11603873402755071380 = FStar.Tactics.Typeclasses.solve;
     _super_3331601577671695699 = FStar.Tactics.Typeclasses.solve;
-    _super_10171955091559533151 = FStar.Tactics.Typeclasses.solve;
-    _super_14975916834865509998 = FStar.Tactics.Typeclasses.solve;
     f_NAME = "HandshakeState";
     f_value_pre = (fun (self: t_HandshakeState) -> true);
     f_value_post = (fun (self: t_HandshakeState) (out: i32) -> true);
@@ -157,14 +157,14 @@ val t_RecordError_cast_to_repr (x: t_RecordError)
     : Prims.Pure isize Prims.l_True (fun _ -> Prims.l_True)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_Debug_RecordError: Core.Fmt.t_Debug t_RecordError
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_8: Protobuf.Enums.t_Enum t_RecordError =
   {
-    _super_8099741844003281729 = FStar.Tactics.Typeclasses.solve;
     _super_11581440318597584651 = FStar.Tactics.Typeclasses.solve;
     _super_11603873402755071380 = FStar.Tactics.Typeclasses.solve;
     _super_3331601577671695699 = FStar.Tactics.Typeclasses.solve;
-    _super_10171955091559533151 = FStar.Tactics.Typeclasses.solve;
-    _super_14975916834865509998 = FStar.Tactics.Typeclasses.solve;
     f_NAME = "RecordError";
     f_value_pre = (fun (self: t_RecordError) -> true);
     f_value_post = (fun (self: t_RecordError) (out: i32) -> true);
@@ -290,14 +290,14 @@ let discriminant_State_STATE_NOT_CONNECTED: isize = isz 0
 val t_State_cast_to_repr (x: t_State) : Prims.Pure isize Prims.l_True (fun _ -> Prims.l_True)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_Debug_State: Core.Fmt.t_Debug t_State
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl: Protobuf.Enums.t_Enum t_State =
   {
-    _super_8099741844003281729 = FStar.Tactics.Typeclasses.solve;
     _super_11581440318597584651 = FStar.Tactics.Typeclasses.solve;
     _super_11603873402755071380 = FStar.Tactics.Typeclasses.solve;
     _super_3331601577671695699 = FStar.Tactics.Typeclasses.solve;
-    _super_10171955091559533151 = FStar.Tactics.Typeclasses.solve;
-    _super_14975916834865509998 = FStar.Tactics.Typeclasses.solve;
     f_NAME = "State";
     f_value_pre = (fun (self: t_State) -> true);
     f_value_post = (fun (self: t_State) (out: i32) -> true);
@@ -394,6 +394,9 @@ val file_descriptor_proto: Prims.unit
   -> Prims.Pure Protobuf.Descriptor.t_FileDescriptorProto Prims.l_True (fun _ -> Prims.l_True)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_EnumFull_State: Protobuf.Enum_full.t_EnumFull Sandwich_proto.Tunnel.t_State
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_1: Protobuf.Enum_full.t_EnumFull t_State =
   {
     _super_14911585333008767414 = FStar.Tactics.Typeclasses.solve;
@@ -404,27 +407,12 @@ let impl_1: Protobuf.Enum_full.t_EnumFull t_State =
     f_enum_descriptor
     =
     (fun (_: Prims.unit) ->
-        Core.Clone.f_clone #Protobuf.Reflect.Enums.t_EnumDescriptor
-          (Protobuf.Lazy.impl__get #Protobuf.Reflect.Enums.t_EnumDescriptor
-              enum_descriptor__descriptor
-              (fun temp_0_ ->
-                  let _:Prims.unit = temp_0_ in
-                  Core.Option.impl__unwrap #Protobuf.Reflect.Enums.t_EnumDescriptor
-                    (Protobuf.Reflect.File.impl__FileDescriptor__enum_by_package_relative_name (file_descriptor
-                            ()
-                          <:
-                          Protobuf.Reflect.File.t_FileDescriptor)
-                        "State"
-                      <:
-                      Core.Option.t_Option Protobuf.Reflect.Enums.t_EnumDescriptor)
-                  <:
-                  Protobuf.Reflect.Enums.t_EnumDescriptor)
-            <:
-            Protobuf.Reflect.Enums.t_EnumDescriptor));
+      Protobuf.Reflect.Enums.impl__EnumDescriptor__hax_new ()
+    );
     f_descriptor_pre = (fun (self: t_State) -> true);
     f_descriptor_post
     =
-    (fun (self: t_State) (out: Protobuf.Reflect.Enums.t_EnumValueDescriptor) -> true);
+    (fun (self: t_State) (out: Protobuf.Reflect.t_EnumValueDescriptor) -> true);
     f_descriptor
     =
     fun (self: t_State) ->
@@ -443,6 +431,9 @@ val impl__State__generated_enum_descriptor_data: Prims.unit
       (fun _ -> Prims.l_True)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_EnumFull_HandShakeState: Protobuf.Enum_full.t_EnumFull t_HandshakeState
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_5: Protobuf.Enum_full.t_EnumFull t_HandshakeState =
   {
     _super_14911585333008767414 = FStar.Tactics.Typeclasses.solve;
@@ -453,27 +444,11 @@ let impl_5: Protobuf.Enum_full.t_EnumFull t_HandshakeState =
     f_enum_descriptor
     =
     (fun (_: Prims.unit) ->
-        Core.Clone.f_clone #Protobuf.Reflect.Enums.t_EnumDescriptor
-          (Protobuf.Lazy.impl__get #Protobuf.Reflect.Enums.t_EnumDescriptor
-              enum_descriptor__descriptor
-              (fun temp_0_ ->
-                  let _:Prims.unit = temp_0_ in
-                  Core.Option.impl__unwrap #Protobuf.Reflect.Enums.t_EnumDescriptor
-                    (Protobuf.Reflect.File.impl__FileDescriptor__enum_by_package_relative_name (file_descriptor
-                            ()
-                          <:
-                          Protobuf.Reflect.File.t_FileDescriptor)
-                        "HandshakeState"
-                      <:
-                      Core.Option.t_Option Protobuf.Reflect.Enums.t_EnumDescriptor)
-                  <:
-                  Protobuf.Reflect.Enums.t_EnumDescriptor)
-            <:
-            Protobuf.Reflect.Enums.t_EnumDescriptor));
+        Protobuf.Reflect.Enums.impl__EnumDescriptor__hax_new ());
     f_descriptor_pre = (fun (self: t_HandshakeState) -> true);
     f_descriptor_post
     =
-    (fun (self: t_HandshakeState) (out: Protobuf.Reflect.Enums.t_EnumValueDescriptor) -> true);
+    (fun (self: t_HandshakeState) (out: Protobuf.Reflect.t_EnumValueDescriptor) -> true);
     f_descriptor
     =
     fun (self: t_HandshakeState) ->
@@ -492,6 +467,9 @@ val impl__HandshakeState__generated_enum_descriptor_data: Prims.unit
       (fun _ -> Prims.l_True)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_EnumFull_RecordError: Protobuf.Enum_full.t_EnumFull t_RecordError
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_9: Protobuf.Enum_full.t_EnumFull t_RecordError =
   {
     _super_14911585333008767414 = FStar.Tactics.Typeclasses.solve;
@@ -502,27 +480,11 @@ let impl_9: Protobuf.Enum_full.t_EnumFull t_RecordError =
     f_enum_descriptor
     =
     (fun (_: Prims.unit) ->
-        Core.Clone.f_clone #Protobuf.Reflect.Enums.t_EnumDescriptor
-          (Protobuf.Lazy.impl__get #Protobuf.Reflect.Enums.t_EnumDescriptor
-              enum_descriptor__descriptor
-              (fun temp_0_ ->
-                  let _:Prims.unit = temp_0_ in
-                  Core.Option.impl__unwrap #Protobuf.Reflect.Enums.t_EnumDescriptor
-                    (Protobuf.Reflect.File.impl__FileDescriptor__enum_by_package_relative_name (file_descriptor
-                            ()
-                          <:
-                          Protobuf.Reflect.File.t_FileDescriptor)
-                        "RecordError"
-                      <:
-                      Core.Option.t_Option Protobuf.Reflect.Enums.t_EnumDescriptor)
-                  <:
-                  Protobuf.Reflect.Enums.t_EnumDescriptor)
-            <:
-            Protobuf.Reflect.Enums.t_EnumDescriptor));
+      Protobuf.Reflect.Enums.impl__EnumDescriptor__hax_new ());
     f_descriptor_pre = (fun (self: t_RecordError) -> true);
     f_descriptor_post
     =
-    (fun (self: t_RecordError) (out: Protobuf.Reflect.Enums.t_EnumValueDescriptor) -> true);
+    (fun (self: t_RecordError) (out: Protobuf.Reflect.t_EnumValueDescriptor) -> true);
     f_descriptor
     =
     fun (self: t_RecordError) ->

@@ -18,9 +18,9 @@ class t_EnumFull (v_Self: Type0) = {
         (f_descriptor_pre x0)
         (fun result -> f_descriptor_post x0 result);
   f_enum_descriptor_pre:Prims.unit -> bool;
-  f_enum_descriptor_post:Prims.unit -> Protobuf.Reflect.t_EnumDescriptor -> bool;
+  f_enum_descriptor_post:Prims.unit -> Protobuf.Reflect.Enums.t_EnumDescriptor -> bool;
   f_enum_descriptor:x0: Prims.unit
-    -> Prims.Pure Protobuf.Reflect.t_EnumDescriptor
+    -> Prims.Pure Protobuf.Reflect.Enums.t_EnumDescriptor
         (f_enum_descriptor_pre x0)
         (fun result -> f_enum_descriptor_post x0 result)
 }
