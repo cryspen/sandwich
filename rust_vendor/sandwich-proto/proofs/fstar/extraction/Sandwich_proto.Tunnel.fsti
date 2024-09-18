@@ -417,8 +417,7 @@ let impl_1: Protobuf.Enum_full.t_EnumFull t_State =
     =
     fun (self: t_State) ->
       let index:usize = cast (t_State_cast_to_repr self <: isize) <: usize in
-      Protobuf.Reflect.Enums.impl__EnumDescriptor__value_by_index (Protobuf.Enum_full.f_enum_descriptor
-            #t_State
+      Protobuf.Reflect.Enums.impl__EnumDescriptor__value_by_index (Protobuf.Reflect.Enums.impl__EnumDescriptor__hax_new
             ()
           <:
           Protobuf.Reflect.Enums.t_EnumDescriptor)
@@ -453,8 +452,7 @@ let impl_5: Protobuf.Enum_full.t_EnumFull t_HandshakeState =
     =
     fun (self: t_HandshakeState) ->
       let index:usize = cast (t_HandshakeState_cast_to_repr self <: isize) <: usize in
-      Protobuf.Reflect.Enums.impl__EnumDescriptor__value_by_index (Protobuf.Enum_full.f_enum_descriptor
-            #t_HandshakeState
+      Protobuf.Reflect.Enums.impl__EnumDescriptor__value_by_index (Protobuf.Reflect.Enums.impl__EnumDescriptor__hax_new
             ()
           <:
           Protobuf.Reflect.Enums.t_EnumDescriptor)
@@ -489,8 +487,7 @@ let impl_9: Protobuf.Enum_full.t_EnumFull t_RecordError =
     =
     fun (self: t_RecordError) ->
       let index:usize = cast (t_RecordError_cast_to_repr self <: isize) <: usize in
-      Protobuf.Reflect.Enums.impl__EnumDescriptor__value_by_index (Protobuf.Enum_full.f_enum_descriptor
-            #t_RecordError
+      Protobuf.Reflect.Enums.impl__EnumDescriptor__value_by_index (Protobuf.Reflect.Enums.impl__EnumDescriptor__hax_new
             ()
           <:
           Protobuf.Reflect.Enums.t_EnumDescriptor)
