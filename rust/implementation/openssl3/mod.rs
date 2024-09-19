@@ -25,12 +25,14 @@ pub(crate) use certificate_chain::CertificateChainBuilder;
 /// The default provider name.
 const DEFAULT_PROVIDER_NAME: &[u8; 8] = b"default\x00";
 
+#[hax_lib::exclude]
 /// Pointer to the default provider name.
 const DEFAULT_PROVIDER_NAME_PTR: *const c_char = (DEFAULT_PROVIDER_NAME as *const u8).cast();
 
 /// The oqs-provider provider name.
 const OQS_PROVIDER_NAME: &[u8; 12] = b"oqsprovider\x00";
 
+#[hax_lib::exclude]
 /// Pointer to the oqs-provider provider name.
 const OQS_PROVIDER_NAME_PTR: *const c_char = (OQS_PROVIDER_NAME as *const u8).cast();
 
@@ -44,6 +46,7 @@ impl std::fmt::Debug for Provider<'_> {
 }
 
 /// A convenient builder for providers.
+#[hax_lib::exclude]
 struct ProviderBuilder {
     /// Name of the provider, C format.
     name: Option<*const c_char>,
