@@ -7,9 +7,8 @@ use std::ffi::{c_char, c_int, c_void};
 use std::ptr::{self, NonNull};
 
 use crate::io::error::IntoIOError;
-use crate::ossl3::support;
+use crate::ossl3::{NativeBio, NativeSsl};
 
-use support::{NativeBio, NativeSsl};
 
 use super::Tunnel;
 

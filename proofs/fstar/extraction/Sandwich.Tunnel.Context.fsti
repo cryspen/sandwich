@@ -11,6 +11,15 @@ let _ =
   let open Sandwich.Implementation.Openssl3.Tunnel.Context in
   ()
 
+/// Mode for a [`Context`].
+/// A [`Context`] is either a context for client-side applications or
+/// server-side applications.
+type t_Mode =
+  | Mode_Client : t_Mode
+  | Mode_Server : t_Mode
+
+val t_Mode_cast_to_repr (x: t_Mode) : Prims.Pure isize Prims.l_True (fun _ -> Prims.l_True)
+
 /// A Sandwich context.
 type t_Context =
   | Context_OpenSSL3 : Sandwich.Implementation.Openssl3.Tunnel.Context.t_Context -> t_Context
@@ -62,29 +71,6 @@ let impl: Core.Fmt.t_Debug t_Context =
       (Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error)
   }
 
-/// Mode for a [`Context`].
-/// A [`Context`] is either a context for client-side applications or
-/// server-side applications.
-type t_Mode =
-  | Mode_Client : t_Mode
-  | Mode_Server : t_Mode
-
-val t_Mode_cast_to_repr (x: t_Mode) : Prims.Pure isize Prims.l_True (fun _ -> Prims.l_True)
-
-/// Creates a new tunnel from an I/O interface. See [`IO`] from [`crate::io`] module.
-/// The I/O interface must outlive the tunnel, as the tunnel makes use
-/// of it to send and receive data.
-/// If an error occured, the IO interface is returned to the user.
-val impl_1__new_tunnel
-      (self: t_Context)
-      (io: Sandwich.Tunnel.Io.t_BoxedIO)
-      (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
-    : Prims.Pure
-      (Core.Result.t_Result Sandwich.Tunnel.t_Tunnel
-          (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO))
-      Prims.l_True
-      (fun _ -> Prims.l_True)
-
 /// Instantiates a [`Context`] from a protobuf configuration message.
 /// # Examples
 /// ## Constructs a configuration in Rust.
@@ -113,5 +99,19 @@ val impl_1__try_from
       (context: Sandwich.t_Context)
       (configuration: Sandwich_api_proto.Configuration.t_Configuration)
     : Prims.Pure (Core.Result.t_Result t_Context Sandwich.Error.t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
+
+/// Creates a new tunnel from an I/O interface. See [`IO`] from [`crate::io`] module.
+/// The I/O interface must outlive the tunnel, as the tunnel makes use
+/// of it to send and receive data.
+/// If an error occured, the IO interface is returned to the user.
+val impl_1__new_tunnel
+      (self: t_Context)
+      (io: Sandwich.Tunnel.Io.t_BoxedIO)
+      (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
+    : Prims.Pure
+      (Core.Result.t_Result Sandwich.Tunnel.t_Tunnel
+          (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO))
       Prims.l_True
       (fun _ -> Prims.l_True)

@@ -8,13 +8,13 @@ use std::ffi::{c_int, CString};
 use std::pin::Pin;
 use std::ptr::{self, NonNull};
 
-use crate::ossl3::{support, LibCtx};
+use crate::ossl3::LibCtx;
 use crate::support::Pimpl;
 use crate::tunnel::tls::{TlsVersion, VerifyMode};
 use crate::tunnel::{tls, Mode, BoxedIO};
 use crate::Result;
 
-use support::{NativePrivateKey, NativeSsl, NativeSslCtx, NativeX509Certificate};
+use crate::ossl3::{NativePrivateKey, NativeSsl, NativeSslCtx, NativeX509Certificate};
 
 use super::{verify_callback, Tunnel, TunnelBuilder, X509VerifyParam};
 
@@ -124,7 +124,7 @@ impl SslContext {
                 pb::TLSConfigurationError::TLSCONFIGURATIONERROR_UNSUPPORTED_PROTOCOL_VERSION,
                 format!(
                     "failed to set the minimum TLS version: {}",
-                    support::errstr()
+                    crate::ossl3::errstr()
                 ),
             )
                 .into())
@@ -149,7 +149,7 @@ impl SslContext {
                 pb::TLSConfigurationError::TLSCONFIGURATIONERROR_UNSUPPORTED_PROTOCOL_VERSION,
                 format!(
                     "failed to set the maximum TLS version: {}",
-                    support::errstr()
+                    crate::ossl3::errstr()
                 ),
             )
                 .into())
@@ -195,7 +195,7 @@ impl SslContext {
         } else {
             Err((
                 pb::SystemError::SYSTEMERROR_BACKEND,
-                format!("failed to set the trust parameter: {}", support::errstr()),
+                format!("failed to set the trust parameter: {}", crate::ossl3::errstr()),
             )
                 .into())
         }
@@ -238,7 +238,7 @@ impl SslContext {
         S: AsRef<str>,
     {
         let ciphersuites = tls::support::build_ciphersuites_list(
-            ciphers.into_iter().filter_map(support::cipher_name),
+            ciphers.into_iter().filter_map(crate::ossl3::cipher_name),
             "!+@-",
         )?;
         let cstr = CString::new(ciphersuites).map_err(|e| {
@@ -252,7 +252,7 @@ impl SslContext {
         } else {
             Err((
                 pb::TLSConfigurationError::TLSCONFIGURATIONERROR_UNSUPPORTED_CIPHERSUITE,
-                format!("failed to set the cipher list: {}", support::errstr()),
+                format!("failed to set the cipher list: {}", crate::ossl3::errstr()),
             )
                 .into())
         }
@@ -272,7 +272,7 @@ impl SslContext {
         } else {
             Err((
                 pb::TLSConfigurationError::TLSCONFIGURATIONERROR_UNSUPPORTED_CIPHERSUITE,
-                format!("failed to set the cipher list: {}", support::errstr()),
+                format!("failed to set the cipher list: {}", crate::ossl3::errstr()),
             )
                 .into())
         }
@@ -296,7 +296,7 @@ impl SslContext {
         } else {
             Err((
                 pb::TLSConfigurationError::TLSCONFIGURATIONERROR_UNSUPPORTED_CIPHERSUITE,
-                format!("failed to set the ciphersuites: {}", support::errstr()),
+                format!("failed to set the ciphersuites: {}", crate::ossl3::errstr()),
             )
                 .into())
         }
@@ -316,7 +316,7 @@ impl SslContext {
         } else {
             Err((
                 pb::TLSConfigurationError::TLSCONFIGURATIONERROR_UNSUPPORTED_CIPHERSUITE,
-                format!("failed to set the ciphersuites: {}", support::errstr()),
+                format!("failed to set the ciphersuites: {}", crate::ossl3::errstr()),
             )
                 .into())
         }
@@ -379,7 +379,7 @@ impl SslContext {
         {
             Ok(())
         } else {
-            Err((pb::KEMError::KEMERROR_INVALID, support::errstr()).into())
+            Err((pb::KEMError::KEMERROR_INVALID, crate::ossl3::errstr()).into())
         }
     }
 
@@ -404,7 +404,7 @@ impl SslContext {
                 )
                     .into());
             }
-            if proto.contains('\0') {
+            if proto.contains(0x00_u8 as char) {
                 return Err((
                     pb::ALPNError::ALPNERROR_INVALID_STRING,
                     "string cannot contain null bytes",
@@ -447,7 +447,7 @@ impl SslContext {
                 pb::CertificateError::CERTIFICATEERROR_UNSUPPORTED,
                 format!(
                     "failed to use certificate for authentication: {}",
-                    support::errstr()
+                    crate::ossl3::errstr()
                 ),
             )
                 .into())
@@ -466,7 +466,7 @@ impl SslContext {
                 pb::PrivateKeyError::PRIVATEKEYERROR_UNSUPPORTED,
                 format!(
                     "failed to use private key for authentication: {}",
-                    support::errstr()
+                    crate::ossl3::errstr()
                 ),
             )
                 .into());
@@ -476,7 +476,7 @@ impl SslContext {
             Ok(())
         } else {
             Err((pb::TLSConfigurationError::TLSCONFIGURATIONERROR_PRIVATE_KEY_INCONSISTENT_WITH_CERTIFICATE,
-                format!("private key does not match certificate: {}", support::errstr())).into())
+                format!("private key does not match certificate: {}", crate::ossl3::errstr())).into())
         }
     }
 
@@ -511,7 +511,7 @@ impl SslContext {
                 pb::CertificateError::CERTIFICATEERROR_UNSUPPORTED,
                 format!(
                     "failed to add an extra certificate to the certificate chain: {}",
-                    support::errstr()
+                    crate::ossl3::errstr()
                 ),
             )
                 .into())
@@ -536,8 +536,8 @@ impl SslContext {
             .ok_or(pb::CertificateError::CERTIFICATEERROR_MALFORMED.into())
             .and_then(tls::support::configuration_read_certificate)
             .map_err(|e| e >> pb::TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID)?;
-        let cert_chain_bio = support::BIO_from_buffer(&data_source)?;
-        let leaf_certificate = support::X509_from_BIO(
+        let cert_chain_bio = crate::ossl3::BIO_from_buffer(&data_source)?;
+        let leaf_certificate = crate::ossl3::X509_from_BIO(
             lib_ctx,
             cert_chain_bio.as_nonnull(),
             certificate_chain_format,
@@ -550,12 +550,12 @@ impl SslContext {
             .ok_or(pb::PrivateKeyError::PRIVATEKEYERROR_MALFORMED.into())
             .and_then(tls::support::configuration_read_private_key)
             .map_err(|e| e >> pb::TLSConfigurationError::TLSCONFIGURATIONERROR_INVALID)?;
-        let bio = support::BIO_from_buffer(&data_source)?;
-        let private_key = support::EVP_PKEY_from_BIO(lib_ctx, bio.as_nonnull(), format)?;
+        let bio = crate::ossl3::BIO_from_buffer(&data_source)?;
+        let private_key = crate::ossl3::EVP_PKEY_from_BIO(lib_ctx, bio.as_nonnull(), format)?;
         self.set_private_key(private_key.as_nonnull())?;
 
-        while !support::is_BIO_eof(cert_chain_bio.as_nonnull()) {
-            let certificate_in_chain = support::X509_from_BIO(
+        while !crate::ossl3::is_BIO_eof(cert_chain_bio.as_nonnull()) {
+            let certificate_in_chain = crate::ossl3::X509_from_BIO(
                 lib_ctx,
                 cert_chain_bio.as_nonnull(),
                 certificate_chain_format,
@@ -585,10 +585,10 @@ impl SslContext {
 
         for certificate in x509_verifier.trusted_cas.iter() {
             let (format, data_source) = tls::support::configuration_read_certificate(certificate)?;
-            let bio = support::BIO_from_buffer(&data_source)?;
+            let bio = crate::ossl3::BIO_from_buffer(&data_source)?;
 
-            while !support::is_BIO_eof(bio.as_nonnull()) {
-                let x509 = support::X509_from_BIO(lib_ctx, bio.as_nonnull(), format)?;
+            while !crate::ossl3::is_BIO_eof(bio.as_nonnull()) {
+                let x509 = crate::ossl3::X509_from_BIO(lib_ctx, bio.as_nonnull(), format)?;
                 unsafe {
                     openssl3::X509_STORE_add_cert(store.as_ptr(), x509.as_nonnull().as_ptr())
                 };
@@ -614,7 +614,7 @@ impl SslContext {
                     pb::CertificateError::CERTIFICATEERROR_UNKNOWN,
                     format!(
                         "CAfile and CApath are NULL or the processing at one of the locations specified failed: {}",
-                        support::errstr()
+                        crate::ossl3::errstr()
                     ),
                     )
                     .into());
@@ -658,7 +658,7 @@ where
     .ok_or_else(|| {
         (
             pb::SystemError::SYSTEMERROR_MEMORY,
-            format!("failed to instantiate a new SSL: {}", support::errstr()),
+            format!("failed to instantiate a new SSL: {}", crate::ossl3::errstr()),
         )
             .into()
     })
@@ -956,7 +956,7 @@ mod test {
         let ctx = crate::Context::default();
         let ssl_ctx = new_ssl_context(&ctx, Mode::Client).unwrap();
         let ssl_ctx_wrapped = SslContext(ssl_ctx.as_nonnull());
-        let cert = support::test::get_certificate_from_testdata_file(
+        let cert = crate::ossl3::test::get_certificate_from_testdata_file(
             ctx.borrow(),
             "testdata/falcon1024.cert.pem",
             pb_api::ASN1EncodingFormat::ENCODING_FORMAT_PEM,
@@ -974,14 +974,14 @@ mod test {
         let ctx = crate::Context::default();
         let ssl_ctx = new_ssl_context(&ctx, Mode::Client).unwrap();
         let ssl_ctx_wrapped = SslContext(ssl_ctx.as_nonnull());
-        let cert = support::test::get_certificate_from_testdata_file(
+        let cert = crate::ossl3::test::get_certificate_from_testdata_file(
             ctx.borrow(),
             "testdata/falcon1024.cert.pem",
             pb_api::ASN1EncodingFormat::ENCODING_FORMAT_PEM,
         )
         .unwrap();
         ssl_ctx_wrapped.set_certificate(cert.as_nonnull()).unwrap();
-        let private_key = support::test::get_private_key_from_testdata_file(
+        let private_key = crate::ossl3::test::get_private_key_from_testdata_file(
             ctx.borrow(),
             "testdata/falcon1024.key.pem",
             pb_api::ASN1EncodingFormat::ENCODING_FORMAT_PEM,
@@ -999,14 +999,14 @@ mod test {
         let ctx = crate::Context::default();
         let ssl_ctx = new_ssl_context(&ctx, Mode::Client).unwrap();
         let ssl_ctx_wrapped = SslContext(ssl_ctx.as_nonnull());
-        let cert = support::test::get_certificate_from_testdata_file(
+        let cert = crate::ossl3::test::get_certificate_from_testdata_file(
             ctx.borrow(),
             "testdata/falcon1024.cert.pem",
             pb_api::ASN1EncodingFormat::ENCODING_FORMAT_PEM,
         )
         .unwrap();
         ssl_ctx_wrapped.set_certificate(cert.as_nonnull()).unwrap();
-        let private_key = support::test::get_private_key_from_testdata_file(
+        let private_key = crate::ossl3::test::get_private_key_from_testdata_file(
             ctx.borrow(),
             "testdata/dilithium5.key.der",
             pb_api::ASN1EncodingFormat::ENCODING_FORMAT_DER,
@@ -1025,7 +1025,7 @@ mod test {
         let ctx = crate::Context::default();
         let ssl_ctx = new_ssl_context(&ctx, Mode::Client).unwrap();
         let ssl_ctx_wrapped = SslContext(ssl_ctx.as_nonnull());
-        let cert = support::test::get_certificate_from_testdata_file(
+        let cert = crate::ossl3::test::get_certificate_from_testdata_file(
             ctx.borrow(),
             "testdata/falcon1024.cert.pem",
             pb_api::ASN1EncodingFormat::ENCODING_FORMAT_PEM,

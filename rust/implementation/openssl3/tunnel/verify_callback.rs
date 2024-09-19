@@ -7,8 +7,7 @@ use std::ffi::c_int;
 use std::ptr::NonNull;
 
 use super::Ssl;
-use crate::ossl3::support;
-use support::{NativeSsl, NativeX509StoreCtx};
+use crate::ossl3::{NativeSsl, NativeX509StoreCtx};
 
 /// Returns the SSL object from a X509 store context.
 fn x509_store_context_get_ssl(

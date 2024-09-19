@@ -14,7 +14,7 @@ use crate::support::Pimpl;
 use crate::tunnel::tls;
 use crate::Result;
 
-use support::{NativeSsl, NativeSslCtx, NativeX509VerifyParam};
+use crate::ossl3::{NativeSsl, NativeSslCtx, NativeX509VerifyParam};
 
 /// Wrapper around the X509_VERIFY_PARAM object.
 #[derive(Debug)]
@@ -122,7 +122,7 @@ impl<'a> X509VerifyParam<'a> {
         } else {
             Err((
                 pb::TunnelError::TUNNELERROR_VERIFIER,
-                format!("failed to add the SAN entry {san:?}: {}", support::errstr()),
+                format!("failed to add the SAN entry {san:?}: {}", crate::ossl3::errstr()),
             )
                 .into())
         }
@@ -180,7 +180,7 @@ impl<'a> X509VerifyParam<'a> {
         } else {
             Err((
                 pb::SystemError::SYSTEMERROR_BACKEND,
-                format!("failed to enable flag {flag}: {}", support::errstr()),
+                format!("failed to enable flag {flag}: {}", crate::ossl3::errstr()),
             )
                 .into())
         }

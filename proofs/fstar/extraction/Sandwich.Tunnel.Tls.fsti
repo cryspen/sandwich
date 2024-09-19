@@ -19,23 +19,6 @@ type t_TlsVersion =
 val t_TlsVersion_cast_to_repr (x: t_TlsVersion)
     : Prims.Pure isize Prims.l_True (fun _ -> Prims.l_True)
 
-/// A set of security requirements that can be updated with new requirements
-/// described in a given verifier `V`.
-/// A sanitizer check for security requirements described in a given verifier
-/// `V`.
-class t_VerifierSanitizer (v_Self: Type0) (v_V: Type0) = {
-  f_run_sanitizer_checks_pre:v_Self -> v_V -> bool;
-  f_run_sanitizer_checks_post:
-      v_Self ->
-      v_V ->
-      Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
-    -> bool;
-  f_run_sanitizer_checks:x0: v_Self -> x1: v_V
-    -> Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
-        (f_run_sanitizer_checks_pre x0 x1)
-        (fun result -> f_run_sanitizer_checks_post x0 x1 result)
-}
-
 /// Verify mode.
 type t_VerifyMode =
   | VerifyMode_None : t_VerifyMode
@@ -132,6 +115,23 @@ val impl__TunnelSecurityRequirements__openssl3_assess_x509_store_error
       (error: i32)
     : Prims.Pure bool Prims.l_True (fun _ -> Prims.l_True)
 
+/// A set of security requirements that can be updated with new requirements
+/// described in a given verifier `V`.
+/// A sanitizer check for security requirements described in a given verifier
+/// `V`.
+class t_VerifierSanitizer (v_Self: Type0) (v_V: Type0) = {
+  f_run_sanitizer_checks_pre:v_Self -> v_V -> bool;
+  f_run_sanitizer_checks_post:
+      v_Self ->
+      v_V ->
+      Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+    -> bool;
+  f_run_sanitizer_checks:x0: v_Self -> x1: v_V
+    -> Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+        (f_run_sanitizer_checks_pre x0 x1)
+        (fun result -> f_run_sanitizer_checks_post x0 x1 result)
+}
+
 /// Implements [`VerifierSanitizer`] for [`TunnelSecurityRequirements`]
 /// with the [`pb_api::SANVerifier`] verifier.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -165,7 +165,7 @@ let impl_3: t_VerifierSanitizer t_TunnelSecurityRequirements
                 #Alloc.Alloc.t_Global
                 verifier.Sandwich_api_proto.Verifiers.f_alt_names
             then
-              let! hoist6:Rust_primitives.Hax.t_Never =
+              let! hoist18:Rust_primitives.Hax.t_Never =
                 Core.Ops.Control_flow.ControlFlow_Break
                 (Core.Result.Result_Err
                   (Core.Convert.f_into #(Sandwich_proto.Errors.t_TunnelError & string)
@@ -184,7 +184,7 @@ let impl_3: t_VerifierSanitizer t_TunnelSecurityRequirements
                   (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
                   Rust_primitives.Hax.t_Never
               in
-              Core.Ops.Control_flow.ControlFlow_Continue (Rust_primitives.Hax.never_to_any hoist6)
+              Core.Ops.Control_flow.ControlFlow_Continue (Rust_primitives.Hax.never_to_any hoist18)
               <:
               Core.Ops.Control_flow.t_ControlFlow
                 (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit

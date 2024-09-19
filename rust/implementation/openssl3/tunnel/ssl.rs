@@ -12,10 +12,9 @@ use crate::tunnel::tls::{self, VerifierSanitizer};
 use crate::tunnel::BoxedIO;
 use crate::Result;
 
-use crate::ossl3::error::{Error, ErrorLibrary, SslError};
-use crate::ossl3::support;
+use crate::ossl3::{Error, ErrorLibrary, SslError};
 
-use support::{NativeBio, NativeSsl};
+use crate::ossl3::{NativeBio, NativeSsl};
 
 use super::{Context, X509VerifyParam, BIO_METHOD};
 
@@ -118,7 +117,7 @@ impl Ssl {
         } else {
             Err((
                 pb::TunnelError::TUNNELERROR_VERIFIER,
-                format!("failed to set the SNI to '{sni}': {}", support::errstr()),
+                format!("failed to set the SNI to '{sni}': {}", crate::ossl3::errstr()),
             )
                 .into())
         }
@@ -126,7 +125,7 @@ impl Ssl {
 
     /// Creates a new Sandwich BIO and attach it to the SSL object.
     fn create_and_attach_bio(&self) -> Result<()> {
-        let bio = support::new_BIO(BIO_METHOD)?;
+        let bio = crate::ossl3::new_BIO(BIO_METHOD)?;
         let ptr = bio.as_nonnull().as_ptr();
         unsafe {
             openssl3::BIO_set_init(ptr, 1);
@@ -176,7 +175,7 @@ impl Ssl {
                         pb::HandshakeError::HANDSHAKEERROR_UNKNOWN_ERROR,
                         format!(
                             "unexpected `SSL_ERROR_SSL` (code {error_code}) from OpenSSL: {}",
-                            support::errstr()
+                            crate::ossl3::errstr()
                         ),
                     )
                         .into()),
@@ -208,7 +207,7 @@ impl Ssl {
                     pb::HandshakeError::HANDSHAKEERROR_UNKNOWN_ERROR,
                     format!(
                         "unexpected SSL error from OpenSSL: {ssl_error:?} ({})",
-                        support::errstr()
+                        crate::ossl3::errstr()
                     ),
                 )
                     .into()),
@@ -268,7 +267,7 @@ impl Ssl {
 
     /// Handles an SSL error of type `SSL_ERROR_SSL`.
     fn handle_ssl_error_ssl(&self) -> (Result<pb::HandshakeState>, Option<pb::State>) {
-        let error = Error::from(support::peek_last_error());
+        let error = Error::from(crate::ossl3::peek_last_error());
 
         if error.library() != ErrorLibrary::Ssl {
             return (
@@ -276,7 +275,7 @@ impl Ssl {
                     pb::HandshakeError::HANDSHAKEERROR_UNKNOWN_ERROR,
                     format!(
                         "unexpected error from OpenSSL: {error:?} ({})",
-                        support::errstr()
+                        crate::ossl3::errstr()
                     ),
                 )
                     .into()),
@@ -290,7 +289,7 @@ impl Ssl {
                         pb::HandshakeError::HANDSHAKEERROR_UNSUPPORTED_PROTOCOL,
                         format!(
                             "unsupported TLS protocol. error: {error:?} ({})",
-                            support::errstr()
+                            crate::ossl3::errstr()
                         ),
                     )
                         .into()),
@@ -301,7 +300,7 @@ impl Ssl {
                 return (
                     Err((
                         pb::HandshakeError::HANDSHAKEERROR_NO_SHARED_CIPHER,
-                        format!("no shared cipher. error: {error:?} ({})", support::errstr()),
+                        format!("no shared cipher. error: {error:?} ({})", crate::ossl3::errstr()),
                     )
                         .into()),
                     None,
@@ -313,7 +312,7 @@ impl Ssl {
                         pb::HandshakeError::HANDSHAKEERROR_NO_SUITABLE_KEY_SHARE,
                         format!(
                             "no suitable key share found. error: {error:?} ({})",
-                            support::errstr()
+                            crate::ossl3::errstr()
                         ),
                     )
                         .into()),
@@ -327,7 +326,7 @@ impl Ssl {
                         pb::HandshakeError::HANDSHAKEERROR_UNKNOWN_ERROR,
                         format!(
                             "unexpected SSL error from OpenSSL: {error:?} ({})",
-                            support::errstr()
+                            crate::ossl3::errstr()
                         ),
                     )
                         .into()),
@@ -379,7 +378,7 @@ impl Ssl {
                 pb::HandshakeError::HANDSHAKEERROR_UNKNOWN_ERROR,
                 format!(
                     "verification failed: verify code is {verify_result}, error: {}",
-                    support::errstr()
+                    crate::ossl3::errstr()
                 ),
             )
                 .into(),
@@ -510,7 +509,7 @@ impl<'a> Tunnel<'a> {
         } else {
             Err((
                 pb::SystemError::SYSTEMERROR_BACKEND,
-                format!("`SSL_set_ex_data` failed: {}", support::errstr()),
+                format!("`SSL_set_ex_data` failed: {}", crate::ossl3::errstr()),
             )
                 .into())
         }

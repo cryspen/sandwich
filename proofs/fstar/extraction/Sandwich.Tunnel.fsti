@@ -11,165 +11,6 @@ let _ =
   let open Sandwich_proto.Tunnel in
   ()
 
-/// A tunnel.
-type t_Tunnel =
-  | Tunnel_OpenSSL3 :
-      Core.Pin.t_Pin
-        (Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel Alloc.Alloc.t_Global
-        )
-    -> t_Tunnel
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_11: Core.Convert.t_From t_Tunnel Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel =
-  {
-    f_from_pre = (fun (inner: Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel) -> true);
-    f_from_post
-    =
-    (fun (inner: Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel) (out: t_Tunnel) -> true);
-    f_from
-    =
-    fun (inner: Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel) ->
-      Tunnel_OpenSSL3
-      (Alloc.Boxed.impl__pin #Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel inner)
-      <:
-      t_Tunnel
-  }
-
-val impl_12__rewrap:
-    #v_Inner: Type0 ->
-    #v_Other: Type0 ->
-    {| i2: Core.Convert.t_From t_Tunnel v_Inner |} ->
-    (v_Inner & v_Other)
-  -> Prims.Pure (t_Tunnel & v_Other) Prims.l_True (fun _ -> Prims.l_True)
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_14: Core.Fmt.t_Debug t_Tunnel =
-  {
-    f_fmt_pre = (fun (self: t_Tunnel) (f: Core.Fmt.t_Formatter) -> true);
-    f_fmt_post
-    =
-    (fun
-        (self: t_Tunnel)
-        (f: Core.Fmt.t_Formatter)
-        (out1: (Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error))
-        ->
-        true);
-    f_fmt
-    =
-    fun (self: t_Tunnel) (f: Core.Fmt.t_Formatter) ->
-      let f, hax_temp_output:(Core.Fmt.t_Formatter &
-        Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
-        match self with
-        | (Tunnel_OpenSSL3 t: t_Tunnel) ->
-          let tmp0, out:(Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
-            Core.Fmt.impl_7__write_fmt f
-              (Core.Fmt.impl_2__new_v1 (sz 2)
-                  (sz 1)
-                  (let list = ["Tunnel(OpenSSL3("; "))"] in
-                    FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
-                    Rust_primitives.Hax.array_of_list 2 list)
-                  (let list =
-                      [
-                        Core.Fmt.Rt.impl_1__new_debug #(Core.Pin.t_Pin
-                            (Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel
-                                Alloc.Alloc.t_Global))
-                          t
-                        <:
-                        Core.Fmt.Rt.t_Argument
-                      ]
-                    in
-                    FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
-                    Rust_primitives.Hax.array_of_list 1 list)
-                <:
-                Core.Fmt.t_Arguments)
-          in
-          let f:Core.Fmt.t_Formatter = tmp0 in
-          f, out <: (Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error)
-      in
-      f, hax_temp_output
-      <:
-      (Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error)
-  }
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_15: Std.Io.t_Read t_Tunnel =
-  {
-    f_read_pre = (fun (self: t_Tunnel) (buf: t_Slice u8) -> true);
-    f_read_post
-    =
-    (fun
-        (self: t_Tunnel)
-        (buf: t_Slice u8)
-        (out1: (t_Tunnel & t_Slice u8 & Core.Result.t_Result usize Std.Io.Error.t_Error))
-        ->
-        true);
-    f_read
-    =
-    fun (self: t_Tunnel) (buf: t_Slice u8) ->
-      let tmp0, tmp1, out:(t_Tunnel & t_Slice u8 & Core.Result.t_Result usize Std.Io.Error.t_Error)
-      =
-        Std.Io.f_read #t_Tunnel #FStar.Tactics.Typeclasses.solve self buf
-      in
-      let self:t_Tunnel = tmp0 in
-      let buf:t_Slice u8 = tmp1 in
-      let hax_temp_output:Core.Result.t_Result usize Std.Io.Error.t_Error =
-        Core.Result.impl__map_err #usize
-          #Std.Io.Error.t_Error
-          #Std.Io.Error.t_Error
-          out
-          Core.Convert.From.from
-      in
-      self, buf, hax_temp_output
-      <:
-      (t_Tunnel & t_Slice u8 & Core.Result.t_Result usize Std.Io.Error.t_Error)
-  }
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_16: Std.Io.t_Write t_Tunnel =
-  {
-    f_write_pre = (fun (self: t_Tunnel) (buf: t_Slice u8) -> true);
-    f_write_post
-    =
-    (fun
-        (self: t_Tunnel)
-        (buf: t_Slice u8)
-        (out1: (t_Tunnel & Core.Result.t_Result usize Std.Io.Error.t_Error))
-        ->
-        true);
-    f_write
-    =
-    (fun (self: t_Tunnel) (buf: t_Slice u8) ->
-        let tmp0, out:(t_Tunnel & Core.Result.t_Result usize Std.Io.Error.t_Error) =
-          Std.Io.f_write #t_Tunnel #FStar.Tactics.Typeclasses.solve self buf
-        in
-        let self:t_Tunnel = tmp0 in
-        let hax_temp_output:Core.Result.t_Result usize Std.Io.Error.t_Error =
-          Core.Result.impl__map_err #usize
-            #Std.Io.Error.t_Error
-            #Std.Io.Error.t_Error
-            out
-            Core.Convert.From.from
-        in
-        self, hax_temp_output <: (t_Tunnel & Core.Result.t_Result usize Std.Io.Error.t_Error));
-    f_flush_pre = (fun (self: t_Tunnel) -> true);
-    f_flush_post
-    =
-    (fun
-        (self: t_Tunnel)
-        (out: (t_Tunnel & Core.Result.t_Result Prims.unit Std.Io.Error.t_Error))
-        ->
-        true);
-    f_flush
-    =
-    fun (self: t_Tunnel) ->
-      let hax_temp_output:Core.Result.t_Result Prims.unit Std.Io.Error.t_Error =
-        Core.Result.Result_Ok (() <: Prims.unit)
-        <:
-        Core.Result.t_Result Prims.unit Std.Io.Error.t_Error
-      in
-      self, hax_temp_output <: (t_Tunnel & Core.Result.t_Result Prims.unit Std.Io.Error.t_Error)
-  }
-
 /// Structure for states and errors based on protobuf definitions.
 type t_ProtoStateErrorBase (v_Enum: Type0) {| i1: Protobuf.Enums.t_Enum v_Enum |} =
   | ProtoStateErrorBase : v_Enum -> Core.Option.t_Option Sandwich.Error.t_Error
@@ -564,6 +405,37 @@ let impl_10: Core.Error.t_Error (t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_R
     _super_7348497752681407507 = FStar.Tactics.Typeclasses.solve
   }
 
+/// A tunnel.
+type t_Tunnel =
+  | Tunnel_OpenSSL3 :
+      Core.Pin.t_Pin
+        (Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel Alloc.Alloc.t_Global
+        )
+    -> t_Tunnel
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_11: Core.Convert.t_From t_Tunnel Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel =
+  {
+    f_from_pre = (fun (inner: Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel) -> true);
+    f_from_post
+    =
+    (fun (inner: Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel) (out: t_Tunnel) -> true);
+    f_from
+    =
+    fun (inner: Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel) ->
+      Tunnel_OpenSSL3
+      (Alloc.Boxed.impl__pin #Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel inner)
+      <:
+      t_Tunnel
+  }
+
+val impl_12__rewrap:
+    #v_Inner: Type0 ->
+    #v_Other: Type0 ->
+    {| i2: Core.Convert.t_From t_Tunnel v_Inner |} ->
+    (v_Inner & v_Other)
+  -> Prims.Pure (t_Tunnel & v_Other) Prims.l_True (fun _ -> Prims.l_True)
+
 /// Closes the tunnel.
 val impl_13__close (self: t_Tunnel)
     : Prims.Pure
@@ -603,3 +475,131 @@ val impl_13__write (self: t_Tunnel) (buf: t_Slice u8)
         Core.Result.t_Result usize (t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_RecordError))
       Prims.l_True
       (fun _ -> Prims.l_True)
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_14: Core.Fmt.t_Debug t_Tunnel =
+  {
+    f_fmt_pre = (fun (self: t_Tunnel) (f: Core.Fmt.t_Formatter) -> true);
+    f_fmt_post
+    =
+    (fun
+        (self: t_Tunnel)
+        (f: Core.Fmt.t_Formatter)
+        (out1: (Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error))
+        ->
+        true);
+    f_fmt
+    =
+    fun (self: t_Tunnel) (f: Core.Fmt.t_Formatter) ->
+      let f, hax_temp_output:(Core.Fmt.t_Formatter &
+        Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
+        match self with
+        | (Tunnel_OpenSSL3 t: t_Tunnel) ->
+          let tmp0, out:(Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
+            Core.Fmt.impl_7__write_fmt f
+              (Core.Fmt.impl_2__new_v1 (sz 2)
+                  (sz 1)
+                  (let list = ["Tunnel(OpenSSL3("; "))"] in
+                    FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
+                    Rust_primitives.Hax.array_of_list 2 list)
+                  (let list =
+                      [
+                        Core.Fmt.Rt.impl_1__new_debug #(Core.Pin.t_Pin
+                            (Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel
+                                Alloc.Alloc.t_Global))
+                          t
+                        <:
+                        Core.Fmt.Rt.t_Argument
+                      ]
+                    in
+                    FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
+                    Rust_primitives.Hax.array_of_list 1 list)
+                <:
+                Core.Fmt.t_Arguments)
+          in
+          let f:Core.Fmt.t_Formatter = tmp0 in
+          f, out <: (Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error)
+      in
+      f, hax_temp_output
+      <:
+      (Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_15: Std.Io.t_Read t_Tunnel =
+  {
+    f_read_pre = (fun (self: t_Tunnel) (buf: t_Slice u8) -> true);
+    f_read_post
+    =
+    (fun
+        (self: t_Tunnel)
+        (buf: t_Slice u8)
+        (out1: (t_Tunnel & t_Slice u8 & Core.Result.t_Result usize Std.Io.Error.t_Error))
+        ->
+        true);
+    f_read
+    =
+    fun (self: t_Tunnel) (buf: t_Slice u8) ->
+      let tmp0, tmp1, out:(t_Tunnel & t_Slice u8 & Core.Result.t_Result usize Std.Io.Error.t_Error)
+      =
+        Std.Io.f_read #t_Tunnel #FStar.Tactics.Typeclasses.solve self buf
+      in
+      let self:t_Tunnel = tmp0 in
+      let buf:t_Slice u8 = tmp1 in
+      let hax_temp_output:Core.Result.t_Result usize Std.Io.Error.t_Error =
+        Core.Result.impl__map_err #usize
+          #Std.Io.Error.t_Error
+          #Std.Io.Error.t_Error
+          out
+          Core.Convert.From.from
+      in
+      self, buf, hax_temp_output
+      <:
+      (t_Tunnel & t_Slice u8 & Core.Result.t_Result usize Std.Io.Error.t_Error)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_16: Std.Io.t_Write t_Tunnel =
+  {
+    f_write_pre = (fun (self: t_Tunnel) (buf: t_Slice u8) -> true);
+    f_write_post
+    =
+    (fun
+        (self: t_Tunnel)
+        (buf: t_Slice u8)
+        (out1: (t_Tunnel & Core.Result.t_Result usize Std.Io.Error.t_Error))
+        ->
+        true);
+    f_write
+    =
+    (fun (self: t_Tunnel) (buf: t_Slice u8) ->
+        let tmp0, out:(t_Tunnel & Core.Result.t_Result usize Std.Io.Error.t_Error) =
+          Std.Io.f_write #t_Tunnel #FStar.Tactics.Typeclasses.solve self buf
+        in
+        let self:t_Tunnel = tmp0 in
+        let hax_temp_output:Core.Result.t_Result usize Std.Io.Error.t_Error =
+          Core.Result.impl__map_err #usize
+            #Std.Io.Error.t_Error
+            #Std.Io.Error.t_Error
+            out
+            Core.Convert.From.from
+        in
+        self, hax_temp_output <: (t_Tunnel & Core.Result.t_Result usize Std.Io.Error.t_Error));
+    f_flush_pre = (fun (self: t_Tunnel) -> true);
+    f_flush_post
+    =
+    (fun
+        (self: t_Tunnel)
+        (out: (t_Tunnel & Core.Result.t_Result Prims.unit Std.Io.Error.t_Error))
+        ->
+        true);
+    f_flush
+    =
+    fun (self: t_Tunnel) ->
+      let hax_temp_output:Core.Result.t_Result Prims.unit Std.Io.Error.t_Error =
+        Core.Result.Result_Ok (() <: Prims.unit)
+        <:
+        Core.Result.t_Result Prims.unit Std.Io.Error.t_Error
+      in
+      self, hax_temp_output <: (t_Tunnel & Core.Result.t_Result Prims.unit Std.Io.Error.t_Error)
+  }
