@@ -13,25 +13,11 @@ use crate::support::Pimpl;
 use crate::tunnel::tls::{TlsVersion, VerifyMode};
 use crate::tunnel::{tls, Mode, BoxedIO};
 use crate::Result;
+use super::Context;
 
 use crate::ossl3::{NativePrivateKey, NativeSsl, NativeSslCtx, NativeX509Certificate};
 
 use super::{verify_callback, Tunnel, TunnelBuilder, X509VerifyParam};
-
-/// Tunnel context.
-pub struct Context<'a> {
-    /// Library context parent.
-    _lib_ctx: &'a LibCtx<'a>,
-
-    /// `SSL_CTX` object.
-    ssl_ctx: Pimpl<'a, NativeSslCtx>,
-
-    /// Security requirements from the verifiers.
-    security_requirements: tls::TunnelSecurityRequirements,
-
-    /// Execution mode.
-    mode: Mode,
-}
 
 impl std::fmt::Debug for Context<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {

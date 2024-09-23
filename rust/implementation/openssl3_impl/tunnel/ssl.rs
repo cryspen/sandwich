@@ -15,6 +15,8 @@ use crate::Result;
 use crate::ossl3::{Error, ErrorLibrary, SslError};
 
 use crate::ossl3::{NativeBio, NativeSsl};
+use super::Tunnel;
+use crate::ossl3::LibCtx;
 
 use super::{Context, X509VerifyParam, BIO_METHOD};
 
@@ -398,24 +400,6 @@ fn verify_tunnel_verifier(
     };
 
     security_requirements.run_sanitizer_checks(tunnel_verifier)
-}
-
-/// A tunnel, wrapper around a SSL object.
-pub struct Tunnel<'a> {
-    /// Parent SSL_CTX object.
-    _ssl_ctx: &'a Context<'a>,
-
-    /// SSL object.
-    pub(super) ssl: Pimpl<'a, NativeSsl>,
-
-    /// Security requirements from the verifiers.
-    security_requirements: tls::TunnelSecurityRequirements,
-
-    /// IO interface.
-    pub(super) io: BoxedIO,
-
-    /// state.
-    pub(super) state: pb::State,
 }
 
 impl std::fmt::Debug for Tunnel<'_> {

@@ -58,14 +58,13 @@ let impl_1__try_from
                 Core.Result.impl__map_err #t_Context
                   #Sandwich.Error.t_Error
                   #Sandwich.Error.t_Error
-                  (Core.Result.impl__map #Sandwich.Implementation.Openssl3_impl.Tunnel.Context.t_Context
+                  (Core.Result.impl__map #Sandwich.Implementation.Openssl3_impl.Tunnel.t_Context
                       #Sandwich.Error.t_Error
                       #t_Context
                       (Sandwich.Implementation.Openssl3_impl.Tunnel.Context.impl_5__try_from context
                           configuration
                         <:
-                        Core.Result.t_Result
-                          Sandwich.Implementation.Openssl3_impl.Tunnel.Context.t_Context
+                        Core.Result.t_Result Sandwich.Implementation.Openssl3_impl.Tunnel.t_Context
                           Sandwich.Error.t_Error)
                       Sandwich.Tunnel.Context.Context.v_OpenSSL3
                     <:

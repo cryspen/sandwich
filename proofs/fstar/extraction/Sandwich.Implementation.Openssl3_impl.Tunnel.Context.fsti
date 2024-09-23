@@ -296,29 +296,24 @@ val impl__SslContext__set_identity
       Prims.l_True
       (fun _ -> Prims.l_True)
 
-/// Tunnel context.
-type t_Context = {
-  f__lib_ctx:Sandwich.Implementation.Openssl3_impl.t_LibCtx;
-  f_ssl_ctx:Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st;
-  f_security_requirements:Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements;
-  f_mode:Sandwich.Tunnel.Context.t_Mode
-}
-
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl: Core.Fmt.t_Debug t_Context =
+let impl: Core.Fmt.t_Debug Sandwich.Implementation.Openssl3_impl.Tunnel.t_Context =
   {
-    f_fmt_pre = (fun (self: t_Context) (f: Core.Fmt.t_Formatter) -> true);
+    f_fmt_pre
+    =
+    (fun (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Context) (f: Core.Fmt.t_Formatter) ->
+        true);
     f_fmt_post
     =
     (fun
-        (self: t_Context)
+        (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Context)
         (f: Core.Fmt.t_Formatter)
         (out1: (Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error))
         ->
         true);
     f_fmt
     =
-    fun (self: t_Context) (f: Core.Fmt.t_Formatter) ->
+    fun (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Context) (f: Core.Fmt.t_Formatter) ->
       let tmp0, out:(Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
         Core.Fmt.impl_7__write_fmt f
           (Core.Fmt.impl_2__new_v1 (sz 2)
@@ -328,7 +323,8 @@ let impl: Core.Fmt.t_Debug t_Context =
                 Rust_primitives.Hax.array_of_list 2 list)
               (let list =
                   [
-                    Core.Fmt.Rt.impl_1__new_debug #Sandwich.Tunnel.Context.t_Mode self.f_mode
+                    Core.Fmt.Rt.impl_1__new_debug #Sandwich.Tunnel.Context.t_Mode
+                      self.Sandwich.Implementation.Openssl3_impl.Tunnel.f_mode
                     <:
                     Core.Fmt.Rt.t_Argument
                   ]
@@ -346,23 +342,31 @@ let impl: Core.Fmt.t_Debug t_Context =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1: Core.Borrow.t_Borrow t_Context Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements =
+let impl_1: Core.Borrow.t_Borrow Sandwich.Implementation.Openssl3_impl.Tunnel.t_Context
+  Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements =
   {
-    f_borrow_pre = (fun (self: t_Context) -> true);
+    f_borrow_pre = (fun (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Context) -> true);
     f_borrow_post
     =
-    (fun (self: t_Context) (out: Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements) -> true);
-    f_borrow = fun (self: t_Context) -> self.f_security_requirements
+    (fun
+        (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Context)
+        (out: Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements)
+        ->
+        true);
+    f_borrow
+    =
+    fun (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Context) ->
+      self.Sandwich.Implementation.Openssl3_impl.Tunnel.f_security_requirements
   }
 
 /// Instantiates a new SSL object.
-val impl_5__new_ssl (self: t_Context)
+val impl_5__new_ssl (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Context)
     : Prims.Pure
       (Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_st)
           Sandwich.Error.t_Error) Prims.l_True (fun _ -> Prims.l_True)
 
 /// Returns the security requirements of the context.
-val impl_5__security_requirements (self: t_Context)
+val impl_5__security_requirements (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Context)
     : Prims.Pure Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements
       Prims.l_True
       (fun _ -> Prims.l_True)
@@ -378,19 +382,19 @@ val new_ssl_context (ctx: Sandwich.t_Context) (mode: Sandwich.Tunnel.Context.t_M
 val impl_5__try_from
       (ctx: Sandwich.t_Context)
       (configuration: Sandwich_api_proto.Configuration.t_Configuration)
-    : Prims.Pure (Core.Result.t_Result t_Context Sandwich.Error.t_Error)
-      Prims.l_True
-      (fun _ -> Prims.l_True)
+    : Prims.Pure
+      (Core.Result.t_Result Sandwich.Implementation.Openssl3_impl.Tunnel.t_Context
+          Sandwich.Error.t_Error) Prims.l_True (fun _ -> Prims.l_True)
 
 /// Creates a new tunnel.
 val impl_5__new_tunnel
-      (self: t_Context)
+      (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Context)
       (io: Sandwich.Tunnel.Io.t_BoxedIO)
       (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
     : Prims.Pure
       (Core.Result.t_Result
           (Core.Pin.t_Pin
-            (Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel
+            (Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel
                 Alloc.Alloc.t_Global)) (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO))
       Prims.l_True
       (fun _ -> Prims.l_True)

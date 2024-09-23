@@ -196,30 +196,24 @@ val impl__Ssl__write (self: t_Ssl) (buffer: t_Slice u8)
       Prims.l_True
       (fun _ -> Prims.l_True)
 
-/// A tunnel, wrapper around a SSL object.
-type t_Tunnel = {
-  f__ssl_ctx:Sandwich.Implementation.Openssl3_impl.Tunnel.Context.t_Context;
-  f_ssl:Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_st;
-  f_security_requirements:Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements;
-  f_io:Sandwich.Tunnel.Io.t_BoxedIO;
-  f_state:Sandwich_proto.Tunnel.t_State
-}
-
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_3: Core.Fmt.t_Debug t_Tunnel =
+let impl_3: Core.Fmt.t_Debug Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel =
   {
-    f_fmt_pre = (fun (self: t_Tunnel) (f: Core.Fmt.t_Formatter) -> true);
+    f_fmt_pre
+    =
+    (fun (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel) (f: Core.Fmt.t_Formatter) ->
+        true);
     f_fmt_post
     =
     (fun
-        (self: t_Tunnel)
+        (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel)
         (f: Core.Fmt.t_Formatter)
         (out1: (Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error))
         ->
         true);
     f_fmt
     =
-    fun (self: t_Tunnel) (f: Core.Fmt.t_Formatter) ->
+    fun (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel) (f: Core.Fmt.t_Formatter) ->
       let tmp0, out:(Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
         Core.Fmt.impl_7__write_fmt f
           (Core.Fmt.impl_2__new_v1 (sz 2)
@@ -230,7 +224,7 @@ let impl_3: Core.Fmt.t_Debug t_Tunnel =
               (let list =
                   [
                     Rust_primitives.Hax.failure "(reject_RawOrMutPointer) ExplicitRejection { reason: \"a node of kind [Raw_pointer] have been found in the AST\" }"
-                      "core::fmt::rt::impl_1__new_pointer::<\n        lifetime!(something),\n        raw_pointer!(),\n    >(\n        &(deref(\n            &(core::ptr::non_null::impl_3__as_ptr::<\n                openssl3::t_ssl_st,\n            >(\n                sandwich::support::pimpl::impl_2__as_nonnull::<\n                    lifetime!(something),\n                    openssl3::t_ssl_st,\n                >(\n                    &(proj_sandwich::implementation::openssl3_impl::tunnel::ssl::f_ssl(\n                        deref(self),\n                    )),\n                ),\n            )),\n        )),\n    )"
+                      "core::fmt::rt::impl_1__new_pointer::<\n        lifetime!(something),\n        raw_pointer!(),\n    >(\n        &(deref(\n            &(core::ptr::non_null::impl_3__as_ptr::<\n                openssl3::t_ssl_st,\n            >(\n                sandwich::support::pimpl::impl_2__as_nonnull::<\n                    lifetime!(something),\n                    openssl3::t_ssl_st,\n                >(\n                    &(proj_sandwich::implementation::openssl3_impl::tunnel::f_ssl(\n                        deref(self),\n                    )),\n                ),\n            )),\n        )),\n    )"
 
                     <:
                     Core.Fmt.Rt.t_Argument
@@ -250,53 +244,58 @@ let impl_3: Core.Fmt.t_Debug t_Tunnel =
 
 /// Attaches the security requirements structure to the `SSL` object
 /// through `ex_data`.
-val impl_6__attach_security_requirements (self: Core.Pin.t_Pin t_Tunnel)
+val impl_6__attach_security_requirements
+      (self: Core.Pin.t_Pin Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel)
     : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
       Prims.l_True
       (fun _ -> Prims.l_True)
 
 /// Attaches itself to the current BIO.
-val impl_6__attach_to_bio (self: Core.Pin.t_Pin t_Tunnel)
+val impl_6__attach_to_bio
+      (self: Core.Pin.t_Pin Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel)
     : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
       Prims.l_True
       (fun _ -> Prims.l_True)
 
-val impl_6__handshake (self: t_Tunnel)
+val impl_6__handshake (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel)
     : Prims.Pure
-      (t_Tunnel &
+      (Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel &
         Core.Result.t_Result
           (Sandwich.Tunnel.t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_HandshakeState)
           Sandwich.Error.t_Error) Prims.l_True (fun _ -> Prims.l_True)
 
-val impl_6__state (self: t_Tunnel)
+val impl_6__state (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel)
     : Prims.Pure (Sandwich.Tunnel.t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_State)
       Prims.l_True
       (fun _ -> Prims.l_True)
 
 /// Updates the state of the tunnel.
 /// This method must be called after any read or write operation.
-val impl_6__update_state (self: t_Tunnel) : Prims.Pure t_Tunnel Prims.l_True (fun _ -> Prims.l_True)
+val impl_6__update_state (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel)
+    : Prims.Pure Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel
+      Prims.l_True
+      (fun _ -> Prims.l_True)
 
-val impl_6__close (self: t_Tunnel)
+val impl_6__close (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel)
     : Prims.Pure
-      (t_Tunnel &
+      (Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel &
         Core.Result.t_Result Prims.unit
           (Sandwich.Tunnel.t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_RecordError))
       Prims.l_True
       (fun _ -> Prims.l_True)
 
-val impl_6__read (self: t_Tunnel) (buf: t_Slice u8)
+val impl_6__read (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel) (buf: t_Slice u8)
     : Prims.Pure
       (t_Slice u8 &
-        (t_Tunnel &
+        (Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel &
           Core.Result.t_Result usize
             (Sandwich.Tunnel.t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_RecordError)))
       Prims.l_True
       (fun _ -> Prims.l_True)
 
-val impl_6__write (self: t_Tunnel) (buf: t_Slice u8)
+val impl_6__write (self: Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel) (buf: t_Slice u8)
     : Prims.Pure
-      (t_Tunnel &
+      (Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel &
         Core.Result.t_Result usize
           (Sandwich.Tunnel.t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_RecordError))
       Prims.l_True
@@ -305,7 +304,7 @@ val impl_6__write (self: t_Tunnel) (buf: t_Slice u8)
 /// Tunnel builder.
 /// This is a convenient aggregate of useful values to build a tunnel.
 type t_TunnelBuilder = {
-  f_ssl_ctx:Sandwich.Implementation.Openssl3_impl.Tunnel.Context.t_Context;
+  f_ssl_ctx:Sandwich.Implementation.Openssl3_impl.Tunnel.t_Context;
   f_io:Sandwich.Tunnel.Io.t_BoxedIO;
   f_configuration:Sandwich_api_proto.Tunnel.t_TunnelConfiguration
 }
@@ -350,7 +349,9 @@ val impl_5__prepare_ssl (self: t_TunnelBuilder)
 /// Builds a tunnel.
 val impl_5__build (self: t_TunnelBuilder)
     : Prims.Pure
-      (Core.Result.t_Result (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel Alloc.Alloc.t_Global))
-          (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO))
+      (Core.Result.t_Result
+          (Core.Pin.t_Pin
+            (Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3_impl.Tunnel.t_Tunnel
+                Alloc.Alloc.t_Global)) (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO))
       Prims.l_True
       (fun _ -> Prims.l_True)
