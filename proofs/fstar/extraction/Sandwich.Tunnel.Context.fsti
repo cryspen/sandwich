@@ -8,7 +8,7 @@ let _ =
   (* The implicit dependencies arise from typeclasses instances. *)
   let open Sandwich.Error in
   let open Sandwich.Error.Code in
-  let open Sandwich.Implementation.Openssl3.Tunnel.Context in
+  let open Sandwich.Implementation.Openssl3_impl.Tunnel.Context in
   ()
 
 /// Mode for a [`Context`].
@@ -22,7 +22,7 @@ val t_Mode_cast_to_repr (x: t_Mode) : Prims.Pure isize Prims.l_True (fun _ -> Pr
 
 /// A Sandwich context.
 type t_Context =
-  | Context_OpenSSL3 : Sandwich.Implementation.Openssl3.Tunnel.Context.t_Context -> t_Context
+  | Context_OpenSSL3 : Sandwich.Implementation.Openssl3_impl.Tunnel.Context.t_Context -> t_Context
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl: Core.Fmt.t_Debug t_Context =
@@ -52,7 +52,7 @@ let impl: Core.Fmt.t_Debug t_Context =
                     Rust_primitives.Hax.array_of_list 2 list)
                   (let list =
                       [
-                        Core.Fmt.Rt.impl_1__new_debug #Sandwich.Implementation.Openssl3.Tunnel.Context.t_Context
+                        Core.Fmt.Rt.impl_1__new_debug #Sandwich.Implementation.Openssl3_impl.Tunnel.Context.t_Context
                           c
                         <:
                         Core.Fmt.Rt.t_Argument

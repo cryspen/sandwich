@@ -7,7 +7,7 @@ let _ =
   (* This module has implicit dependencies, here we make them explicit. *)
   (* The implicit dependencies arise from typeclasses instances. *)
   let open Protobuf.Enums in
-  let open Sandwich.Implementation.Openssl3.Tunnel.Ssl in
+  let open Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl in
   let open Sandwich_proto.Tunnel in
   ()
 
@@ -36,31 +36,33 @@ let impl_12__rewrap
 let impl_13__close (self: t_Tunnel) =
   match self with
   | (Tunnel_OpenSSL3 t: t_Tunnel) ->
-    impl_12__rewrap #Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel
+    impl_12__rewrap #Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel
       #(Core.Result.t_Result Prims.unit (t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_RecordError))
-      (Sandwich.Implementation.Openssl3.Tunnel.Ssl.impl_6__close (Core.Pin.impl_5__into_inner #(Alloc.Boxed.t_Box
-                  Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel Alloc.Alloc.t_Global)
+      (Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.impl_6__close (Core.Pin.impl_5__into_inner #(
+                Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel
+                  Alloc.Alloc.t_Global)
               t
             <:
-            Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel)
+            Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel)
         <:
-        (Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel &
+        (Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel &
           Core.Result.t_Result Prims.unit
             (t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_RecordError)))
 
 let impl_13__handshake (self: t_Tunnel) =
   match self with
   | (Tunnel_OpenSSL3 t: t_Tunnel) ->
-    impl_12__rewrap #Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel
+    impl_12__rewrap #Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel
       #(Core.Result.t_Result (t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_HandshakeState)
           Sandwich.Error.t_Error)
-      (Sandwich.Implementation.Openssl3.Tunnel.Ssl.impl_6__handshake (Core.Pin.impl_5__into_inner #(Alloc.Boxed.t_Box
-                  Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel Alloc.Alloc.t_Global)
+      (Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.impl_6__handshake (Core.Pin.impl_5__into_inner
+              #(Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel
+                  Alloc.Alloc.t_Global)
               t
             <:
-            Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel)
+            Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel)
         <:
-        (Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel &
+        (Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel &
           Core.Result.t_Result (t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_HandshakeState)
             Sandwich.Error.t_Error))
 
@@ -71,18 +73,19 @@ let impl_13__read (self: t_Tunnel) (buf: t_Slice u8) =
     match self with
     | (Tunnel_OpenSSL3 t: t_Tunnel) ->
       let tmp0, out:(t_Slice u8 &
-        (Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel &
+        (Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel &
           Core.Result.t_Result usize (t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_RecordError))) =
-        Sandwich.Implementation.Openssl3.Tunnel.Ssl.impl_6__read (Core.Pin.impl_5__into_inner #(Alloc.Boxed.t_Box
-                  Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel Alloc.Alloc.t_Global)
+        Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.impl_6__read (Core.Pin.impl_5__into_inner #(
+                Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel
+                  Alloc.Alloc.t_Global)
               t
             <:
-            Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel)
+            Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel)
           buf
       in
       let buf:t_Slice u8 = tmp0 in
       buf,
-      impl_12__rewrap #Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel
+      impl_12__rewrap #Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel
         #(Core.Result.t_Result usize (t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_RecordError))
         out
       <:
@@ -99,25 +102,26 @@ let impl_13__read (self: t_Tunnel) (buf: t_Slice u8) =
 let impl_13__state (self: t_Tunnel) =
   match self with
   | (Tunnel_OpenSSL3 t: t_Tunnel) ->
-    Sandwich.Implementation.Openssl3.Tunnel.Ssl.impl_6__state (Core.Ops.Deref.f_deref #(Core.Pin.t_Pin
-            (Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel
+    Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.impl_6__state (Core.Ops.Deref.f_deref #(Core.Pin.t_Pin
+            (Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel
                 Alloc.Alloc.t_Global))
           #FStar.Tactics.Typeclasses.solve
           t
         <:
-        Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel)
+        Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel)
 
 let impl_13__write (self: t_Tunnel) (buf: t_Slice u8) =
   match self with
   | (Tunnel_OpenSSL3 t: t_Tunnel) ->
-    impl_12__rewrap #Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel
+    impl_12__rewrap #Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel
       #(Core.Result.t_Result usize (t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_RecordError))
-      (Sandwich.Implementation.Openssl3.Tunnel.Ssl.impl_6__write (Core.Pin.impl_5__into_inner #(Alloc.Boxed.t_Box
-                  Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel Alloc.Alloc.t_Global)
+      (Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.impl_6__write (Core.Pin.impl_5__into_inner #(
+                Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel
+                  Alloc.Alloc.t_Global)
               t
             <:
-            Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel)
+            Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel)
           buf
         <:
-        (Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel &
+        (Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel &
           Core.Result.t_Result usize (t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_RecordError)))

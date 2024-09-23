@@ -135,7 +135,7 @@ mod support;
 pub mod tunnel;
 
 #[cfg(feature = "openssl3")]
-use implementation::openssl3 as ossl3;
+use implementation::openssl3_impl as ossl3;
 
 #[cfg(feature = "ffi")]
 pub(crate) mod ffi;

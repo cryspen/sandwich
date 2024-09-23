@@ -19,7 +19,7 @@ _SANDWICH_SRCS = [
     "//rust/experimental/turbo/support",
     "//rust/ffi",
     "//rust/implementation",
-    "//rust/implementation/openssl3",
+    "//rust/implementation/openssl3_impl",
     "//rust/implementation/ossl",
     "//rust/implementation/ossl/boringssl",
     "//rust/implementation/ossl/openssl1_1_1",
@@ -302,7 +302,7 @@ bartleby(
 cc_library(
     name = "openssl3_bindgen_library",
     hdrs = [
-        "//rust/implementation/openssl3:bindgen",
+        "//rust/implementation/openssl3_impl:bindgen",
     ],
     deps = [
         ":openssl3_bartleby",
@@ -322,7 +322,7 @@ rust_bindgen_library(
         "//conditions:default": [],
     }),
     crate_name = "openssl3",
-    header = "//rust/implementation/openssl3:bindgen",
+    header = "//rust/implementation/openssl3_impl:bindgen",
     rustc_flags = [
         "-A",
         "non-camel-case-types",

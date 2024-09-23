@@ -1,4 +1,4 @@
-module Sandwich.Implementation.Openssl3.Tunnel.Context
+module Sandwich.Implementation.Openssl3_impl.Tunnel.Context
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open Core
 open FStar.Mul
@@ -9,7 +9,7 @@ let _ =
   let open Sandwich in
   let open Sandwich.Error in
   let open Sandwich.Error.Code in
-  let open Sandwich.Implementation.Openssl3.Tunnel.X509_verify_param in
+  let open Sandwich.Implementation.Openssl3_impl.Tunnel.X509_verify_param in
   let open Sandwich.Support.Data_source in
   let open Sandwich.Tunnel.Context in
   let open Sandwich.Tunnel.Tls in
@@ -69,7 +69,7 @@ let impl_3: Core.Fmt.t_Debug t_SslContext =
               (let list =
                   [
                     Rust_primitives.Hax.failure "(reject_RawOrMutPointer) ExplicitRejection { reason: \"a node of kind [Raw_pointer] have been found in the AST\" }"
-                      "core::fmt::rt::impl_1__new_pointer::<\n        lifetime!(something),\n        raw_pointer!(),\n    >(\n        &(deref(\n            &(core::ptr::non_null::impl_3__as_ptr::<\n                openssl3::t_ssl_ctx_st,\n            >(proj_sandwich::implementation::openssl3::tunnel::context::_0(deref(self)))),\n        )),\n    )"
+                      "core::fmt::rt::impl_1__new_pointer::<\n        lifetime!(something),\n        raw_pointer!(),\n    >(\n        &(deref(\n            &(core::ptr::non_null::impl_3__as_ptr::<\n                openssl3::t_ssl_ctx_st,\n            >(\n                proj_sandwich::implementation::openssl3_impl::tunnel::context::_0(\n                    deref(self),\n                ),\n            )),\n        )),\n    )"
 
                     <:
                     Core.Fmt.Rt.t_Argument
@@ -278,7 +278,7 @@ val impl__SslContext__configure_tls13
 /// OpenSSL SSL context.
 val impl__SslContext__fill_certificate_trust_store
       (self: t_SslContext)
-      (lib_ctx: Sandwich.Implementation.Openssl3.t_LibCtx)
+      (lib_ctx: Sandwich.Implementation.Openssl3_impl.t_LibCtx)
       (x509_verifier: Core.Option.t_Option Sandwich_api_proto.Verifiers.t_X509Verifier)
     : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
       Prims.l_True
@@ -290,7 +290,7 @@ val impl__SslContext__fill_certificate_trust_store
 /// TLS tunnel (mTLS).
 val impl__SslContext__set_identity
       (self: t_SslContext)
-      (lib_ctx: Sandwich.Implementation.Openssl3.t_LibCtx)
+      (lib_ctx: Sandwich.Implementation.Openssl3_impl.t_LibCtx)
       (identity: Core.Option.t_Option Sandwich_api_proto.Tls.t_X509Identity)
     : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
       Prims.l_True
@@ -298,7 +298,7 @@ val impl__SslContext__set_identity
 
 /// Tunnel context.
 type t_Context = {
-  f__lib_ctx:Sandwich.Implementation.Openssl3.t_LibCtx;
+  f__lib_ctx:Sandwich.Implementation.Openssl3_impl.t_LibCtx;
   f_ssl_ctx:Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st;
   f_security_requirements:Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements;
   f_mode:Sandwich.Tunnel.Context.t_Mode
@@ -390,7 +390,7 @@ val impl_5__new_tunnel
     : Prims.Pure
       (Core.Result.t_Result
           (Core.Pin.t_Pin
-            (Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel
+            (Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel
                 Alloc.Alloc.t_Global)) (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO))
       Prims.l_True
       (fun _ -> Prims.l_True)

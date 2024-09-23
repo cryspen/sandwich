@@ -8,4 +8,4 @@
 pub(crate) mod ossl;
 
 #[cfg(feature = "openssl3")]
-pub(crate) mod openssl3;
+pub(crate) mod openssl3_impl;

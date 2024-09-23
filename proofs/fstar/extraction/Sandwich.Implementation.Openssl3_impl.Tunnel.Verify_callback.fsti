@@ -1,4 +1,4 @@
-module Sandwich.Implementation.Openssl3.Tunnel.Verify_callback
+module Sandwich.Implementation.Openssl3_impl.Tunnel.Verify_callback
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open Core
 open FStar.Mul
@@ -43,19 +43,19 @@ fn verify_callback(mut verify_code: int, store_ctx: raw_pointer!()) -> int {
             openssl3::t_x509_store_ctx_st,
         >(store_ctx)) {
             core::option::Option_Some(store_ctx) => {
-                (match (sandwich::implementation::openssl3::tunnel::verify_callback::x509_store_context_get_ssl(
+                (match (sandwich::implementation::openssl3_impl::tunnel::verify_callback::x509_store_context_get_ssl(
                     store_ctx,
                 )) {
                     core::option::Option_Some(ssl) => {
-                        let ssl_wrapped: sandwich::implementation::openssl3::tunnel::ssl::t_Ssl = {
+                        let ssl_wrapped: sandwich::implementation::openssl3_impl::tunnel::ssl::t_Ssl = {
                             core::convert::f_from(ssl)
                         };
-                        (match (sandwich::implementation::openssl3::tunnel::ssl::impl__Ssl__get_tunnel_security_requirements::<
+                        (match (sandwich::implementation::openssl3_impl::tunnel::ssl::impl__Ssl__get_tunnel_security_requirements::<
                             lifetime!(something),
                         >(&(ssl_wrapped))) {
                             core::option::Option_Some(security_requirements) => {
                                 let current_error: int = {
-                                    sandwich::implementation::openssl3::tunnel::verify_callback::x509_store_context_get_error(
+                                    sandwich::implementation::openssl3_impl::tunnel::verify_callback::x509_store_context_get_error(
                                         store_ctx,
                                     )
                                 };
@@ -69,7 +69,7 @@ fn verify_callback(mut verify_code: int, store_ctx: raw_pointer!()) -> int {
                                                 let _: tuple0 = { (verify_code = 1) };
                                                 {
                                                     let _: tuple0 = {
-                                                        sandwich::implementation::openssl3::tunnel::verify_callback::x509_store_context_record_error::<
+                                                        sandwich::implementation::openssl3_impl::tunnel::verify_callback::x509_store_context_record_error::<
                                                             int,
                                                         >(store_ctx, cast(openssl3::v_X509_V_OK))
                                                     };
@@ -109,7 +109,7 @@ Last AST:
     [{ Concrete_ident.Imported.data =
        (Concrete_ident.Imported.TypeNs "implementation"); disambiguator = 0 };
       { Concrete_ident.Imported.data =
-        (Concrete_ident.Imported.TypeNs "openssl3"); disambiguator = 0 };
+        (Concrete_ident.Imported.TypeNs "openssl3_impl"); disambiguator = 0 };
       { Concrete_ident.Imported.data =
         (Concrete_ident.Imported.TypeNs "tunnel"); disambiguator = 0 };
       { Concrete_ident.Imported.data =

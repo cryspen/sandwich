@@ -1,4 +1,4 @@
-module Sandwich.Implementation.Openssl3.Support
+module Sandwich.Implementation.Openssl3_impl.Support
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open Core
 open FStar.Mul
@@ -58,7 +58,7 @@ val new_BIO (bio_meth: Core.Ptr.Non_null.t_NonNull Openssl3.t_bio_method_st)
 
 /// Reads a private key (`EVP_PKEY` object) from a `BIO` object.
 val v_EVP_PKEY_from_BIO
-      (lib_ctx: Sandwich.Implementation.Openssl3.t_LibCtx)
+      (lib_ctx: Sandwich.Implementation.Openssl3_impl.t_LibCtx)
       (bio: Core.Ptr.Non_null.t_NonNull Openssl3.t_bio_st)
       (format: Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat)
     : Prims.Pure
@@ -67,7 +67,7 @@ val v_EVP_PKEY_from_BIO
 
 /// Reads a certificate (`X509` object) from a `BIO` object.
 val v_X509_from_BIO
-      (lib_ctx: Sandwich.Implementation.Openssl3.t_LibCtx)
+      (lib_ctx: Sandwich.Implementation.Openssl3_impl.t_LibCtx)
       (bio: Core.Ptr.Non_null.t_NonNull Openssl3.t_bio_st)
       (format: Sandwich_api_proto.Encoding_format.t_ASN1EncodingFormat)
     : Prims.Pure
