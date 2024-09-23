@@ -8,7 +8,7 @@ let _ =
   (* The implicit dependencies arise from typeclasses instances. *)
   let open Sandwich.Error in
   let open Sandwich.Error.Code in
-  let open Sandwich.Implementation.Openssl3.Tunnel.Context in
+  let open Sandwich.Implementation.Openssl3_impl.Tunnel.Context in
   ()
 
 let t_Mode_cast_to_repr (x: t_Mode) =
@@ -58,14 +58,14 @@ let impl_1__try_from
                 Core.Result.impl__map_err #t_Context
                   #Sandwich.Error.t_Error
                   #Sandwich.Error.t_Error
-                  (Core.Result.impl__map #Sandwich.Implementation.Openssl3.Tunnel.Context.t_Context
+                  (Core.Result.impl__map #Sandwich.Implementation.Openssl3_impl.Tunnel.Context.t_Context
                       #Sandwich.Error.t_Error
                       #t_Context
-                      (Sandwich.Implementation.Openssl3.Tunnel.Context.impl_5__try_from context
+                      (Sandwich.Implementation.Openssl3_impl.Tunnel.Context.impl_5__try_from context
                           configuration
                         <:
                         Core.Result.t_Result
-                          Sandwich.Implementation.Openssl3.Tunnel.Context.t_Context
+                          Sandwich.Implementation.Openssl3_impl.Tunnel.Context.t_Context
                           Sandwich.Error.t_Error)
                       Sandwich.Tunnel.Context.Context.v_OpenSSL3
                     <:
@@ -114,7 +114,9 @@ let impl_1__new_tunnel
      =
   match self with
   | (Context_OpenSSL3 c: t_Context) ->
-    match Sandwich.Implementation.Openssl3.Tunnel.Context.impl_5__new_tunnel c io configuration with
+    match
+      Sandwich.Implementation.Openssl3_impl.Tunnel.Context.impl_5__new_tunnel c io configuration
+    with
     | Core.Result.Result_Ok hoist32 ->
       Core.Result.Result_Ok (Sandwich.Tunnel.Tunnel_OpenSSL3 hoist32 <: Sandwich.Tunnel.t_Tunnel)
       <:

@@ -7,7 +7,7 @@ let _ =
   (* This module has implicit dependencies, here we make them explicit. *)
   (* The implicit dependencies arise from typeclasses instances. *)
   let open Protobuf.Enums in
-  let open Sandwich.Implementation.Openssl3.Tunnel.Ssl in
+  let open Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl in
   let open Sandwich_proto.Tunnel in
   ()
 
@@ -409,22 +409,22 @@ let impl_10: Core.Error.t_Error (t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_R
 type t_Tunnel =
   | Tunnel_OpenSSL3 :
       Core.Pin.t_Pin
-        (Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel Alloc.Alloc.t_Global
-        )
+        (Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel
+            Alloc.Alloc.t_Global)
     -> t_Tunnel
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_11: Core.Convert.t_From t_Tunnel Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel =
+let impl_11: Core.Convert.t_From t_Tunnel Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel =
   {
-    f_from_pre = (fun (inner: Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel) -> true);
+    f_from_pre = (fun (inner: Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel) -> true);
     f_from_post
     =
-    (fun (inner: Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel) (out: t_Tunnel) -> true);
+    (fun (inner: Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel) (out: t_Tunnel) -> true);
     f_from
     =
-    fun (inner: Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel) ->
+    fun (inner: Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel) ->
       Tunnel_OpenSSL3
-      (Alloc.Boxed.impl__pin #Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel inner)
+      (Alloc.Boxed.impl__pin #Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel inner)
       <:
       t_Tunnel
   }
@@ -505,7 +505,8 @@ let impl_14: Core.Fmt.t_Debug t_Tunnel =
                   (let list =
                       [
                         Core.Fmt.Rt.impl_1__new_debug #(Core.Pin.t_Pin
-                            (Alloc.Boxed.t_Box Sandwich.Implementation.Openssl3.Tunnel.Ssl.t_Tunnel
+                            (Alloc.Boxed.t_Box
+                                Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl.t_Tunnel
                                 Alloc.Alloc.t_Global))
                           t
                         <:

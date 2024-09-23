@@ -1,4 +1,4 @@
-module Sandwich.Implementation.Openssl3
+module Sandwich.Implementation.Openssl3_impl
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open Core
 open FStar.Mul
@@ -173,11 +173,11 @@ Last available AST for this item:
 #[feature(register_tool)]
 #[register_tool(_hax)]
 fn impl__ProviderBuilder__name(
-    self: sandwich::implementation::openssl3::t_ProviderBuilder,
+    self: sandwich::implementation::openssl3_impl::t_ProviderBuilder,
     name: raw_pointer!(),
-) -> sandwich::implementation::openssl3::t_ProviderBuilder {
+) -> sandwich::implementation::openssl3_impl::t_ProviderBuilder {
     {
-        sandwich::implementation::openssl3::ProviderBuilder {
+        sandwich::implementation::openssl3_impl::ProviderBuilder {
             f_name: core::option::Option_Some(name),
             ..(self)
         }
@@ -192,7 +192,7 @@ Last AST:
     [{ Concrete_ident.Imported.data =
        (Concrete_ident.Imported.TypeNs "implementation"); disambiguator = 0 };
       { Concrete_ident.Imported.data =
-        (Concrete_ident.Imported.TypeNs "openssl3"); disambiguator = 0 };
+        (Concrete_ident.Imported.TypeNs "openssl3_impl"); disambiguator = 0 };
       { Concrete_ident.Imported.data = Concrete_ident.Imported.Impl;
         disambiguator = 1 };
       { Concrete_ident.Imported.data =

@@ -57,45 +57,45 @@ testdata = { path = "rust_vendor/testdata" }
 
 [[test]]
 name = "depth-exceeded"
-path = "rust/implementation/openssl3/tunnel/tests/depth_exceeded.rs"
+path = "rust/implementation/openssl3_impl/tunnel/tests/depth_exceeded.rs"
 required-features = ["openssl3", "tunnel"]
 
 [[test]]
 name = "expired-certificate"
-path = "rust/implementation/openssl3/tunnel/tests/expired_certificate.rs"
+path = "rust/implementation/openssl3_impl/tunnel/tests/expired_certificate.rs"
 required-features = ["openssl3", "tunnel"]
 
 [[test]]
 name = "mtls"
-path = "rust/implementation/openssl3/tunnel/tests/mtls.rs"
+path = "rust/implementation/openssl3_impl/tunnel/tests/mtls.rs"
 required-features = ["openssl3", "tunnel"]
 
 [[test]]
 name = "subject-alt-names-dns"
-path = "rust/implementation/openssl3/tunnel/tests/subject_alt_names_dns.rs"
+path = "rust/implementation/openssl3_impl/tunnel/tests/subject_alt_names_dns.rs"
 required-features = ["openssl3", "tunnel"]
 
 [[test]]
 name = "subject-alt-names-email"
-path = "rust/implementation/openssl3/tunnel/tests/subject_alt_names_email.rs"
+path = "rust/implementation/openssl3_impl/tunnel/tests/subject_alt_names_email.rs"
 required-features = ["openssl3", "tunnel"]
 
 [[test]]
 name = "subject-alt-names-ip-address"
-path = "rust/implementation/openssl3/tunnel/tests/subject_alt_names_ip_address.rs"
+path = "rust/implementation/openssl3_impl/tunnel/tests/subject_alt_names_ip_address.rs"
 required-features = ["openssl3", "tunnel"]
 
 [[test]]
 name = "tls-classical"
-path = "rust/implementation/openssl3/tunnel/tests/tls_classical.rs"
+path = "rust/implementation/openssl3_impl/tunnel/tests/tls_classical.rs"
 required-features = ["openssl3", "tunnel"]
 
 [[test]]
 name = "tls-hybrid"
-path = "rust/implementation/openssl3/tunnel/tests/tls_hybrid.rs"
+path = "rust/implementation/openssl3_impl/tunnel/tests/tls_hybrid.rs"
 required-features = ["openssl3", "tunnel"]
 
 [[test]]
 name = "tls-quantum-resistant"
-path = "rust/implementation/openssl3/tunnel/tests/tls_quantum_resistant.rs"
+path = "rust/implementation/openssl3_impl/tunnel/tests/tls_quantum_resistant.rs"
 required-features = ["openssl3", "tunnel"]

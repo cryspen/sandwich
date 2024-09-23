@@ -1,4 +1,4 @@
-module Sandwich.Implementation.Openssl3.Tunnel.Ssl
+module Sandwich.Implementation.Openssl3_impl.Tunnel.Ssl
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open Core
 open FStar.Mul
@@ -8,8 +8,8 @@ let _ =
   (* The implicit dependencies arise from typeclasses instances. *)
   let open Sandwich.Error in
   let open Sandwich.Error.Code in
-  let open Sandwich.Implementation.Openssl3 in
-  let open Sandwich.Implementation.Openssl3.Tunnel.X509_verify_param in
+  let open Sandwich.Implementation.Openssl3_impl in
+  let open Sandwich.Implementation.Openssl3_impl.Tunnel.X509_verify_param in
   let open Sandwich.Tunnel in
   let open Sandwich.Tunnel.Tls in
   let open Sandwich_proto.Tunnel in
@@ -102,7 +102,7 @@ val impl__Ssl__get_last_recorded_error
       {| i7: Core.Convert.t_Into impl_765196419_ i32 |}
       (self: t_Ssl)
       (ret: impl_765196419_)
-    : Prims.Pure (Core.Result.t_Result Sandwich.Implementation.Openssl3.t_SslError i32)
+    : Prims.Pure (Core.Result.t_Result Sandwich.Implementation.Openssl3_impl.t_SslError i32)
       Prims.l_True
       (fun _ -> Prims.l_True)
 
@@ -198,7 +198,7 @@ val impl__Ssl__write (self: t_Ssl) (buffer: t_Slice u8)
 
 /// A tunnel, wrapper around a SSL object.
 type t_Tunnel = {
-  f__ssl_ctx:Sandwich.Implementation.Openssl3.Tunnel.Context.t_Context;
+  f__ssl_ctx:Sandwich.Implementation.Openssl3_impl.Tunnel.Context.t_Context;
   f_ssl:Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_st;
   f_security_requirements:Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements;
   f_io:Sandwich.Tunnel.Io.t_BoxedIO;
@@ -230,7 +230,7 @@ let impl_3: Core.Fmt.t_Debug t_Tunnel =
               (let list =
                   [
                     Rust_primitives.Hax.failure "(reject_RawOrMutPointer) ExplicitRejection { reason: \"a node of kind [Raw_pointer] have been found in the AST\" }"
-                      "core::fmt::rt::impl_1__new_pointer::<\n        lifetime!(something),\n        raw_pointer!(),\n    >(\n        &(deref(\n            &(core::ptr::non_null::impl_3__as_ptr::<\n                openssl3::t_ssl_st,\n            >(\n                sandwich::support::pimpl::impl_2__as_nonnull::<\n                    lifetime!(something),\n                    openssl3::t_ssl_st,\n                >(\n                    &(proj_sandwich::implementation::openssl3::tunnel::ssl::f_ssl(\n                        deref(self),\n                    )),\n                ),\n            )),\n        )),\n    )"
+                      "core::fmt::rt::impl_1__new_pointer::<\n        lifetime!(something),\n        raw_pointer!(),\n    >(\n        &(deref(\n            &(core::ptr::non_null::impl_3__as_ptr::<\n                openssl3::t_ssl_st,\n            >(\n                sandwich::support::pimpl::impl_2__as_nonnull::<\n                    lifetime!(something),\n                    openssl3::t_ssl_st,\n                >(\n                    &(proj_sandwich::implementation::openssl3_impl::tunnel::ssl::f_ssl(\n                        deref(self),\n                    )),\n                ),\n            )),\n        )),\n    )"
 
                     <:
                     Core.Fmt.Rt.t_Argument
@@ -305,7 +305,7 @@ val impl_6__write (self: t_Tunnel) (buf: t_Slice u8)
 /// Tunnel builder.
 /// This is a convenient aggregate of useful values to build a tunnel.
 type t_TunnelBuilder = {
-  f_ssl_ctx:Sandwich.Implementation.Openssl3.Tunnel.Context.t_Context;
+  f_ssl_ctx:Sandwich.Implementation.Openssl3_impl.Tunnel.Context.t_Context;
   f_io:Sandwich.Tunnel.Io.t_BoxedIO;
   f_configuration:Sandwich_api_proto.Tunnel.t_TunnelConfiguration
 }
