@@ -47,10 +47,10 @@ fn verify_callback(mut verify_code: int, store_ctx: raw_pointer!()) -> int {
                     store_ctx,
                 )) {
                     core::option::Option_Some(ssl) => {
-                        let ssl_wrapped: sandwich::implementation::openssl3_impl::tunnel::ssl::t_Ssl = {
+                        let ssl_wrapped: sandwich::implementation::openssl3_impl::tunnel::t_Ssl = {
                             core::convert::f_from(ssl)
                         };
-                        (match (sandwich::implementation::openssl3_impl::tunnel::ssl::impl__Ssl__get_tunnel_security_requirements::<
+                        (match (sandwich::implementation::openssl3_impl::tunnel::impl__Ssl__get_tunnel_security_requirements::<
                             lifetime!(something),
                         >(&(ssl_wrapped))) {
                             core::option::Option_Some(security_requirements) => {
