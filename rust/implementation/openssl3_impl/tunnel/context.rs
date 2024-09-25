@@ -32,14 +32,14 @@ impl Borrow<tls::TunnelSecurityRequirements> for Context<'_> {
 }
 
 /// Instantiates a new SSL context (`SSL_CTX`).
-fn new_ssl_context<'a, 'b>(ctx: &'a crate::Context, mode: Mode) -> Result<Pimpl<'b, NativeSslCtx>>
+fn new_ssl_context<'a, 'b>(lib_ctx: &'a LibCtx<'static>, mode: Mode) -> Result<Pimpl<'b, NativeSslCtx>>
 where
     'a: 'b,
 {
     unsafe {
         Pimpl::new(
             openssl3::SSL_CTX_new_ex(
-                ctx.get_openssl3_lib_ctx().as_nonnull().as_ptr(),
+                lib_ctx.as_nonnull().as_ptr(),
                 ptr::null(),
                 match mode {
                     Mode::Client => openssl3::TLS_client_method(),
@@ -672,15 +672,14 @@ impl<'a> Context<'a> {
     /// Instantiates a new [`Context`] from a [protobuf configuration](`pb_api::Configuration`)
     /// and a top-level context.
     pub(crate) fn try_from<'b>(
-        ctx: &'a crate::Context,
+        lib_ctx: &'a LibCtx<'static>,
         configuration: &pb_api::Configuration,
     ) -> Result<Self>
     where
         'b: 'a,
     {
-        let lib_ctx = ctx.borrow();
         let (mode, tls_options) = tls::support::configuration_get_mode_and_options(configuration)?;
-        let ssl_ctx = new_ssl_context(ctx, mode)?;
+        let ssl_ctx = new_ssl_context(lib_ctx, mode)?;
         let ssl_ctx_wrapped = SslContext(ssl_ctx.as_nonnull());
 
         ssl_ctx_wrapped.set_default_parameters()?;

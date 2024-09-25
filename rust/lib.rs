@@ -147,7 +147,8 @@ pub struct Context {
     /// OpenSSL 3 top-level context library.
     #[cfg(feature = "openssl3")]
     #[allow(dead_code)]
-    ossl3_lib_ctx: ossl3::LibCtx<'static>,
+    _placeholder: (),
+    // ossl3_lib_ctx: ossl3::LibCtx<'static>,
 }
 
 impl Default for Context {
@@ -160,24 +161,25 @@ impl Context {
     /// Instantiates a new [`Context`].
     pub fn new() -> Self {
         Self {
-            #[cfg(feature = "openssl3")]
-            ossl3_lib_ctx: ossl3::LibCtx::try_new().expect("failed to initialize OpenSSL 3"),
+            _placeholder: (),
+            // #[cfg(feature = "openssl3")]
+            // ossl3_lib_ctx: ossl3::LibCtx::try_new().expect("failed to initialize OpenSSL 3"),
         }
     }
 
-    /// Returns the current top-level library context for Openssl 3.
-    #[cfg(feature = "openssl3")]
-    pub(crate) fn get_openssl3_lib_ctx(&self) -> &ossl3::LibCtx<'static> {
-        &self.ossl3_lib_ctx
-    }
+    // /// Returns the current top-level library context for Openssl 3.
+    // #[cfg(feature = "openssl3")]
+    // pub(crate) fn get_openssl3_lib_ctx(&self) -> &ossl3::LibCtx<'static> {
+    //     &self.ossl3_lib_ctx
+    // }
 }
 
-#[cfg(feature = "openssl3")]
-impl std::borrow::Borrow<ossl3::LibCtx<'static>> for Context {
-    fn borrow(&self) -> &ossl3::LibCtx<'static> {
-        &self.ossl3_lib_ctx
-    }
-}
+// #[cfg(feature = "openssl3")]
+// impl std::borrow::Borrow<ossl3::LibCtx<'static>> for Context {
+//     fn borrow(&self) -> &ossl3::LibCtx<'static> {
+//         &self.ossl3_lib_ctx
+//     }
+// }
 
 /// A [`Result`](std::result::Result) using [`Error`].
 pub type Result<T> = std::result::Result<T, Error>;

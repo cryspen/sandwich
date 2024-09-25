@@ -200,181 +200,182 @@ impl std::error::Error for RecordError {}
 pub type RecordResult<T> = Result<T, RecordError>;
 
 /// A tunnel.
-pub enum Tunnel<'a> {
-    /// An OpenSSL 1.1.1 tunnel.
-    #[cfg(feature = "openssl1_1_1")]
-    OpenSSL1_1_1(ossl::openssl1_1_1::Tunnel<'a>),
+pub struct Tunnel {
+    _placeholder: (),
+    // /// An OpenSSL 1.1.1 tunnel.
+    // #[cfg(feature = "openssl1_1_1")]
+    // OpenSSL1_1_1(ossl::openssl1_1_1::Tunnel<'a>),
 
-    /// An BoringSSL tunnel.
-    #[cfg(feature = "boringssl")]
-    BoringSSL(ossl::boringssl::Tunnel<'a>),
+    // /// An BoringSSL tunnel.
+    // #[cfg(feature = "boringssl")]
+    // BoringSSL(ossl::boringssl::Tunnel<'a>),
 
-    /// An OpenSSL 3 tunnel.
-    #[cfg(feature = "openssl3")]
-    OpenSSL3(std::pin::Pin<Box<crate::ossl3::tunnel::Tunnel<'a>>>),
+    // /// An OpenSSL 3 tunnel.
+    // #[cfg(feature = "openssl3")]
+    // OpenSSL3(std::pin::Pin<Box<crate::ossl3::tunnel::Tunnel<'a>>>),
 }
 
-#[cfg(feature = "openssl3")]
-impl<'a> From<crate::ossl3::tunnel::Tunnel<'a>> for Tunnel<'a> {
-    fn from(inner: crate::ossl3::tunnel::Tunnel<'a>) -> Self {
-        Self::OpenSSL3(Box::pin(inner))
-    }
-}
+// #[cfg(feature = "openssl3")]
+// impl<'a> From<crate::ossl3::tunnel::Tunnel<'a>> for Tunnel<'a> {
+//     fn from(inner: crate::ossl3::tunnel::Tunnel<'a>) -> Self {
+//         Self::OpenSSL3(Box::pin(inner))
+//     }
+// }
 
-impl<'a> Tunnel<'a> {
-    fn rewrap<Inner, Other>((inner, other): (Inner, Other)) -> (Self, Other)
-        where Self: From<Inner> {
-            (inner.into(), other)
-        }
-}
+// impl<'a> Tunnel<'a> {
+//     fn rewrap<Inner, Other>((inner, other): (Inner, Other)) -> (Self, Other)
+//         where Self: From<Inner> {
+//             (inner.into(), other)
+//         }
+// }
 
-macro_rules! dispatch {
-    ($self:ident, $func:ident, $($arg:tt) *) => {
-        match $self {
-            #[cfg(feature = "openssl1_1_1")]
-            Self::OpenSSL1_1_1(t) => t.0.$func($($arg)*),
+// macro_rules! dispatch {
+//     ($self:ident, $func:ident, $($arg:tt) *) => {
+//         match $self {
+//             #[cfg(feature = "openssl1_1_1")]
+//             Self::OpenSSL1_1_1(t) => t.0.$func($($arg)*),
 
-            #[cfg(feature = "boringssl")]
-            Self::BoringSSL(t) => t.0.$func($($arg)*),
+//             #[cfg(feature = "boringssl")]
+//             Self::BoringSSL(t) => t.0.$func($($arg)*),
 
-            #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(t) => t.$func($($arg)*),
-        }
-    };
-    ($self:ident, $func:ident) => {
-        match $self {
-            #[cfg(feature = "openssl1_1_1")]
-            Self::OpenSSL1_1_1(t) => t.0.$func(),
+//             #[cfg(feature = "openssl3")]
+//             Self::OpenSSL3(t) => t.$func($($arg)*),
+//         }
+//     };
+//     ($self:ident, $func:ident) => {
+//         match $self {
+//             #[cfg(feature = "openssl1_1_1")]
+//             Self::OpenSSL1_1_1(t) => t.0.$func(),
 
-            #[cfg(feature = "boringssl")]
-            Self::BoringSSL(t) => t.0.$func(),
+//             #[cfg(feature = "boringssl")]
+//             Self::BoringSSL(t) => t.0.$func(),
 
-            #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(t) => t.$func(),
-        }
-    };
-}
+//             #[cfg(feature = "openssl3")]
+//             Self::OpenSSL3(t) => t.$func(),
+//         }
+//     };
+// }
 
-impl Tunnel<'_> {
-    /// Returns the state of the tunnel.
-    pub fn state(&self) -> State {
-        match self {
-            #[cfg(feature = "openssl1_1_1")]
-            Self::OpenSSL1_1_1(t) => t.0.state(),
+// impl Tunnel<'_> {
+//     /// Returns the state of the tunnel.
+//     pub fn state(&self) -> State {
+//         match self {
+//             #[cfg(feature = "openssl1_1_1")]
+//             Self::OpenSSL1_1_1(t) => t.0.state(),
 
-            #[cfg(feature = "boringssl")]
-            Self::BoringSSL(t) => t.0.state(),
+//             #[cfg(feature = "boringssl")]
+//             Self::BoringSSL(t) => t.0.state(),
 
-            #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(t) => t.state(),
-        }
-    }
+//             #[cfg(feature = "openssl3")]
+//             Self::OpenSSL3(t) => t.state(),
+//         }
+//     }
 
-    /// Performs the handshake.
-    ///
-    /// Depending on the return value, this method may need to be called
-    /// more than once.
-    pub fn handshake(self) -> (Self, crate::Result<HandshakeState>) {
-        match self {
-            #[cfg(feature = "openssl1_1_1")]
-            Self::OpenSSL1_1_1(t) => t.0.handshake(),
+//     /// Performs the handshake.
+//     ///
+//     /// Depending on the return value, this method may need to be called
+//     /// more than once.
+//     pub fn handshake(self) -> (Self, crate::Result<HandshakeState>) {
+//         match self {
+//             #[cfg(feature = "openssl1_1_1")]
+//             Self::OpenSSL1_1_1(t) => t.0.handshake(),
 
-            #[cfg(feature = "boringssl")]
-            Self::BoringSSL(t) => t.0.handshake(),
+//             #[cfg(feature = "boringssl")]
+//             Self::BoringSSL(t) => t.0.handshake(),
 
-            #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(t) => {
-                Self::rewrap((*std::pin::Pin::into_inner(t)).handshake())
-            }
-        }
-    }
+//             #[cfg(feature = "openssl3")]
+//             Self::OpenSSL3(t) => {
+//                 Self::rewrap((*std::pin::Pin::into_inner(t)).handshake())
+//             }
+//         }
+//     }
 
-    /// Writes data to the tunnel.
-    pub fn write(self, buf: &[u8]) -> (Self, RecordResult<usize>) {
-        match self {
-            #[cfg(feature = "openssl1_1_1")]
-            Self::OpenSSL1_1_1(t) => t.0.write(buf),
+//     /// Writes data to the tunnel.
+//     pub fn write(self, buf: &[u8]) -> (Self, RecordResult<usize>) {
+//         match self {
+//             #[cfg(feature = "openssl1_1_1")]
+//             Self::OpenSSL1_1_1(t) => t.0.write(buf),
 
-            #[cfg(feature = "boringssl")]
-            Self::BoringSSL(t) => t.0.write(buf),
+//             #[cfg(feature = "boringssl")]
+//             Self::BoringSSL(t) => t.0.write(buf),
 
-            #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(t) => Self::rewrap((*std::pin::Pin::into_inner(t)).write(buf)),
-        }
-    }
+//             #[cfg(feature = "openssl3")]
+//             Self::OpenSSL3(t) => Self::rewrap((*std::pin::Pin::into_inner(t)).write(buf)),
+//         }
+//     }
 
-    /// Reads data from the tunnel.
-    pub fn read(self, buf: &mut [u8]) -> (Self, RecordResult<usize>) {
-        match self {
-            #[cfg(feature = "openssl1_1_1")]
-            Self::OpenSSL1_1_1(t) => t.0.read(buf),
+//     /// Reads data from the tunnel.
+//     pub fn read(self, buf: &mut [u8]) -> (Self, RecordResult<usize>) {
+//         match self {
+//             #[cfg(feature = "openssl1_1_1")]
+//             Self::OpenSSL1_1_1(t) => t.0.read(buf),
 
-            #[cfg(feature = "boringssl")]
-            Self::BoringSSL(t) => t.0.read(buf),
+//             #[cfg(feature = "boringssl")]
+//             Self::BoringSSL(t) => t.0.read(buf),
 
-            #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(t) => Self::rewrap((*std::pin::Pin::into_inner(t)).read(buf)),
-        }
-    }
+//             #[cfg(feature = "openssl3")]
+//             Self::OpenSSL3(t) => Self::rewrap((*std::pin::Pin::into_inner(t)).read(buf)),
+//         }
+//     }
 
-    /// Closes the tunnel.
-    pub fn close(self) -> (Self, RecordResult<()>) {
-        match self {
-            #[cfg(feature = "openssl1_1_1")]
-            Self::OpenSSL1_1_1(t) => t.0.close(),
+//     /// Closes the tunnel.
+//     pub fn close(self) -> (Self, RecordResult<()>) {
+//         match self {
+//             #[cfg(feature = "openssl1_1_1")]
+//             Self::OpenSSL1_1_1(t) => t.0.close(),
 
-            #[cfg(feature = "boringssl")]
-            Self::BoringSSL(t) => t.0.close(),
+//             #[cfg(feature = "boringssl")]
+//             Self::BoringSSL(t) => t.0.close(),
 
-            #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(t) => Self::rewrap((*std::pin::Pin::into_inner(t)).close()),
-        }
-    }
+//             #[cfg(feature = "openssl3")]
+//             Self::OpenSSL3(t) => Self::rewrap((*std::pin::Pin::into_inner(t)).close()),
+//         }
+//     }
 
-    /// Adds tracer to tunnel.
-    #[cfg(feature = "tracer")]
-    pub fn add_tracer(self, tracer: SandwichTracer) -> Self {
-        match self {
-            #[cfg(feature = "openssl1_1_1")]
-            Self::OpenSSL1_1_1(t) => t.0.add_tracer(tracer),
+//     /// Adds tracer to tunnel.
+//     #[cfg(feature = "tracer")]
+//     pub fn add_tracer(self, tracer: SandwichTracer) -> Self {
+//         match self {
+//             #[cfg(feature = "openssl1_1_1")]
+//             Self::OpenSSL1_1_1(t) => t.0.add_tracer(tracer),
 
-            #[cfg(feature = "boringssl")]
-            Self::BoringSSL(t) => t.0.add_tracer(tracer),
+//             #[cfg(feature = "boringssl")]
+//             Self::BoringSSL(t) => t.0.add_tracer(tracer),
 
-            #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(t) => Self::rewrap(((*std::pin::Pin::into_inner(t))).add_tracer(tracer)),
-        }
-    }
-}
+//             #[cfg(feature = "openssl3")]
+//             Self::OpenSSL3(t) => Self::rewrap(((*std::pin::Pin::into_inner(t))).add_tracer(tracer)),
+//         }
+//     }
+// }
 
-impl std::fmt::Debug for Tunnel<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            #[cfg(feature = "openssl1_1_1")]
-            Self::OpenSSL1_1_1(t) => write!(f, "Tunnel(OpenSSL1_1_1({t:?}))"),
-            #[cfg(feature = "boringssl")]
-            Self::BoringSSL(t) => write!(f, "Tunnel(BoringSSL({t:?}))"),
-            #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(t) => write!(f, "Tunnel(OpenSSL3({t:?}))"),
-        }
-    }
-}
+// impl std::fmt::Debug for Tunnel<'_> {
+//     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+//         match self {
+//             #[cfg(feature = "openssl1_1_1")]
+//             Self::OpenSSL1_1_1(t) => write!(f, "Tunnel(OpenSSL1_1_1({t:?}))"),
+//             #[cfg(feature = "boringssl")]
+//             Self::BoringSSL(t) => write!(f, "Tunnel(BoringSSL({t:?}))"),
+//             #[cfg(feature = "openssl3")]
+//             Self::OpenSSL3(t) => write!(f, "Tunnel(OpenSSL3({t:?}))"),
+//         }
+//     }
+// }
 
-impl std::io::Read for Tunnel<'_> {
-    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        self.read(buf).map_err(std::io::Error::from)
-    }
-}
+// impl std::io::Read for Tunnel<'_> {
+//     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+//         self.read(buf).map_err(std::io::Error::from)
+//     }
+// }
 
-impl std::io::Write for Tunnel<'_> {
-    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
-        self.write(buf).map_err(std::io::Error::from)
-    }
+// impl std::io::Write for Tunnel<'_> {
+//     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+//         self.write(buf).map_err(std::io::Error::from)
+//     }
 
-    fn flush(&mut self) -> std::io::Result<()> {
-        Ok(())
-    }
-}
+//     fn flush(&mut self) -> std::io::Result<()> {
+//         Ok(())
+//     }
+// }
 
 #[cfg(test)]
 mod test {

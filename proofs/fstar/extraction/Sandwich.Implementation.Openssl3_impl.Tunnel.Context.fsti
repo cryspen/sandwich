@@ -6,7 +6,6 @@ open FStar.Mul
 let _ =
   (* This module has implicit dependencies, here we make them explicit. *)
   (* The implicit dependencies arise from typeclasses instances. *)
-  let open Sandwich in
   let open Sandwich.Error in
   let open Sandwich.Error.Code in
   let open Sandwich.Implementation.Openssl3_impl.Tunnel.X509_verify_param in
@@ -274,6 +273,14 @@ val impl__SslContext__configure_tls13
       Prims.l_True
       (fun _ -> Prims.l_True)
 
+/// Instantiates a new SSL context (`SSL_CTX`).
+val new_ssl_context
+      (lib_ctx: Sandwich.Implementation.Openssl3_impl.t_LibCtx)
+      (mode: Sandwich.Tunnel.Context.t_Mode)
+    : Prims.Pure
+      (Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st)
+          Sandwich.Error.t_Error) Prims.l_True (fun _ -> Prims.l_True)
+
 /// Imports the trusted certificates from the protobuf configuration to the
 /// OpenSSL SSL context.
 val impl__SslContext__fill_certificate_trust_store
@@ -371,16 +378,10 @@ val impl_5__security_requirements (self: Sandwich.Implementation.Openssl3_impl.T
       Prims.l_True
       (fun _ -> Prims.l_True)
 
-/// Instantiates a new SSL context (`SSL_CTX`).
-val new_ssl_context (ctx: Sandwich.t_Context) (mode: Sandwich.Tunnel.Context.t_Mode)
-    : Prims.Pure
-      (Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st)
-          Sandwich.Error.t_Error) Prims.l_True (fun _ -> Prims.l_True)
-
 /// Instantiates a new [`Context`] from a [protobuf configuration](`pb_api::Configuration`)
 /// and a top-level context.
 val impl_5__try_from
-      (ctx: Sandwich.t_Context)
+      (lib_ctx: Sandwich.Implementation.Openssl3_impl.t_LibCtx)
       (configuration: Sandwich_api_proto.Configuration.t_Configuration)
     : Prims.Pure
       (Core.Result.t_Result Sandwich.Implementation.Openssl3_impl.Tunnel.t_Context

@@ -40,131 +40,132 @@ pub(crate) enum Mode {
 /// the tunnel.
 /// Returning the I/O interface in case of error allows the caller to re-use it
 /// without having to create a new one.
-pub type TunnelResult<'a> = Result<Tunnel<'a>, (crate::Error, BoxedIO)>;
+pub type TunnelResult = Result<Tunnel, (crate::Error, BoxedIO)>;
 
 /// A Sandwich context.
-pub enum Context<'a> {
-    /// OpenSSL 1.1.1 context.
-    #[cfg(feature = "openssl1_1_1")]
-    OpenSSL1_1_1(ossl::openssl1_1_1::Context<'a>),
+pub enum Context {
+    // /// OpenSSL 1.1.1 context.
+    // #[cfg(feature = "openssl1_1_1")]
+    // OpenSSL1_1_1(ossl::openssl1_1_1::Context<'a>),
 
-    /// BoringSSL context.
-    #[cfg(feature = "boringssl")]
-    BoringSSL(ossl::boringssl::Context<'a>),
+    // /// BoringSSL context.
+    // #[cfg(feature = "boringssl")]
+    // BoringSSL(ossl::boringssl::Context<'a>),
 
-    /// OpenSSL 3 context.
-    #[cfg(feature = "openssl3")]
-    OpenSSL3(crate::ossl3::tunnel::Context<'a>),
+    // /// OpenSSL 3 context.
+    // #[cfg(feature = "openssl3")]
+    // OpenSSL3(crate::ossl3::tunnel::Context<'a>),
 }
 
-impl std::fmt::Debug for Context<'_> {
+impl std::fmt::Debug for Context {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            #[cfg(feature = "openssl1_1_1")]
-            Self::OpenSSL1_1_1(c) => write!(f, "Context(OpenSSL1_1_1({c:?}))"),
-            #[cfg(feature = "boringssl")]
-            Self::BoringSSL(c) => write!(f, "Context(BoringSSL({c:?}))"),
-            #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(c) => write!(f, "Context(OpenSSL3({c:?}))"),
-        }
+      write!(f, "rust::tunnel::Context()")  
+      // match self {
+      //       #[cfg(feature = "openssl1_1_1")]
+      //       Self::OpenSSL1_1_1(c) => write!(f, "Context(OpenSSL1_1_1({c:?}))"),
+      //       #[cfg(feature = "boringssl")]
+      //       Self::BoringSSL(c) => write!(f, "Context(BoringSSL({c:?}))"),
+      //       #[cfg(feature = "openssl3")]
+      //       Self::OpenSSL3(c) => write!(f, "Context(OpenSSL3({c:?}))"),
+      //   }
     }
 }
 
-impl<'a> Context<'a> {
-    /// Instantiates a [`Context`] from a protobuf configuration message.
-    ///
-    /// # Examples
-    ///
-    /// ## Constructs a configuration in Rust.
-    /// ```
-    /// use sandwich_api_proto as pb_api;
-    ///
-    /// // Instantiates a top-level context.
-    /// let sw = sandwich::Context;
-    ///
-    /// // Creates a protobuf configuration
-    /// let mut configuration = pb_api::Configuration::new();
-    ///
-    /// // Sets the implementation to be used by Sandwich. Here it's OpenSSL 1.1.1
-    /// // with liboqs.
-    /// configuration.set_impl(pb_api::Implementation::IMPL_OPENSSL1_1_1_OQS);
-    ///
-    /// // Sets the client or server configuration according to the implementation
-    /// // and the protocol.
-    /// // …
-    ///
-    /// // Creates the Sandwich context that will make use of the supplied
-    /// // configuration.
-    ///
-    /// match sandwich::context::try_from(&sw, &configuration) {
-    ///     Err(e) => eprintln!("Failed to instantiate a Sandwich context: {}", e),
-    ///     Ok(context) => {
-    ///         // Do something with `context`.
-    ///     }
-    /// };
-    ///
-    /// ```
-    #[allow(unused_variables)]
-    pub fn try_from(
-        context: &'a crate::Context,
-        configuration: &pb_api::Configuration,
-    ) -> crate::Result<Self> {
-        tls::assert_compliance(configuration)?;
-        configuration
-        .impl_
-        .enum_value()
-        .map_err(|_| errors!{ConfigurationError::CONFIGURATIONERROR_INVALID_IMPLEMENTATION => ConfigurationError::CONFIGURATIONERROR_INVALID})
-        .and_then(|v| match v {
-            #[cfg(feature = "openssl1_1_1")]
-            pb_api::Implementation::IMPL_OPENSSL1_1_1_OQS => {
-                ossl::openssl1_1_1::Context::try_from(configuration)
-                    .map(Self::OpenSSL1_1_1)
-                    .map_err(|e| e >> ConfigurationError::CONFIGURATIONERROR_INVALID)
-            }
-            #[cfg(feature = "boringssl")]
-            pb_api::Implementation::IMPL_BORINGSSL_OQS => {
-                ossl::boringssl::Context::try_from(configuration)
-                    .map(Self::BoringSSL)
-                    .map_err(|e| e >> ConfigurationError::CONFIGURATIONERROR_INVALID)
-            }
-            #[cfg(feature = "openssl3")]
-            pb_api::Implementation::IMPL_OPENSSL3_OQS_PROVIDER => {
-                crate::ossl3::tunnel::Context::try_from(context, configuration)
-                    .map(Self::OpenSSL3)
-                    .map_err(|e| e >> ConfigurationError::CONFIGURATIONERROR_INVALID)
-            }
-            _ => Err(
-                errors!{ConfigurationError::CONFIGURATIONERROR_INVALID_IMPLEMENTATION => ConfigurationError::CONFIGURATIONERROR_INVALID}
-            ),
-        })
-        .map_err(|e| e >> pb::APIError::APIERROR_CONFIGURATION)
-    }
+impl Context {
+    // /// Instantiates a [`Context`] from a protobuf configuration message.
+    // ///
+    // /// # Examples
+    // ///
+    // /// ## Constructs a configuration in Rust.
+    // /// ```
+    // /// use sandwich_api_proto as pb_api;
+    // ///
+    // /// // Instantiates a top-level context.
+    // /// let sw = sandwich::Context;
+    // ///
+    // /// // Creates a protobuf configuration
+    // /// let mut configuration = pb_api::Configuration::new();
+    // ///
+    // /// // Sets the implementation to be used by Sandwich. Here it's OpenSSL 1.1.1
+    // /// // with liboqs.
+    // /// configuration.set_impl(pb_api::Implementation::IMPL_OPENSSL1_1_1_OQS);
+    // ///
+    // /// // Sets the client or server configuration according to the implementation
+    // /// // and the protocol.
+    // /// // …
+    // ///
+    // /// // Creates the Sandwich context that will make use of the supplied
+    // /// // configuration.
+    // ///
+    // /// match sandwich::context::try_from(&sw, &configuration) {
+    // ///     Err(e) => eprintln!("Failed to instantiate a Sandwich context: {}", e),
+    // ///     Ok(context) => {
+    // ///         // Do something with `context`.
+    // ///     }
+    // /// };
+    // ///
+    // /// ```
+    // #[allow(unused_variables)]
+    // pub fn try_from(
+    //     context: &'a crate::Context,
+    //     configuration: &pb_api::Configuration,
+    // ) -> crate::Result<Self> {
+    //     tls::assert_compliance(configuration)?;
+    //     configuration
+    //     .impl_
+    //     .enum_value()
+    //     .map_err(|_| errors!{ConfigurationError::CONFIGURATIONERROR_INVALID_IMPLEMENTATION => ConfigurationError::CONFIGURATIONERROR_INVALID})
+    //     .and_then(|v| match v {
+    //         #[cfg(feature = "openssl1_1_1")]
+    //         pb_api::Implementation::IMPL_OPENSSL1_1_1_OQS => {
+    //             ossl::openssl1_1_1::Context::try_from(configuration)
+    //                 .map(Self::OpenSSL1_1_1)
+    //                 .map_err(|e| e >> ConfigurationError::CONFIGURATIONERROR_INVALID)
+    //         }
+    //         #[cfg(feature = "boringssl")]
+    //         pb_api::Implementation::IMPL_BORINGSSL_OQS => {
+    //             ossl::boringssl::Context::try_from(configuration)
+    //                 .map(Self::BoringSSL)
+    //                 .map_err(|e| e >> ConfigurationError::CONFIGURATIONERROR_INVALID)
+    //         }
+    //         #[cfg(feature = "openssl3")]
+    //         pb_api::Implementation::IMPL_OPENSSL3_OQS_PROVIDER => {
+    //             crate::ossl3::tunnel::Context::try_from(context, configuration)
+    //                 .map(Self::OpenSSL3)
+    //                 .map_err(|e| e >> ConfigurationError::CONFIGURATIONERROR_INVALID)
+    //         }
+    //         _ => Err(
+    //             errors!{ConfigurationError::CONFIGURATIONERROR_INVALID_IMPLEMENTATION => ConfigurationError::CONFIGURATIONERROR_INVALID}
+    //         ),
+    //     })
+    //     .map_err(|e| e >> pb::APIError::APIERROR_CONFIGURATION)
+    // }
 
-    /// Creates a new tunnel from an I/O interface. See [`IO`] from [`crate::io`] module.
-    ///
-    /// The I/O interface must outlive the tunnel, as the tunnel makes use
-    /// of it to send and receive data.
-    ///
-    /// If an error occured, the IO interface is returned to the user.
-    pub fn new_tunnel(
-        &self,
-        io: BoxedIO,
-        configuration: pb_api::TunnelConfiguration,
-    ) -> TunnelResult<'_> {
-        match self {
-            #[cfg(feature = "openssl1_1_1")]
-            Self::OpenSSL1_1_1(c) => Ok(Tunnel::OpenSSL1_1_1(ossl::openssl1_1_1::Tunnel(
-                c.0.new_tunnel(io, configuration)?,
-            ))),
-            #[cfg(feature = "boringssl")]
-            Self::BoringSSL(c) => Ok(Tunnel::BoringSSL(ossl::boringssl::Tunnel(
-                c.0.new_tunnel(io, configuration)?,
-            ))),
-            // (crate::Error, Box<dyn IO>) -> (crate::Error, BoxedIO)
-            #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(c) => Ok(Tunnel::OpenSSL3(c.new_tunnel(io, configuration)?)),
-        }
-    }
+    // /// Creates a new tunnel from an I/O interface. See [`IO`] from [`crate::io`] module.
+    // ///
+    // /// The I/O interface must outlive the tunnel, as the tunnel makes use
+    // /// of it to send and receive data.
+    // ///
+    // /// If an error occured, the IO interface is returned to the user.
+    // pub fn new_tunnel(
+    //     &self,
+    //     io: BoxedIO,
+    //     configuration: pb_api::TunnelConfiguration,
+    // ) -> TunnelResult<'_> {
+    //     match self {
+    //         #[cfg(feature = "openssl1_1_1")]
+    //         Self::OpenSSL1_1_1(c) => Ok(Tunnel::OpenSSL1_1_1(ossl::openssl1_1_1::Tunnel(
+    //             c.0.new_tunnel(io, configuration)?,
+    //         ))),
+    //         #[cfg(feature = "boringssl")]
+    //         Self::BoringSSL(c) => Ok(Tunnel::BoringSSL(ossl::boringssl::Tunnel(
+    //             c.0.new_tunnel(io, configuration)?,
+    //         ))),
+    //         // (crate::Error, Box<dyn IO>) -> (crate::Error, BoxedIO)
+    //         #[cfg(feature = "openssl3")]
+    //         Self::OpenSSL3(c) => Ok(Tunnel::OpenSSL3(c.new_tunnel(io, configuration)?)),
+    //     }
+    // }
 }
 
 #[cfg(test)]
