@@ -6,14 +6,13 @@ open FStar.Mul
 (* item error backend: (reject_RawOrMutPointer) ExplicitRejection { reason: "a node of kind [Raw_pointer] have been found in the AST" }
 Last available AST for this item:
 
-/// Wrapper around an raw pointer.
 #[allow(dead_code)]
 #[allow(unused_imports)]
 #[allow(dead_code)]
 #[deny(bare_trait_objects)]
 #[feature(register_tool)]
 #[register_tool(_hax)]
-struct t_Pimpl<'a: 'unk, T>
+struct t_PimplInner<'a: 'unk, T>
 where
     _: core::marker::t_Sized<T>,
 {
@@ -35,7 +34,7 @@ Last AST:
       { Concrete_ident.Imported.data =
         (Concrete_ident.Imported.TypeNs "pimpl"); disambiguator = 0 };
       { Concrete_ident.Imported.data =
-        (Concrete_ident.Imported.TypeNs "Pimpl"); disambiguator = 0 }
+        (Concrete_ident.Imported.TypeNs "PimplInner"); disambiguator = 0 }
       ]
     };
   kind = Concrete_ident.Kind.Value }) */

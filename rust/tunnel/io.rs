@@ -25,19 +25,31 @@ impl IO for BoxedIO {
     fn set_state(&mut self, _state: pb::State) {}
 }
 
+fn _boxed_io_read(boxed_io: &mut BoxedIO, buf: &mut [u8]) -> Result<usize, std::io::Error> {
+    boxed_io.0.read(buf)
+}
+
 impl std::io::Read for BoxedIO {
     fn read(&mut self, buf: &mut [u8]) -> Result<usize, std::io::Error> {
-        (self.0).read(buf)
+        _boxed_io_read(self, buf)
     }
+}
+
+fn _boxed_io_write(boxed_io: &mut BoxedIO, buf: &[u8]) -> Result<usize, std::io::Error> {
+    boxed_io.0.write(buf)
+}
+
+fn _boxed_io_flush(boxed_io: &mut BoxedIO) -> Result<(), std::io::Error> {
+    boxed_io.0.flush()
 }
 
 impl std::io::Write for BoxedIO {
     fn write(&mut self, buf: &[u8]) -> Result<usize, std::io::Error> {
-        (self.0).write(buf)
+        _boxed_io_write(self, buf)
     }
 
     fn flush(&mut self) -> Result<(), std::io::Error> {
-        (self.0).flush()
+        _boxed_io_flush(self)
     }
 }
 
@@ -47,12 +59,14 @@ impl std::io::Write for BoxedIO {
 //     }
 // }
 
+#[hax_lib::exclude]
 impl From<Box<dyn IO>> for BoxedIO {
     fn from(io: Box<dyn IO>) -> Self {
-        unimplemented!()
+        BoxedIO(io)
     }
 }
 
+#[hax_lib::exclude]
 impl<'a> std::fmt::Debug for dyn IO + 'a {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "Box(tunnel::IO)")

@@ -703,10 +703,25 @@ let impl_6: Core.Convert.t_From Sandwich_proto.Tunnel.t_RecordError t_SslError =
         Sandwich_proto.Tunnel.RecordError_RECORDERROR_UNKNOWN <: Sandwich_proto.Tunnel.t_RecordError
   }
 
+/// Creates a `BIO` object from a immutable buffer.
+val v_BIO_from_buffer
+      (#impl_424714745_: Type0)
+      {| i1: Core.Convert.t_AsRef impl_424714745_ (t_Slice u8) |}
+      (buffer: impl_424714745_)
+    : Prims.Pure
+      (Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_bio_st)
+          Sandwich.Error.t_Error) Prims.l_True (fun _ -> Prims.l_True)
+
 /// Returns a string containing the error strings for all errors that
 /// OpenSSL 3 has recorded.
 /// This function clears the error queue.
 val errstr: Prims.unit -> Prims.Pure Alloc.String.t_String Prims.l_True (fun _ -> Prims.l_True)
+
+/// Creates a new `BIO` object with a specific method.
+val new_BIO (bio_meth: Core.Ptr.Non_null.t_NonNull Openssl3.t_bio_method_st)
+    : Prims.Pure
+      (Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_bio_st)
+          Sandwich.Error.t_Error) Prims.l_True (fun _ -> Prims.l_True)
 
 /// A wrapper around an `OSSL_PROVIDER`.
 type t_Provider =
@@ -717,21 +732,6 @@ val impl__ProviderBuilder__build (self: t_ProviderBuilder)
     : Prims.Pure (Core.Result.t_Result t_Provider Sandwich.Error.t_Error)
       Prims.l_True
       (fun _ -> Prims.l_True)
-
-/// Creates a `BIO` object from a immutable buffer.
-val v_BIO_from_buffer
-      (#impl_424714745_: Type0)
-      {| i1: Core.Convert.t_AsRef impl_424714745_ (t_Slice u8) |}
-      (buffer: impl_424714745_)
-    : Prims.Pure
-      (Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_bio_st)
-          Sandwich.Error.t_Error) Prims.l_True (fun _ -> Prims.l_True)
-
-/// Creates a new `BIO` object with a specific method.
-val new_BIO (bio_meth: Core.Ptr.Non_null.t_NonNull Openssl3.t_bio_method_st)
-    : Prims.Pure
-      (Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_bio_st)
-          Sandwich.Error.t_Error) Prims.l_True (fun _ -> Prims.l_True)
 
 /// An `OSSL_LIB_CTX` object wrapped in a `Pimpl`.
 type t_LibCtx = {

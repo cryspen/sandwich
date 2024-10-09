@@ -1,5 +1,22 @@
 
 
+pub mod io {
+    pub struct Error {
+        _hax_placeholder: (),
+    }
+    pub trait Read {
+        fn read(&mut self, buf: &mut [u8]) -> Result<usize, Error>;
+    }
+
+    pub trait Write {
+        fn write(&mut self, buf: &[u8]) -> Result<usize, Error>;
+
+        fn flush(&mut self) -> Result<(), Error>;
+    }
+}
+
+
+
 pub mod message {
     /// Trait which is implemented by all generated message.
     ///

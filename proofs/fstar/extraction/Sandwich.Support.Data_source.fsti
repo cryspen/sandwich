@@ -111,9 +111,9 @@ let impl: Core.Convert.t_TryFrom t_DataSource Sandwich_api_proto.Data_source.t_D
                   Core.Result.t_Result (Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
                     Sandwich_proto.Errors.t_DataSourceError
                 with
-                | Core.Result.Result_Ok hoist20 ->
+                | Core.Result.Result_Ok hoist19 ->
                   Core.Ops.Control_flow.ControlFlow_Continue
-                  (Core.Result.Result_Ok (DataSource_Fs hoist20 <: t_DataSource)
+                  (Core.Result.Result_Ok (DataSource_Fs hoist19 <: t_DataSource)
                     <:
                     Core.Result.t_Result t_DataSource Sandwich.Error.t_Error)
                   <:

@@ -15,7 +15,10 @@ use std::ptr::NonNull;
 pub(crate) type Deleter<T> = fn(*mut T);
 
 /// Wrapper around an raw pointer.
-pub(crate) struct Pimpl<'a, T> {
+#[hax_lib::opaque_type]
+pub(crate) struct Pimpl<'a, T>(PimplInner<'a, T>);
+
+struct PimplInner<'a, T> {
     /// The type to own.
     p: NonNull<T>,
 
@@ -32,7 +35,7 @@ unsafe impl<T> Send for Pimpl<'_, T> {}
 /// Implements [`std::fmt::Debug`] for [`Pimpl`].
 impl<T> std::fmt::Debug for Pimpl<'_, T> {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "pimpl ptr={:?}", self.p)
+        write!(f, "pimpl ptr={:?}", self.0.p)
     }
 }
 
@@ -52,41 +55,41 @@ impl<'a, T> Pimpl<'a, T> {
         let Some(p) = NonNull::new(ptr) else {
             return None;
         };
-        Some(Self {
+        Some(Self( PimplInner {
             p,
             del: Some(del),
             phantom: PhantomData,
-        })
+        }))
     }
 
     /// Instantiates a [`Pimpl`] from a raw pointer and a deleter.
     /// This method does the same job as [`Pimpl::new`], but the pointer's
     /// nullity will not be checked.
     pub unsafe fn new_unchecked(ptr: *mut T, del: Deleter<T>) -> Self {
-        Self {
+        Self(PimplInner {
             p: NonNull::new_unchecked(ptr),
             del: Some(del),
             phantom: PhantomData,
-        }
+        })
     }
 
     /// Returns a copy of the [`NonNull`] pointer.
     pub(crate) fn as_nonnull(&self) -> NonNull<T> {
-        self.p
+        self.0.p
     }
 
     /// Returns the raw pointer by consuming the object.
     pub fn into_raw(mut self) -> *mut T {
-        self.del = None;
-        self.p.as_ptr()
+        self.0.del = None;
+        self.0.p.as_ptr()
     }
 }
 
 /// Implements the custom destructor for [`Pimpl`].
 impl<'a, T> Drop for Pimpl<'a, T> {
     fn drop(&mut self) {
-        if let Some(del) = self.del {
-            (del)(self.p.as_ptr());
+        if let Some(del) = self.0.del {
+            (del)(self.0.p.as_ptr());
         }
     }
 }

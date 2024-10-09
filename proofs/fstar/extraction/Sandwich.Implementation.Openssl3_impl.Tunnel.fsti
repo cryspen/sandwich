@@ -384,6 +384,29 @@ val impl__Ssl__get_tunnel_security_requirements (self: t_Ssl)
       Prims.l_True
       (fun _ -> Prims.l_True)
 
+/// Initializes the trusted certificate store.
+val impl__SslContext__initialize_trusted_cert_store (self: t_SslContext)
+    : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
+
+/// Sets supported application protocols (ALPN).
+val impl__SslContext__set_alpn_protocols
+      (#v_S #impl_995885649_: Type0)
+      {| i6: Core.Convert.t_AsRef v_S string |}
+      {| i6: Core.Iter.Traits.Collect.t_IntoIterator impl_995885649_ |}
+      (self: t_SslContext)
+      (protocols: impl_995885649_)
+    : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
+
+/// Sets the default parameters for a SSL context.
+val impl__SslContext__set_default_parameters (self: t_SslContext)
+    : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
+
 /// Handles an SSL error of type `SSL_ERROR_SSL`.
 val impl__Ssl__handle_ssl_error_ssl (self: t_Ssl)
     : Prims.Pure
@@ -406,38 +429,10 @@ val impl__Ssl__set_server_name_indication
       Prims.l_True
       (fun _ -> Prims.l_True)
 
-/// Appends a certificate to the certificate chain the peer is going to expose
-/// to remote.
-/// This function takes a [`Pimpl`] as input since [`SSL_CTX_add_extra_chain_cert`]
-/// takes the ownership of the `X509` object.
-val impl__SslContext__add_extra_chain_cert
-      (self: t_SslContext)
-      (extra_certificate: Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_x509_st)
-    : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
-      Prims.l_True
-      (fun _ -> Prims.l_True)
-
 /// Loads the OpenSSL system-default trust anchors into context store.
 val impl__SslContext__fill_certificate_trust_store_with_default_cas
       (self: t_SslContext)
       (x509_verifier: Core.Option.t_Option Sandwich_api_proto.Verifiers.t_X509Verifier)
-    : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
-      Prims.l_True
-      (fun _ -> Prims.l_True)
-
-/// Initializes the trusted certificate store.
-val impl__SslContext__initialize_trusted_cert_store (self: t_SslContext)
-    : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
-      Prims.l_True
-      (fun _ -> Prims.l_True)
-
-/// Sets supported application protocols (ALPN).
-val impl__SslContext__set_alpn_protocols
-      (#v_S #impl_995885649_: Type0)
-      {| i6: Core.Convert.t_AsRef v_S string |}
-      {| i6: Core.Iter.Traits.Collect.t_IntoIterator impl_995885649_ |}
-      (self: t_SslContext)
-      (protocols: impl_995885649_)
     : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
       Prims.l_True
       (fun _ -> Prims.l_True)
@@ -463,12 +458,6 @@ val impl__SslContext__set_default_cipher_list (self: t_SslContext)
 /// by OpenSSL.
 /// This function is only useful for TLS 1.3.
 val impl__SslContext__set_default_ciphersuites (self: t_SslContext)
-    : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
-      Prims.l_True
-      (fun _ -> Prims.l_True)
-
-/// Sets the default parameters for a SSL context.
-val impl__SslContext__set_default_parameters (self: t_SslContext)
     : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
       Prims.l_True
       (fun _ -> Prims.l_True)
@@ -540,6 +529,17 @@ val impl__Ssl__create_and_attach_bio (self: t_Ssl)
       Prims.l_True
       (fun _ -> Prims.l_True)
 
+/// Appends a certificate to the certificate chain the peer is going to expose
+/// to remote.
+/// This function takes a [`Pimpl`] as input since [`SSL_CTX_add_extra_chain_cert`]
+/// takes the ownership of the `X509` object.
+val impl__SslContext__add_extra_chain_cert
+      (self: t_SslContext)
+      (extra_certificate: Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_x509_st)
+    : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
+
 /// Verifies the tunnel configuration against the security requirements that come
 /// from the context.
 val verify_tunnel_verifier
@@ -598,14 +598,6 @@ val impl__Ssl__set_subject_alternative_names
       Prims.l_True
       (fun _ -> Prims.l_True)
 
-/// Instantiates a new SSL context (`SSL_CTX`).
-val new_ssl_context
-      (lib_ctx: Sandwich.Implementation.Openssl3_impl.t_LibCtx)
-      (mode: Sandwich.Tunnel.Context.t_Mode)
-    : Prims.Pure
-      (Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st)
-          Sandwich.Error.t_Error) Prims.l_True (fun _ -> Prims.l_True)
-
 /// Closes the tunnel.
 val impl__Ssl__close (self: t_Ssl)
     : Prims.Pure
@@ -630,6 +622,14 @@ val impl__Ssl__write (self: t_Ssl) (buffer: t_Slice u8)
           (Sandwich.Tunnel.t_ProtoStateErrorBase Sandwich_proto.Tunnel.t_RecordError))
       Prims.l_True
       (fun _ -> Prims.l_True)
+
+/// Instantiates a new SSL context (`SSL_CTX`).
+val new_ssl_context
+      (lib_ctx: Sandwich.Implementation.Openssl3_impl.t_LibCtx)
+      (mode: Sandwich.Tunnel.Context.t_Mode)
+    : Prims.Pure
+      (Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st)
+          Sandwich.Error.t_Error) Prims.l_True (fun _ -> Prims.l_True)
 
 /// Imports the trusted certificates from the protobuf configuration to the
 /// OpenSSL SSL context.
