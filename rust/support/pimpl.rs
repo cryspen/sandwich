@@ -78,6 +78,7 @@ impl<'a, T> Pimpl<'a, T> {
         self.0.p
     }
 
+    #[hax_lib::exclude]
     /// Returns the raw pointer by consuming the object.
     pub fn into_raw(mut self) -> *mut T {
         self.0.del = None;

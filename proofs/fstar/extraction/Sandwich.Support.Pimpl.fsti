@@ -47,7 +47,3 @@ val t_Pimpl (#v_T: Type0) : Type0
 /// Returns a copy of the [`NonNull`] pointer.
 val impl_2__as_nonnull (#v_T: Type0) (self: t_Pimpl v_T)
     : Prims.Pure (Core.Ptr.Non_null.t_NonNull v_T) Prims.l_True (fun _ -> Prims.l_True)
-
-/// Returns the raw pointer by consuming the object.
-val impl_2__into_raw (#v_T: Type0) (self: t_Pimpl v_T)
-    : Prims.Pure Rust_primitives.Hax.t_failure Prims.l_True (fun _ -> Prims.l_True)

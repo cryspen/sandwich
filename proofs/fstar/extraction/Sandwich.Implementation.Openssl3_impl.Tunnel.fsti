@@ -429,6 +429,17 @@ val impl__Ssl__set_server_name_indication
       Prims.l_True
       (fun _ -> Prims.l_True)
 
+/// Appends a certificate to the certificate chain the peer is going to expose
+/// to remote.
+/// This function takes a [`Pimpl`] as input since [`SSL_CTX_add_extra_chain_cert`]
+/// takes the ownership of the `X509` object.
+val impl__SslContext__add_extra_chain_cert
+      (self: t_SslContext)
+      (extra_certificate: Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_x509_st)
+    : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
+
 /// Loads the OpenSSL system-default trust anchors into context store.
 val impl__SslContext__fill_certificate_trust_store_with_default_cas
       (self: t_SslContext)
@@ -525,17 +536,6 @@ val ssl_context_new_ssl (ssl_context: Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_
 
 /// Creates a new Sandwich BIO and attach it to the SSL object.
 val impl__Ssl__create_and_attach_bio (self: t_Ssl)
-    : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
-      Prims.l_True
-      (fun _ -> Prims.l_True)
-
-/// Appends a certificate to the certificate chain the peer is going to expose
-/// to remote.
-/// This function takes a [`Pimpl`] as input since [`SSL_CTX_add_extra_chain_cert`]
-/// takes the ownership of the `X509` object.
-val impl__SslContext__add_extra_chain_cert
-      (self: t_SslContext)
-      (extra_certificate: Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_x509_st)
     : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
       Prims.l_True
       (fun _ -> Prims.l_True)
