@@ -11,16 +11,6 @@ let _ =
   let open Sandwich_proto.Tunnel in
   ()
 
-let impl_12__rewrap
-      (#v_Inner: Type0)
-      (#v_Other: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core.Convert.t_From t_Tunnel v_Inner)
-      (inner, other: (v_Inner & v_Other))
-     =
-  Core.Convert.f_into #v_Inner #t_Tunnel #FStar.Tactics.Typeclasses.solve inner, other
-  <:
-  (t_Tunnel & v_Other)
-
 let impl_5__is_err
       (#v_Enum: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Protobuf.Enums.t_Enum v_Enum)
@@ -32,6 +22,16 @@ let impl_5__value
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Protobuf.Enums.t_Enum v_Enum)
       (self: t_ProtoStateErrorBase v_Enum)
      = self._0
+
+let impl_12__rewrap
+      (#v_Inner: Type0)
+      (#v_Other: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core.Convert.t_From t_Tunnel v_Inner)
+      (inner, other: (v_Inner & v_Other))
+     =
+  Core.Convert.f_into #v_Inner #t_Tunnel #FStar.Tactics.Typeclasses.solve inner, other
+  <:
+  (t_Tunnel & v_Other)
 
 let impl_13__close (self: t_Tunnel) =
   match self with

@@ -16,72 +16,126 @@ type t_Error =
 
 /// Instantiates an [`Error`] from an enum value.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl
+let impl
       (#v_ErrorEnum: Type0)
-      {| i1: Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum |}
-      {| i2: Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode v_ErrorEnum |}
-    : Core.Convert.t_From t_Error v_ErrorEnum
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i1:
+          Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i2:
+          Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode v_ErrorEnum)
+    : Core.Convert.t_From t_Error v_ErrorEnum =
+  {
+    f_from_pre = (fun (e: v_ErrorEnum) -> true);
+    f_from_post = (fun (e: v_ErrorEnum) (out: t_Error) -> true);
+    f_from
+    =
+    fun (e: v_ErrorEnum) ->
+      Error
+      (Alloc.Slice.impl__into_vec #Sandwich.Error.Code.t_ErrorCode
+          #Alloc.Alloc.t_Global
+          (Rust_primitives.unsize (Rust_primitives.Hax.box_new (let list =
+                      [
+                        Core.Convert.f_from #Sandwich.Error.Code.t_ErrorCode
+                          #v_ErrorEnum
+                          #FStar.Tactics.Typeclasses.solve
+                          e
+                        <:
+                        Sandwich.Error.Code.t_ErrorCode
+                      ]
+                    in
+                    FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
+                    Rust_primitives.Hax.array_of_list 1 list)
+                <:
+                Alloc.Boxed.t_Box (t_Array Sandwich.Error.Code.t_ErrorCode (sz 1))
+                  Alloc.Alloc.t_Global)
+            <:
+            Alloc.Boxed.t_Box (t_Slice Sandwich.Error.Code.t_ErrorCode) Alloc.Alloc.t_Global))
+      <:
+      t_Error
+  }
 
 /// Instantiates an [`Error`] from an enum value and a string.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_1
-      (#v_ErrorEnum #v_S: Type0)
-      {| i2: Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum |}
-      {| i3: Core.Convert.t_AsRef v_S string |}
-      {| i4: Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode (v_ErrorEnum & v_S) |}
-    : Core.Convert.t_From t_Error (v_ErrorEnum & v_S)
-
-/// Instantiates an [`Error`] from an enum value and a string.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_2
+let impl_2
       (#v_ErrorEnum: Type0)
-      {| i1: Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum |}
-      {| i2: Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode (v_ErrorEnum & string) |}
-    : Core.Convert.t_From t_Error (v_ErrorEnum & string)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i1:
+          Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i2:
+          Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode (v_ErrorEnum & string))
+    : Core.Convert.t_From t_Error (v_ErrorEnum & string) =
+  {
+    f_from_pre = (fun (e, s: (v_ErrorEnum & string)) -> true);
+    f_from_post = (fun (e, s: (v_ErrorEnum & string)) (out: t_Error) -> true);
+    f_from
+    =
+    fun (e, s: (v_ErrorEnum & string)) ->
+      Error
+      (Alloc.Slice.impl__into_vec #Sandwich.Error.Code.t_ErrorCode
+          #Alloc.Alloc.t_Global
+          (Rust_primitives.unsize (Rust_primitives.Hax.box_new (let list =
+                      [
+                        Core.Convert.f_from #Sandwich.Error.Code.t_ErrorCode
+                          #(v_ErrorEnum & string)
+                          #FStar.Tactics.Typeclasses.solve
+                          (e, s <: (v_ErrorEnum & string))
+                        <:
+                        Sandwich.Error.Code.t_ErrorCode
+                      ]
+                    in
+                    FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
+                    Rust_primitives.Hax.array_of_list 1 list)
+                <:
+                Alloc.Boxed.t_Box (t_Array Sandwich.Error.Code.t_ErrorCode (sz 1))
+                  Alloc.Alloc.t_Global)
+            <:
+            Alloc.Boxed.t_Box (t_Slice Sandwich.Error.Code.t_ErrorCode) Alloc.Alloc.t_Global))
+      <:
+      t_Error
+  }
 
 /// Instantiates an [`Error`] from an enum value and a string.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_3
+let impl_3
       (#v_ErrorEnum: Type0)
-      {| i1: Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum |}
-      {| i2:
-          Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode (v_ErrorEnum & Alloc.String.t_String)
-        |}
-    : Core.Convert.t_From t_Error (v_ErrorEnum & Alloc.String.t_String)
-
-/// Instantiates an [`Error`] from an [`ProtoBasedErrorCode`].
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_4:Core.Convert.t_From t_Error Sandwich.Error.Code.t_ProtoBasedErrorCode
-
-/// Instantiates an [`Error`] from an enum value and a string.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_5 (#v_S: Type0) {| i1: Core.Convert.t_AsRef v_S string |}
-    : Core.Convert.t_From t_Error (Sandwich.Error.Code.t_ProtoBasedErrorCode & v_S)
-
-/// Instantiates an [`Error`] from an enum value and a string.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_6:Core.Convert.t_From t_Error (Sandwich.Error.Code.t_ProtoBasedErrorCode & string)
-
-/// Instantiates an [`Error`] from an enum value and a string.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_7:Core.Convert.t_From t_Error
-  (Sandwich.Error.Code.t_ProtoBasedErrorCode & Alloc.String.t_String)
-
-/// Instantiates an [`Error`] from an [`ErrorCode`].
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_8:Core.Convert.t_From t_Error Sandwich.Error.Code.t_ErrorCode
-
-/// Implements [`std::fmt::Display`] for [`Error`].
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_18:Core.Fmt.t_Display t_Error
-
-/// Implements [`std::fmt::Debug`] for [`Error`].
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_19:Core.Fmt.t_Debug t_Error
-
-/// Implements [`std::error::Error`] for [`Error`].
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_20:Core.Error.t_Error t_Error
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i1:
+          Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i2:
+          Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode (v_ErrorEnum & Alloc.String.t_String))
+    : Core.Convert.t_From t_Error (v_ErrorEnum & Alloc.String.t_String) =
+  {
+    f_from_pre = (fun (e, s: (v_ErrorEnum & Alloc.String.t_String)) -> true);
+    f_from_post = (fun (e, s: (v_ErrorEnum & Alloc.String.t_String)) (out: t_Error) -> true);
+    f_from
+    =
+    fun (e, s: (v_ErrorEnum & Alloc.String.t_String)) ->
+      Error
+      (Alloc.Slice.impl__into_vec #Sandwich.Error.Code.t_ErrorCode
+          #Alloc.Alloc.t_Global
+          (Rust_primitives.unsize (Rust_primitives.Hax.box_new (let list =
+                      [
+                        Core.Convert.f_from #Sandwich.Error.Code.t_ErrorCode
+                          #(v_ErrorEnum & Alloc.String.t_String)
+                          #FStar.Tactics.Typeclasses.solve
+                          (e, s <: (v_ErrorEnum & Alloc.String.t_String))
+                        <:
+                        Sandwich.Error.Code.t_ErrorCode
+                      ]
+                    in
+                    FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
+                    Rust_primitives.Hax.array_of_list 1 list)
+                <:
+                Alloc.Boxed.t_Box (t_Array Sandwich.Error.Code.t_ErrorCode (sz 1))
+                  Alloc.Alloc.t_Global)
+            <:
+            Alloc.Boxed.t_Box (t_Slice Sandwich.Error.Code.t_ErrorCode) Alloc.Alloc.t_Global))
+      <:
+      t_Error
+  }
 
 /// Appends an [`Error`] into the chain, using the `>>` operator.
 /// The `>>` operator is used to easily build a chain of error:
@@ -99,62 +153,40 @@ val impl_20:Core.Error.t_Error t_Error
 ///   // because: an ASN.1 error occurred: invalid format".
 /// ```
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_9
+let impl_9
       (#v_ErrorEnum: Type0)
-      {| i1: Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum |}
-      {| i2: Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode v_ErrorEnum |}
-    : Core.Ops.Bit.t_Shr t_Error v_ErrorEnum
-
-/// Appends an [`Error`] into the chain, using the `>>` operator and a string.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_10
-      (#v_ErrorEnum #v_S: Type0)
-      {| i2: Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum |}
-      {| i3: Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode (v_ErrorEnum & v_S) |}
-      {| i4: Core.Convert.t_AsRef v_S string |}
-    : Core.Ops.Bit.t_Shr t_Error (v_ErrorEnum & v_S)
-
-/// Appends an [`Error`] into the chain, using the `>>` operator and a string.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_11
-      (#v_ErrorEnum: Type0)
-      {| i1: Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum |}
-      {| i2: Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode (v_ErrorEnum & string) |}
-    : Core.Ops.Bit.t_Shr t_Error (v_ErrorEnum & string)
-
-/// Appends an [`Error`] into the chain, using the `>>` operator and a string.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_12
-      (#v_ErrorEnum: Type0)
-      {| i1: Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum |}
-      {| i2:
-          Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode (v_ErrorEnum & Alloc.String.t_String)
-        |}
-    : Core.Ops.Bit.t_Shr t_Error (v_ErrorEnum & Alloc.String.t_String)
-
-/// Appends an [`Error`] into the chain, using the `>>` operator.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_13:Core.Ops.Bit.t_Shr t_Error Sandwich.Error.Code.t_ProtoBasedErrorCode
-
-/// Appends an [`Error`] into the chain, using the `>>` operator and a string.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_14 (#v_S: Type0) {| i1: Core.Convert.t_AsRef v_S string |}
-    : Core.Ops.Bit.t_Shr t_Error (Sandwich.Error.Code.t_ProtoBasedErrorCode & v_S)
-
-/// Appends an [`Error`] into the chain, using the `>>` operator and a string.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_15:Core.Ops.Bit.t_Shr t_Error (Sandwich.Error.Code.t_ProtoBasedErrorCode & string)
-
-/// Appends an [`Error`] into the chain, using the `>>` operator.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_16:Core.Ops.Bit.t_Shr t_Error
-  (Sandwich.Error.Code.t_ProtoBasedErrorCode & Alloc.String.t_String)
-
-/// Appends an [`Error`] into the chain, using the `>>` operator.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_17:Core.Ops.Bit.t_Shr t_Error Sandwich.Error.Code.t_ErrorCode
-
-/// Implements operator>> between two [`ErrorCode`] to produce
-/// an [`Error`].
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_22:Core.Ops.Bit.t_Shr Sandwich.Error.Code.t_ErrorCode Sandwich.Error.Code.t_ErrorCode
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i1:
+          Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i2:
+          Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode v_ErrorEnum)
+    : Core.Ops.Bit.t_Shr t_Error v_ErrorEnum =
+  {
+    f_Output = t_Error;
+    f_shr_pre = (fun (self: t_Error) (e: v_ErrorEnum) -> true);
+    f_shr_post = (fun (self: t_Error) (e: v_ErrorEnum) (out: t_Error) -> true);
+    f_shr
+    =
+    fun (self: t_Error) (e: v_ErrorEnum) ->
+      let n:t_Error = Error self._0 <: t_Error in
+      let n:t_Error =
+        {
+          n with
+          _0
+          =
+          Alloc.Vec.impl_1__push #Sandwich.Error.Code.t_ErrorCode
+            #Alloc.Alloc.t_Global
+            n._0
+            (Core.Convert.f_from #Sandwich.Error.Code.t_ErrorCode
+                #v_ErrorEnum
+                #FStar.Tactics.Typeclasses.solve
+                e
+              <:
+              Sandwich.Error.Code.t_ErrorCode)
+        }
+        <:
+        t_Error
+      in
+      n
+  }

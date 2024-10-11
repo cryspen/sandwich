@@ -16,25 +16,6 @@ let t_Mode_cast_to_repr (x: t_Mode) =
   | Mode_Client  -> isz 0
   | Mode_Server  -> isz 1
 
-let impl_1__new_tunnel
-      (self: t_Context)
-      (io: Sandwich.Tunnel.Io.t_BoxedIO)
-      (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
-     =
-  match self with
-  | (Context_OpenSSL3 c: t_Context) ->
-    match Sandwich.Implementation.Openssl3.Tunnel.Context.impl_5__new_tunnel c io configuration with
-    | Core.Result.Result_Ok hoist4 ->
-      Core.Result.Result_Ok (Sandwich.Tunnel.Tunnel_OpenSSL3 hoist4 <: Sandwich.Tunnel.t_Tunnel)
-      <:
-      Core.Result.t_Result Sandwich.Tunnel.t_Tunnel
-        (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
-    | Core.Result.Result_Err err ->
-      Core.Result.Result_Err err
-      <:
-      Core.Result.t_Result Sandwich.Tunnel.t_Tunnel
-        (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
-
 let impl_1__try_from
       (context: Sandwich.t_Context)
       (configuration: Sandwich_api_proto.Configuration.t_Configuration)
@@ -125,3 +106,22 @@ let impl_1__try_from
           Sandwich.Error.t_Error)
   | Core.Result.Result_Err err ->
     Core.Result.Result_Err err <: Core.Result.t_Result t_Context Sandwich.Error.t_Error
+
+let impl_1__new_tunnel
+      (self: t_Context)
+      (io: Sandwich.Tunnel.Io.t_BoxedIO)
+      (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
+     =
+  match self with
+  | (Context_OpenSSL3 c: t_Context) ->
+    match Sandwich.Implementation.Openssl3.Tunnel.Context.impl_5__new_tunnel c io configuration with
+    | Core.Result.Result_Ok hoist32 ->
+      Core.Result.Result_Ok (Sandwich.Tunnel.Tunnel_OpenSSL3 hoist32 <: Sandwich.Tunnel.t_Tunnel)
+      <:
+      Core.Result.t_Result Sandwich.Tunnel.t_Tunnel
+        (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
+    | Core.Result.Result_Err err ->
+      Core.Result.Result_Err err
+      <:
+      Core.Result.t_Result Sandwich.Tunnel.t_Tunnel
+        (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
