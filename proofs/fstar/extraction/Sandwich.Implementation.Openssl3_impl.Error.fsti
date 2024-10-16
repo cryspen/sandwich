@@ -145,6 +145,61 @@ type t_ErrorLibrary =
   | ErrorLibrary_Http : t_ErrorLibrary
   | ErrorLibrary_User : t_ErrorLibrary
 
+/// An OpenSSL error.
+type t_Error = {
+  f_library:t_ErrorLibrary;
+  f_reason:i32
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl: Core.Fmt.t_Debug t_Error =
+  {
+    f_fmt_pre = (fun (self: t_Error) (f: Core.Fmt.t_Formatter) -> true);
+    f_fmt_post
+    =
+    (fun
+        (self: t_Error)
+        (f: Core.Fmt.t_Formatter)
+        (out1: (Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error))
+        ->
+        true);
+    f_fmt
+    =
+    fun (self: t_Error) (f: Core.Fmt.t_Formatter) ->
+      let tmp0, out:(Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
+        Core.Fmt.impl_9__write_fmt f
+          (Core.Fmt.impl_2__new_v1 (sz 3)
+              (sz 2)
+              (let list = ["OpenSSL3Error(lib="; ", reason="; ")"] in
+                FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 3);
+                Rust_primitives.Hax.array_of_list 3 list)
+              (let list =
+                  [
+                    Core.Fmt.Rt.impl_1__new_debug #t_ErrorLibrary self.f_library
+                    <:
+                    Core.Fmt.Rt.t_Argument;
+                    Core.Fmt.Rt.impl_1__new_display #i32 self.f_reason <: Core.Fmt.Rt.t_Argument
+                  ]
+                in
+                FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
+                Rust_primitives.Hax.array_of_list 2 list)
+            <:
+            Core.Fmt.t_Arguments)
+      in
+      let f:Core.Fmt.t_Formatter = tmp0 in
+      let hax_temp_output:Core.Result.t_Result Prims.unit Core.Fmt.t_Error = out in
+      f, hax_temp_output
+      <:
+      (Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error)
+  }
+
+/// Returns the library where the error has occurred.
+val impl__Error__library (self: t_Error)
+    : Prims.Pure t_ErrorLibrary Prims.l_True (fun _ -> Prims.l_True)
+
+/// Returns the reason of the error.
+val impl__Error__reason (self: t_Error) : Prims.Pure u32 Prims.l_True (fun _ -> Prims.l_True)
+
 let discriminant_ErrorLibrary_X509v3: isize = cast (Openssl3.v_ERR_LIB_X509V3 <: u32) <: isize
 
 val t_ErrorLibrary_cast_to_repr (x: t_ErrorLibrary)
@@ -400,6 +455,87 @@ let impl_4: Core.Convert.t_TryFrom t_ErrorLibrary i32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_1: Core.Convert.t_From t_Error u64 =
+  {
+    f_from_pre = (fun (err: u64) -> true);
+    f_from_post = (fun (err: u64) (out: t_Error) -> true);
+    f_from
+    =
+    fun (err: u64) ->
+      {
+        f_library
+        =
+        Core.Result.impl__unwrap_or #t_ErrorLibrary
+          #Prims.unit
+          (Core.Convert.f_try_into #i32
+              #t_ErrorLibrary
+              #FStar.Tactics.Typeclasses.solve
+              (Sandwich.Implementation.Openssl3_impl.Support.err_get_lib err <: i32)
+            <:
+            Core.Result.t_Result t_ErrorLibrary Prims.unit)
+          (ErrorLibrary_None <: t_ErrorLibrary);
+        f_reason = Sandwich.Implementation.Openssl3_impl.Support.err_get_reason err
+      }
+      <:
+      t_Error
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_3: Core.Convert.t_From Sandwich_proto.Tunnel.t_RecordError t_SslError =
+  {
+    f_from_pre = (fun (ssl_error: t_SslError) -> true);
+    f_from_post = (fun (ssl_error: t_SslError) (out: Sandwich_proto.Tunnel.t_RecordError) -> true);
+    f_from
+    =
+    fun (ssl_error: t_SslError) ->
+      match ssl_error with
+      | SslError_WantRead  ->
+        Sandwich_proto.Tunnel.RecordError_RECORDERROR_WANT_READ
+        <:
+        Sandwich_proto.Tunnel.t_RecordError
+      | SslError_WantWrite  ->
+        Sandwich_proto.Tunnel.RecordError_RECORDERROR_WANT_WRITE
+        <:
+        Sandwich_proto.Tunnel.t_RecordError
+      | SslError_ZeroReturn  ->
+        Sandwich_proto.Tunnel.RecordError_RECORDERROR_CLOSED <: Sandwich_proto.Tunnel.t_RecordError
+      | SslError_Syscall  ->
+        (match
+            Std.Io.Error.impl__Error__raw_os_error (Std.Io.Error.impl__Error__last_os_error ()
+                <:
+                Std.Io.Error.t_Error)
+          with
+          | Core.Option.Option_Some 32l ->
+            Sandwich_proto.Tunnel.RecordError_RECORDERROR_CLOSED
+            <:
+            Sandwich_proto.Tunnel.t_RecordError
+          | _ ->
+            Sandwich_proto.Tunnel.RecordError_RECORDERROR_UNKNOWN
+            <:
+            Sandwich_proto.Tunnel.t_RecordError)
+      | SslError_Ssl  ->
+        let error:t_Error =
+          Core.Convert.f_from #t_Error
+            #u64
+            #FStar.Tactics.Typeclasses.solve
+            (Sandwich.Implementation.Openssl3_impl.Support.peek_last_error () <: u64)
+        in
+        if
+          (impl__Error__library error <: t_ErrorLibrary) =. (ErrorLibrary_Ssl <: t_ErrorLibrary) &&
+          (impl__Error__reason error <: u32) =. Openssl3.v_SSL_R_PROTOCOL_IS_SHUTDOWN
+        then
+          Sandwich_proto.Tunnel.RecordError_RECORDERROR_CLOSED
+          <:
+          Sandwich_proto.Tunnel.t_RecordError
+        else
+          Sandwich_proto.Tunnel.RecordError_RECORDERROR_UNKNOWN
+          <:
+          Sandwich_proto.Tunnel.t_RecordError
+      | _ ->
+        Sandwich_proto.Tunnel.RecordError_RECORDERROR_UNKNOWN <: Sandwich_proto.Tunnel.t_RecordError
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_11: Core.Convert.t_TryFrom t_SslError i32 =
   {
     f_Error = Prims.unit;
@@ -462,140 +598,4 @@ let impl_11: Core.Convert.t_TryFrom t_SslError i32 =
         <:
         Core.Result.t_Result t_SslError Prims.unit
       | _ -> Core.Result.Result_Err (() <: Prims.unit) <: Core.Result.t_Result t_SslError Prims.unit
-  }
-
-/// An OpenSSL error.
-type t_Error = {
-  f_library:t_ErrorLibrary;
-  f_reason:i32
-}
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl: Core.Fmt.t_Debug t_Error =
-  {
-    f_fmt_pre = (fun (self: t_Error) (f: Core.Fmt.t_Formatter) -> true);
-    f_fmt_post
-    =
-    (fun
-        (self: t_Error)
-        (f: Core.Fmt.t_Formatter)
-        (out1: (Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error))
-        ->
-        true);
-    f_fmt
-    =
-    fun (self: t_Error) (f: Core.Fmt.t_Formatter) ->
-      let tmp0, out:(Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
-        Core.Fmt.impl_7__write_fmt f
-          (Core.Fmt.impl_2__new_v1 (sz 3)
-              (sz 2)
-              (let list = ["OpenSSL3Error(lib="; ", reason="; ")"] in
-                FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 3);
-                Rust_primitives.Hax.array_of_list 3 list)
-              (let list =
-                  [
-                    Core.Fmt.Rt.impl_1__new_debug #t_ErrorLibrary self.f_library
-                    <:
-                    Core.Fmt.Rt.t_Argument;
-                    Core.Fmt.Rt.impl_1__new_display #i32 self.f_reason <: Core.Fmt.Rt.t_Argument
-                  ]
-                in
-                FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
-                Rust_primitives.Hax.array_of_list 2 list)
-            <:
-            Core.Fmt.t_Arguments)
-      in
-      let f:Core.Fmt.t_Formatter = tmp0 in
-      let hax_temp_output:Core.Result.t_Result Prims.unit Core.Fmt.t_Error = out in
-      f, hax_temp_output
-      <:
-      (Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error)
-  }
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1: Core.Convert.t_From t_Error u64 =
-  {
-    f_from_pre = (fun (err: u64) -> true);
-    f_from_post = (fun (err: u64) (out: t_Error) -> true);
-    f_from
-    =
-    fun (err: u64) ->
-      {
-        f_library
-        =
-        Core.Result.impl__unwrap_or #t_ErrorLibrary
-          #Prims.unit
-          (Core.Convert.f_try_into #i32
-              #t_ErrorLibrary
-              #FStar.Tactics.Typeclasses.solve
-              (Sandwich.Implementation.Openssl3_impl.Support.err_get_lib err <: i32)
-            <:
-            Core.Result.t_Result t_ErrorLibrary Prims.unit)
-          (ErrorLibrary_None <: t_ErrorLibrary);
-        f_reason = Sandwich.Implementation.Openssl3_impl.Support.err_get_reason err
-      }
-      <:
-      t_Error
-  }
-
-/// Returns the library where the error has occurred.
-val impl__Error__library (self: t_Error)
-    : Prims.Pure t_ErrorLibrary Prims.l_True (fun _ -> Prims.l_True)
-
-/// Returns the reason of the error.
-val impl__Error__reason (self: t_Error) : Prims.Pure u32 Prims.l_True (fun _ -> Prims.l_True)
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_3: Core.Convert.t_From Sandwich_proto.Tunnel.t_RecordError t_SslError =
-  {
-    f_from_pre = (fun (ssl_error: t_SslError) -> true);
-    f_from_post = (fun (ssl_error: t_SslError) (out: Sandwich_proto.Tunnel.t_RecordError) -> true);
-    f_from
-    =
-    fun (ssl_error: t_SslError) ->
-      match ssl_error with
-      | SslError_WantRead  ->
-        Sandwich_proto.Tunnel.RecordError_RECORDERROR_WANT_READ
-        <:
-        Sandwich_proto.Tunnel.t_RecordError
-      | SslError_WantWrite  ->
-        Sandwich_proto.Tunnel.RecordError_RECORDERROR_WANT_WRITE
-        <:
-        Sandwich_proto.Tunnel.t_RecordError
-      | SslError_ZeroReturn  ->
-        Sandwich_proto.Tunnel.RecordError_RECORDERROR_CLOSED <: Sandwich_proto.Tunnel.t_RecordError
-      | SslError_Syscall  ->
-        (match
-            Std.Io.Error.impl__Error__raw_os_error (Std.Io.Error.impl__Error__last_os_error ()
-                <:
-                Std.Io.Error.t_Error)
-          with
-          | Core.Option.Option_Some 32l ->
-            Sandwich_proto.Tunnel.RecordError_RECORDERROR_CLOSED
-            <:
-            Sandwich_proto.Tunnel.t_RecordError
-          | _ ->
-            Sandwich_proto.Tunnel.RecordError_RECORDERROR_UNKNOWN
-            <:
-            Sandwich_proto.Tunnel.t_RecordError)
-      | SslError_Ssl  ->
-        let error:t_Error =
-          Core.Convert.f_from #t_Error
-            #u64
-            #FStar.Tactics.Typeclasses.solve
-            (Sandwich.Implementation.Openssl3_impl.Support.peek_last_error () <: u64)
-        in
-        if
-          (impl__Error__library error <: t_ErrorLibrary) =. (ErrorLibrary_Ssl <: t_ErrorLibrary) &&
-          (impl__Error__reason error <: u32) =. Openssl3.v_SSL_R_PROTOCOL_IS_SHUTDOWN
-        then
-          Sandwich_proto.Tunnel.RecordError_RECORDERROR_CLOSED
-          <:
-          Sandwich_proto.Tunnel.t_RecordError
-        else
-          Sandwich_proto.Tunnel.RecordError_RECORDERROR_UNKNOWN
-          <:
-          Sandwich_proto.Tunnel.t_RecordError
-      | _ ->
-        Sandwich_proto.Tunnel.RecordError_RECORDERROR_UNKNOWN <: Sandwich_proto.Tunnel.t_RecordError
   }

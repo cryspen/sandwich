@@ -5,8 +5,8 @@ open FStar.Mul
 
 /// Types that can be converted to a [`pb::IOError`].
 class t_IntoIOError (v_Self: Type0) = {
-  f_into_io_error_pre:v_Self -> bool;
-  f_into_io_error_post:v_Self -> Sandwich_proto.Io.t_IOError -> bool;
+  f_into_io_error_pre:v_Self -> Type0;
+  f_into_io_error_post:v_Self -> Sandwich_proto.Io.t_IOError -> Type0;
   f_into_io_error:x0: v_Self
     -> Prims.Pure Sandwich_proto.Io.t_IOError
         (f_into_io_error_pre x0)

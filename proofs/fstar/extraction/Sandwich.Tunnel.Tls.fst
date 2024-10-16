@@ -16,6 +16,16 @@ let t_TlsVersion_cast_to_repr (x: t_TlsVersion) =
   | TlsVersion_Tls12  -> isz 0
   | TlsVersion_Tls13  -> isz 1
 
+let impl__TunnelSecurityRequirements__new (_: Prims.unit) =
+  { f_allow_expired_certificate = false } <: t_TunnelSecurityRequirements
+
+let impl__TunnelSecurityRequirements__openssl3_assess_x509_store_error
+      (self: t_TunnelSecurityRequirements)
+      (error: i32)
+     =
+  self.f_allow_expired_certificate &&
+  error =. (cast (Openssl3.v_X509_V_ERR_CERT_HAS_EXPIRED <: u32) <: i32)
+
 let t_VerifyMode_cast_to_repr (x: t_VerifyMode) =
   match x with
   | VerifyMode_None  -> isz 0
@@ -90,13 +100,3 @@ let get_tls13_config (cfg: Sandwich_api_proto.Configuration.t_Configuration) =
             Rust_primitives.Hax.t_Never))
   | Core.Option.Option_None  ->
     Core.Option.Option_None <: Core.Option.t_Option Sandwich_api_proto.Tls.t_TLSv13Config
-
-let impl__TunnelSecurityRequirements__new (_: Prims.unit) =
-  { f_allow_expired_certificate = false } <: t_TunnelSecurityRequirements
-
-let impl__TunnelSecurityRequirements__openssl3_assess_x509_store_error
-      (self: t_TunnelSecurityRequirements)
-      (error: i32)
-     =
-  self.f_allow_expired_certificate &&
-  error =. (cast (Openssl3.v_X509_V_ERR_CERT_HAS_EXPIRED <: u32) <: i32)

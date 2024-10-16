@@ -3,6 +3,10 @@ module Sandwich.Implementation.Openssl3_impl.Error
 open Core
 open FStar.Mul
 
+let impl__Error__library (self: t_Error) = self.f_library
+
+let impl__Error__reason (self: t_Error) = cast (self.f_reason <: i32) <: u32
+
 let t_ErrorLibrary_cast_to_repr (x: t_ErrorLibrary) =
   match x with
   | ErrorLibrary_None  -> discriminant_ErrorLibrary_None
@@ -67,7 +71,3 @@ let t_SslError_cast_to_repr (x: t_SslError) =
   | SslError_WantAsyncJob  -> discriminant_SslError_WantAsyncJob
   | SslError_WantClientHelloCb  -> discriminant_SslError_WantClientHelloCb
   | SslError_WantRetryVerify  -> discriminant_SslError_WantRetryVerify
-
-let impl__Error__library (self: t_Error) = self.f_library
-
-let impl__Error__reason (self: t_Error) = cast (self.f_reason <: i32) <: u32
