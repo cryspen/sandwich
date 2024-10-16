@@ -491,7 +491,7 @@ let set_alpn_protocols
                   (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error) Prims.unit
             in
             let! _:Prims.unit =
-              if Core.Str.impl__str__contains #char proto '\000'
+              if Core.Str.impl__str__contains #char proto '\x00'
               then
                 let! hoist4:Rust_primitives.Hax.t_Never =
                   Core.Ops.Control_flow.ControlFlow_Break
