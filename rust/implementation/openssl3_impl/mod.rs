@@ -8,6 +8,7 @@ extern crate openssl3;
 use sandwich_proto as pb;
 
 use std::ffi::c_char;
+use std::ffi::CStr;
 use std::ptr::NonNull;
 
 use crate::support::Pimpl;
@@ -23,16 +24,10 @@ pub(crate) mod certificate_chain;
 pub(crate) use certificate_chain::CertificateChainBuilder;
 
 /// The default provider name.
-const DEFAULT_PROVIDER_NAME: &[u8; 8] = b"default\x00";
-
-/// Pointer to the default provider name.
-const DEFAULT_PROVIDER_NAME_PTR: *const c_char = (DEFAULT_PROVIDER_NAME as *const u8).cast();
+const DEFAULT_PROVIDER_NAME: &'static CStr = c"default";
 
 /// The oqs-provider provider name.
-const OQS_PROVIDER_NAME: &[u8; 12] = b"oqsprovider\x00";
-
-/// Pointer to the oqs-provider provider name.
-const OQS_PROVIDER_NAME_PTR: *const c_char = (OQS_PROVIDER_NAME as *const u8).cast();
+const OQS_PROVIDER_NAME: &'static CStr = c"oqsprovider";
 
 /// A wrapper around an `OSSL_PROVIDER`.
 struct Provider<'a>(Pimpl<'a, openssl3::OSSL_PROVIDER>);
@@ -46,7 +41,7 @@ impl std::fmt::Debug for Provider<'_> {
 /// A convenient builder for providers.
 struct ProviderBuilder {
     /// Name of the provider, C format.
-    name: Option<*const c_char>,
+    name: Option<&'static CStr>,
 
     /// Library context.
     lib_ctx: Option<NonNull<openssl3::OSSL_LIB_CTX>>,
@@ -68,7 +63,7 @@ impl ProviderBuilder {
     }
 
     /// Sets the name.
-    fn name(self, name: *const c_char) -> Self {
+    fn name(self, name: &'static CStr) -> Self {
         Self {
             name: Some(name),
             ..self
@@ -100,7 +95,7 @@ impl ProviderBuilder {
                 .into());
         };
         let provider = unsafe {
-            Pimpl::new(openssl3::OSSL_PROVIDER_load(lib_ctx.as_ptr(), name), |x| {
+            Pimpl::new(openssl3::OSSL_PROVIDER_load(lib_ctx.as_ptr(), name.as_ptr()), |x| {
                 openssl3::OSSL_PROVIDER_unload(x);
             })
         }
@@ -141,7 +136,7 @@ impl<'a> LibCtx<'a> {
         ))?;
 
         let default_provider = ProviderBuilder::new()
-            .name(DEFAULT_PROVIDER_NAME_PTR)
+            .name(DEFAULT_PROVIDER_NAME)
             .lib_ctx(libctx.as_nonnull())
             .build()?;
 
@@ -152,7 +147,7 @@ impl<'a> LibCtx<'a> {
         if unsafe {
             openssl3::OSSL_PROVIDER_add_builtin(
                 libctx.as_nonnull().as_ptr(),
-                OQS_PROVIDER_NAME_PTR,
+                OQS_PROVIDER_NAME.as_ptr(),
                 Some(openssl3::oqs_provider_init),
             )
         } != 1
@@ -164,7 +159,7 @@ impl<'a> LibCtx<'a> {
                 .into());
         }
         let oqs_provider = ProviderBuilder::new()
-            .name(OQS_PROVIDER_NAME_PTR)
+            .name(OQS_PROVIDER_NAME)
             .lib_ctx(libctx.as_nonnull())
             .build()?;
 
@@ -180,7 +175,7 @@ impl<'a> LibCtx<'a> {
                     .into());
             }
             let name = unsafe { std::ffi::CStr::from_ptr(name) };
-            if name.to_str() != Ok("oqsprovider") {
+            if name != OQS_PROVIDER_NAME {
                 return Err((
                     pb::SystemError::SYSTEMERROR_MEMORY,
                     format!("provider's name does not match 'oqsprovider': got {name:?}"),

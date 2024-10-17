@@ -3,15 +3,17 @@ module Sandwich.Implementation.Openssl3_impl
 open Core
 open FStar.Mul
 
+/// A convenient builder for providers.
+/// A convenient builder for providers.
+/// A convenient builder for providers.
 /// Sets the library context.
+/// Sets the name.
 /// Initializes a builder.
 /// Support for OpenSSL 3 errors.
 /// OpenSSL 3 support module.
 /// Tunnel implementation using OpenSSL 3 and oqs-provider.
 /// The default provider name.
-/// Pointer to the default provider name.
 /// The oqs-provider provider name.
-/// Pointer to the oqs-provider provider name.
 /// A wrapper around an `OSSL_PROVIDER`.
 /// A wrapper around an `OSSL_PROVIDER`.
 /// An `OSSL_LIB_CTX` object wrapped in a `Pimpl`.
