@@ -14,6 +14,7 @@ use std::ptr::NonNull;
 /// A deleter.
 pub(crate) type Deleter<T> = fn(*mut T);
 
+#[hax_lib::opaque]
 /// Wrapper around an raw pointer.
 pub(crate) struct Pimpl<'a, T> {
     /// The type to own.

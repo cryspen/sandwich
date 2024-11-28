@@ -40,6 +40,7 @@ where
     }
 }
 
+#[hax_lib::opaque]
 /// Instantiates an [`Error`] from an enum value and a string.
 impl<'s, ErrorEnum: code::AllowedProtoBasedErrorCodeEnum, S> From<(ErrorEnum, &'s S)> for Error
 where
@@ -51,6 +52,7 @@ where
     }
 }
 
+#[hax_lib::opaque]
 /// Instantiates an [`Error`] from an enum value and a string.
 impl<'s, ErrorEnum: code::AllowedProtoBasedErrorCodeEnum> From<(ErrorEnum, &'s str)> for Error
 where
@@ -61,6 +63,7 @@ where
     }
 }
 
+#[hax_lib::opaque]
 /// Instantiates an [`Error`] from an enum value and a string.
 impl<ErrorEnum: code::AllowedProtoBasedErrorCodeEnum> From<(ErrorEnum, String)> for Error
 where
@@ -78,6 +81,7 @@ impl From<ProtoBasedErrorCode> for Error {
     }
 }
 
+#[hax_lib::opaque]
 /// Instantiates an [`Error`] from an enum value and a string.
 impl<S> From<(ProtoBasedErrorCode, &S)> for Error
 where
@@ -88,6 +92,7 @@ where
     }
 }
 
+#[hax_lib::opaque]
 /// Instantiates an [`Error`] from an enum value and a string.
 impl From<(ProtoBasedErrorCode, &str)> for Error {
     fn from((e, s): (ProtoBasedErrorCode, &str)) -> Self {
@@ -95,6 +100,7 @@ impl From<(ProtoBasedErrorCode, &str)> for Error {
     }
 }
 
+#[hax_lib::opaque]
 /// Instantiates an [`Error`] from an enum value and a string.
 impl From<(ProtoBasedErrorCode, String)> for Error {
     fn from((e, s): (ProtoBasedErrorCode, String)) -> Self {

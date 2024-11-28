@@ -669,6 +669,7 @@ fn get_verify_mode_from_mode_and_x509_verifier(
 pub(crate) type PinnedTunnel<'a> = Pin<Box<Tunnel<'a>>>;
 
 impl<'a> Context<'a> {
+    #[hax_lib::opaque]
     /// Instantiates a new [`Context`] from a [protobuf configuration](`pb_api::Configuration`)
     /// and a top-level context.
     pub(crate) fn try_from<'b>(
@@ -717,6 +718,7 @@ impl<'a> Context<'a> {
         })
     }
 
+    #[hax_lib::opaque]
     /// Instantiates a new SSL object.
     pub(crate) fn new_ssl<'b>(&self) -> Result<Pimpl<'b, NativeSsl>>
     where

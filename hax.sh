@@ -31,7 +31,7 @@ function extract_interfaces() {
         CONTINUE=n
         for PACKAGE in openssl3 sandwich-api-proto sandwich-proto sandwich; do
             rm /tmp/idents.json
-            cargo hax -C -p "$PACKAGE" \; into -i "-** $(echo "$FLAGS" | to_flags)-sandwich::tunnel::tls::**" --make-impl-interfaces-opaque fstar --interfaces '+!**'
+            cargo hax -C -p "$PACKAGE" \; into -i "-** $(echo "$FLAGS" | to_flags)-sandwich::tunnel::tls::**" fstar --interfaces '+!**'
             PREV_FLAGS=$(echo "$FLAGS")
             FLAGS=$(
                 {

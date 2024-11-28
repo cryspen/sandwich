@@ -237,6 +237,7 @@ unsafe extern "C" fn bio_destroy(_bio: *mut NativeBio) -> c_int {
     1
 }
 
+#[hax_lib::opaque]
 /// Static BIO method.
 pub(super) const BIO_METH_OBJECT: openssl3::bio_method_st = openssl3::bio_method_st {
     type_: openssl3::BIO_TYPE_SOCKET as i32,
@@ -255,6 +256,7 @@ pub(super) const BIO_METH_OBJECT: openssl3::bio_method_st = openssl3::bio_method
     bsendmmsg: None,
 };
 
+#[hax_lib::opaque]
 pub(super) const BIO_METHOD: NonNull<openssl3::BIO_METHOD> =
     unsafe { NonNull::new_unchecked((&BIO_METH_OBJECT as *const openssl3::BIO_METHOD).cast_mut()) };
 

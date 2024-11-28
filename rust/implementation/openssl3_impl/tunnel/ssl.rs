@@ -39,6 +39,7 @@ impl From<NonNull<NativeSsl>> for Ssl {
     }
 }
 
+#[hax_lib::opaque]
 impl Ssl {
     /// Returns a pointer to some extra data from a SSL object.
     fn get_extra_data_ptr<T>(&self, extra_data_index: impl Into<c_int>) -> Option<NonNull<T>> {
@@ -475,6 +476,7 @@ impl<'a> TunnelBuilder<'a> {
     }
 }
 
+#[hax_lib::opaque]
 impl<'a> Tunnel<'a> {
     /// Attaches the security requirements structure to the `SSL` object
     /// through `ex_data`.

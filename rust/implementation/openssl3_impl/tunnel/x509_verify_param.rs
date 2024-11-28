@@ -23,6 +23,7 @@ pub(super) struct X509VerifyParam<'a>(
     PhantomData<&'a NativeX509VerifyParam>,
 );
 
+#[hax_lib::opaque]
 /// Instantiates an [`X509VerifyParam`] from an SSL context.
 impl<'a> TryFrom<&Pimpl<'a, NativeSslCtx>> for X509VerifyParam<'a> {
     type Error = crate::Error;
@@ -38,6 +39,7 @@ impl<'a> TryFrom<&Pimpl<'a, NativeSslCtx>> for X509VerifyParam<'a> {
     }
 }
 
+#[hax_lib::opaque]
 /// Instantiates an [`X509VerifyParam`] from an SSL object.
 impl<'a> TryFrom<NonNull<NativeSsl>> for X509VerifyParam<'a> {
     type Error = crate::Error;

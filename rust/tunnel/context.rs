@@ -13,6 +13,7 @@
 //! Any objects derived from a [`Context`] will use its configuration.
 
 use pb::ConfigurationError;
+use pb_api::configuration;
 
 #[cfg(any(feature = "openssl1_1_1", feature = "boringssl"))]
 use crate::implementation::ossl;
@@ -165,6 +166,10 @@ impl<'a> Context<'a> {
             Self::OpenSSL3(c) => Ok(Tunnel::OpenSSL3(c.new_tunnel(io, configuration)?)),
         }
     }
+}
+
+fn new_tunnel<'a>(context : &'a Context, io: BoxedIO, configuration: pb_api::TunnelConfiguration) -> TunnelResult<'a>{
+  context.new_tunnel(io, configuration)
 }
 
 #[cfg(test)]

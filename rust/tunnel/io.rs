@@ -14,11 +14,11 @@ pub trait IO: crate::IO {
     ///
     /// It is guaranteed that the state of the tunnel will not change between
     /// two calls to this callback.
-    fn set_state(&mut self, _state: pb::State) {}
+    fn set_state(&mut self, _state: pb::State);
 }
 
 /// BoxedIO
-#[hax_lib::opaque_type]
+#[hax_lib::opaque]
 pub struct BoxedIO(pub Box<dyn IO>);
 
 impl IO for BoxedIO {
