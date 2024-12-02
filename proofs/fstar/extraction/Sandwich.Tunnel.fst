@@ -3,6 +3,6 @@ module Sandwich.Tunnel
 open Core
 open FStar.Mul
 
-include Sandwich.Tunnel.Rec_bundle_473346641 {t_Tunnel70284935 as t_Tunnel}
+include Sandwich.Tunnel.Rec_bundle_818341900 {t_Tunnel70284935 as t_Tunnel}
 
-include Sandwich.Tunnel.Rec_bundle_473346641 {Tunnel70284935_OpenSSL3 as Tunnel_OpenSSL3}
+include Sandwich.Tunnel.Rec_bundle_818341900 {Tunnel70284935_OpenSSL3 as Tunnel_OpenSSL3}

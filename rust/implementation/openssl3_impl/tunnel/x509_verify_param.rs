@@ -62,6 +62,7 @@ impl<'a> TryFrom<&'a Pimpl<'a, NativeSsl>> for X509VerifyParam<'a> {
     }
 }
 
+#[hax_lib::opaque]
 impl<'a> X509VerifyParam<'a> {
     /// Applies the default parameters.
     ///

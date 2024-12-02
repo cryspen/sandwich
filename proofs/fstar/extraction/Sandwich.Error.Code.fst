@@ -17,6 +17,14 @@ class t_AllowedProtoBasedErrorCodeEnum (v_Self: Type0) = {
 
 /// Adds `ErrorEnum` to the list of [`AllowedProtoBasedErrorCodeEnum`] trait.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_41: t_AllowedProtoBasedErrorCodeEnum Sandwich_proto.Errors.t_TLSConfigurationError =
+  {
+    _super_11581440318597584651 = FStar.Tactics.Typeclasses.solve;
+    _super_9442900250278684536 = FStar.Tactics.Typeclasses.solve
+  }
+
+/// Adds `ErrorEnum` to the list of [`AllowedProtoBasedErrorCodeEnum`] trait.
+[@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_131: t_AllowedProtoBasedErrorCodeEnum Sandwich_proto.Errors.t_TunnelError =
   {
     _super_11581440318597584651 = FStar.Tactics.Typeclasses.solve;
@@ -51,6 +59,20 @@ type t_ProtoBasedErrorCode =
 
 /// Implements `[From<sandwich_proto::ErrorEnum>]` for [`ProtoBasedErrorCode`].
 [@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_36: Core.Convert.t_From t_ProtoBasedErrorCode Sandwich_proto.Errors.t_TLSConfigurationError =
+  {
+    f_from_pre = (fun (v: Sandwich_proto.Errors.t_TLSConfigurationError) -> true);
+    f_from_post
+    =
+    (fun (v: Sandwich_proto.Errors.t_TLSConfigurationError) (out: t_ProtoBasedErrorCode) -> true);
+    f_from
+    =
+    fun (v: Sandwich_proto.Errors.t_TLSConfigurationError) ->
+      ProtoBasedErrorCode_TLSConfigurationError v <: t_ProtoBasedErrorCode
+  }
+
+/// Implements `[From<sandwich_proto::ErrorEnum>]` for [`ProtoBasedErrorCode`].
+[@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_126: Core.Convert.t_From t_ProtoBasedErrorCode Sandwich_proto.Errors.t_TunnelError =
   {
     f_from_pre = (fun (v: Sandwich_proto.Errors.t_TunnelError) -> true);
@@ -70,6 +92,61 @@ type t_ErrorCode = {
   f_ec:t_ProtoBasedErrorCode;
   f_msg:Core.Option.t_Option Alloc.String.t_String
 }
+
+/// Implements `[From<sandwich_proto::ErrorEnum>]` for [`ErrorCode`].
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_37: Core.Convert.t_From t_ErrorCode Sandwich_proto.Errors.t_TLSConfigurationError =
+  {
+    f_from_pre = (fun (v: Sandwich_proto.Errors.t_TLSConfigurationError) -> true);
+    f_from_post
+    =
+    (fun (v: Sandwich_proto.Errors.t_TLSConfigurationError) (out: t_ErrorCode) -> true);
+    f_from
+    =
+    fun (v: Sandwich_proto.Errors.t_TLSConfigurationError) ->
+      {
+        f_ec
+        =
+        Core.Convert.f_from #t_ProtoBasedErrorCode
+          #Sandwich_proto.Errors.t_TLSConfigurationError
+          #FStar.Tactics.Typeclasses.solve
+          v;
+        f_msg = Core.Option.Option_None <: Core.Option.t_Option Alloc.String.t_String
+      }
+      <:
+      t_ErrorCode
+  }
+
+/// Instantiates an [`ErrorCode`] from an error enum and a string.
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_39: Core.Convert.t_From t_ErrorCode
+  (Sandwich_proto.Errors.t_TLSConfigurationError & string) =
+  {
+    f_from_pre = (fun (v, s: (Sandwich_proto.Errors.t_TLSConfigurationError & string)) -> true);
+    f_from_post
+    =
+    (fun (v, s: (Sandwich_proto.Errors.t_TLSConfigurationError & string)) (out: t_ErrorCode) -> true
+    );
+    f_from
+    =
+    fun (v, s: (Sandwich_proto.Errors.t_TLSConfigurationError & string)) ->
+      {
+        f_ec
+        =
+        Core.Convert.f_from #t_ProtoBasedErrorCode
+          #Sandwich_proto.Errors.t_TLSConfigurationError
+          #FStar.Tactics.Typeclasses.solve
+          v;
+        f_msg
+        =
+        Core.Option.Option_Some
+        (Core.Convert.f_into #string #Alloc.String.t_String #FStar.Tactics.Typeclasses.solve s)
+        <:
+        Core.Option.t_Option Alloc.String.t_String
+      }
+      <:
+      t_ErrorCode
+  }
 
 /// Instantiates an [`ErrorCode`] from an error enum and a string.
 [@@ FStar.Tactics.Typeclasses.tcinstance]

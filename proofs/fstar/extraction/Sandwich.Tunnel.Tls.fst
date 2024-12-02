@@ -16,6 +16,25 @@ let _ =
 /// `TLSOptions` configuration message.
 type t_TunnelSecurityRequirements = { f_allow_expired_certificate:bool }
 
+/// Instantiates a [`TunnelSecurityRequirements`].
+let impl__TunnelSecurityRequirements__new (_: Prims.unit) : t_TunnelSecurityRequirements =
+  { f_allow_expired_certificate = false } <: t_TunnelSecurityRequirements
+
+/// Implements [`Default`] for [`TunnelSecurityRequirements`].
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_1: Core.Default.t_Default t_TunnelSecurityRequirements =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: t_TunnelSecurityRequirements) -> true);
+    f_default = fun (_: Prims.unit) -> impl__TunnelSecurityRequirements__new ()
+  }
+
+/// Verify mode.
+type t_VerifyMode =
+  | VerifyMode_None : t_VerifyMode
+  | VerifyMode_Peer : t_VerifyMode
+  | VerifyMode_Mutual : t_VerifyMode
+
 /// A set of security requirements that can be updated with new requirements
 /// described in a given verifier `V`.
 /// A sanitizer check for security requirements described in a given verifier

@@ -31,6 +31,7 @@ impl Borrow<tls::TunnelSecurityRequirements> for Context<'_> {
     }
 }
 
+#[hax_lib::opaque]
 /// Instantiates a new SSL context (`SSL_CTX`).
 fn new_ssl_context<'a, 'b>(ctx: &'a crate::Context, mode: Mode) -> Result<Pimpl<'b, NativeSslCtx>>
 where
@@ -78,6 +79,7 @@ impl std::fmt::Debug for SslContext {
     }
 }
 
+#[hax_lib::opaque]
 impl SslContext {
     /// Disables session caching on a SSL context.
     fn disable_session_cache_mode(&self) {
@@ -668,8 +670,14 @@ fn get_verify_mode_from_mode_and_x509_verifier(
 /// A boxed and pinned tunnel.
 pub(crate) type PinnedTunnel<'a> = Pin<Box<Tunnel<'a>>>;
 
+fn hax_try_from<'a> (
+    ctx: &'a crate::Context,
+    configuration: &pb_api::Configuration,
+) -> Result<Context<'a>> {
+    Context::try_from(ctx, configuration)
+}
+
 impl<'a> Context<'a> {
-    #[hax_lib::opaque]
     /// Instantiates a new [`Context`] from a [protobuf configuration](`pb_api::Configuration`)
     /// and a top-level context.
     pub(crate) fn try_from<'b>(

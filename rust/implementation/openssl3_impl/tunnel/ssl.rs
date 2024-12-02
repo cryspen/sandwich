@@ -39,8 +39,8 @@ impl From<NonNull<NativeSsl>> for Ssl {
     }
 }
 
-#[hax_lib::opaque]
 impl Ssl {
+    #[hax_lib::opaque]
     /// Returns a pointer to some extra data from a SSL object.
     fn get_extra_data_ptr<T>(&self, extra_data_index: impl Into<c_int>) -> Option<NonNull<T>> {
         NonNull::new(
@@ -49,12 +49,14 @@ impl Ssl {
         )
     }
 
+    #[hax_lib::opaque]
     /// Returns a reference to some extra data from a SSL object.
     fn get_extra_data_ref<'a, T>(&self, extra_data_index: impl Into<c_int>) -> Option<&'a T> {
         self.get_extra_data_ptr::<T>(extra_data_index)
             .map(|ptr| unsafe { ptr.as_ref() })
     }
 
+    #[hax_lib::opaque]
     /// Returns the last recorded error.
     fn get_last_recorded_error(
         &self,
@@ -64,6 +66,7 @@ impl Ssl {
         SslError::try_from(err).map_err(|_| err)
     }
 
+    #[hax_lib::opaque]
     /// Returns the tunnel security requirements from a SSL object.
     pub(super) fn get_tunnel_security_requirements<'a>(
         &self,
@@ -94,6 +97,7 @@ impl Ssl {
         Ok(())
     }
 
+    #[hax_lib::opaque]
     /// Sets the server name indication (SNI).
     fn set_server_name_indication(&self, sni: impl AsRef<str>) -> Result<()> {
         let sni = sni.as_ref();
@@ -126,6 +130,7 @@ impl Ssl {
         }
     }
 
+    #[hax_lib::opaque]
     /// Creates a new Sandwich BIO and attach it to the SSL object.
     fn create_and_attach_bio(&self) -> Result<()> {
         let bio = crate::ossl3::new_BIO(BIO_METHOD)?;
@@ -138,11 +143,13 @@ impl Ssl {
         Ok(())
     }
 
+    #[hax_lib::opaque]
     /// Returns a pointer to the BIO currently attached to the SSL object.
     fn get_attached_bio(&self) -> Option<NonNull<NativeBio>> {
         NonNull::new(unsafe { openssl3::SSL_get_rbio(self.0.as_ptr()) })
     }
 
+    #[hax_lib::opaque]
     /// Returns the state of the SSL tunnel.
     fn get_state(&self) -> pb::HandshakeState {
         if unsafe { openssl3::SSL_get_state(self.0.as_ptr()) }
@@ -154,12 +161,14 @@ impl Ssl {
         }
     }
 
+    #[hax_lib::opaque]
     /// Checks if the tunnel is in a shutdown state.
     fn is_shutdown(&self) -> bool {
         let shutdown_state = unsafe { openssl3::SSL_get_shutdown(self.0.as_ptr()) } as u32;
         (shutdown_state & (openssl3::SSL_SENT_SHUTDOWN | openssl3::SSL_RECEIVED_SHUTDOWN)) != 0
     }
 
+    #[hax_lib::opaque]
     /// Performs the handshake.
     fn do_handshake(&self) -> (Result<pb::HandshakeState>, Option<pb::State>) {
         let handshake_error = unsafe { openssl3::SSL_do_handshake(self.0.as_ptr()) };
@@ -219,6 +228,7 @@ impl Ssl {
         }
     }
 
+    #[hax_lib::opaque]
     /// Reads some data and writes it to a buffer.
     fn read(&self, buffer: &mut [u8]) -> crate::tunnel::RecordResult<usize> {
         let buf_len: i32 = buffer
@@ -234,6 +244,7 @@ impl Ssl {
         Err(self.get_error_from_record_stage(err).into())
     }
 
+    #[hax_lib::opaque]
     /// Write some data.
     fn write(&self, buffer: &[u8]) -> crate::tunnel::RecordResult<usize> {
         let buf_len: i32 = buffer
@@ -248,6 +259,7 @@ impl Ssl {
         Err(self.get_error_from_record_stage(err).into())
     }
 
+    #[hax_lib::opaque]
     /// Returns the error that occurred during the record stage.
     ///
     /// The record stage is the stage when `SSL_read` and `SSL_write`
@@ -262,12 +274,14 @@ impl Ssl {
         ssl_error.into()
     }
 
+    #[hax_lib::opaque]
     /// Closes the tunnel.
     fn close(&self) -> crate::tunnel::RecordResult<()> {
         unsafe { openssl3::SSL_shutdown(self.0.as_ptr()) };
         Ok(())
     }
 
+    #[hax_lib::opaque]
     /// Handles an SSL error of type `SSL_ERROR_SSL`.
     fn handle_ssl_error_ssl(&self) -> (Result<pb::HandshakeState>, Option<pb::State>) {
         let error = Error::from(crate::ossl3::peek_last_error());
