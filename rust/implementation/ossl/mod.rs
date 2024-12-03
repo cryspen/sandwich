@@ -611,7 +611,7 @@ where
         }
 
         let security_requirements = x509_verifier
-            .map(tls::TunnelSecurityRequirements::from)
+            .map(|x| tls::TunnelSecurityRequirements::from(x))
             .unwrap_or_default();
 
         Ok(Self {

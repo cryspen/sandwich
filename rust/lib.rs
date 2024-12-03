@@ -172,6 +172,7 @@ impl Context {
     }
 }
 
+#[hax_lib::opaque]
 #[cfg(feature = "openssl3")]
 impl std::borrow::Borrow<ossl3::LibCtx<'static>> for Context {
     fn borrow(&self) -> &ossl3::LibCtx<'static> {

@@ -5,10 +5,12 @@ open FStar.Mul
 
 /// Wrapper around an raw pointer.
 assume
-val t_Pimpl': #v_T: Type0 -> Type0
+val t_Pimpl': v_T: Type0 -> Type0
 
 let t_Pimpl = t_Pimpl'
 
 /// Returns a copy of the [`NonNull`] pointer.
-let impl_2__as_nonnull (#v_T: Type0) (self: t_Pimpl v_T) : Core.Ptr.Non_null.t_NonNull v_T =
-  self.f_p
+assume
+val impl_2__as_nonnull': #v_T: Type0 -> self: t_Pimpl v_T -> Core.Ptr.Non_null.t_NonNull v_T
+
+let impl_2__as_nonnull = impl_2__as_nonnull'

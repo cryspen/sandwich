@@ -23,14 +23,6 @@ let impl_41: t_AllowedProtoBasedErrorCodeEnum Sandwich_proto.Errors.t_TLSConfigu
     _super_9442900250278684536 = FStar.Tactics.Typeclasses.solve
   }
 
-/// Adds `ErrorEnum` to the list of [`AllowedProtoBasedErrorCodeEnum`] trait.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_131: t_AllowedProtoBasedErrorCodeEnum Sandwich_proto.Errors.t_TunnelError =
-  {
-    _super_11581440318597584651 = FStar.Tactics.Typeclasses.solve;
-    _super_9442900250278684536 = FStar.Tactics.Typeclasses.solve
-  }
-
 /// An error code.
 /// An error code holds one of the error described in `errors.proto`
 /// and listed in `ErrorKind`.
@@ -69,20 +61,6 @@ let impl_36: Core.Convert.t_From t_ProtoBasedErrorCode Sandwich_proto.Errors.t_T
     =
     fun (v: Sandwich_proto.Errors.t_TLSConfigurationError) ->
       ProtoBasedErrorCode_TLSConfigurationError v <: t_ProtoBasedErrorCode
-  }
-
-/// Implements `[From<sandwich_proto::ErrorEnum>]` for [`ProtoBasedErrorCode`].
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_126: Core.Convert.t_From t_ProtoBasedErrorCode Sandwich_proto.Errors.t_TunnelError =
-  {
-    f_from_pre = (fun (v: Sandwich_proto.Errors.t_TunnelError) -> true);
-    f_from_post
-    =
-    (fun (v: Sandwich_proto.Errors.t_TunnelError) (out: t_ProtoBasedErrorCode) -> true);
-    f_from
-    =
-    fun (v: Sandwich_proto.Errors.t_TunnelError) ->
-      ProtoBasedErrorCode_TunnelError v <: t_ProtoBasedErrorCode
   }
 
 /// An error code.
@@ -143,61 +121,6 @@ let impl_39: Core.Convert.t_From t_ErrorCode
         (Core.Convert.f_into #string #Alloc.String.t_String #FStar.Tactics.Typeclasses.solve s)
         <:
         Core.Option.t_Option Alloc.String.t_String
-      }
-      <:
-      t_ErrorCode
-  }
-
-/// Instantiates an [`ErrorCode`] from an error enum and a string.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_129: Core.Convert.t_From t_ErrorCode (Sandwich_proto.Errors.t_TunnelError & string) =
-  {
-    f_from_pre = (fun (v, s: (Sandwich_proto.Errors.t_TunnelError & string)) -> true);
-    f_from_post
-    =
-    (fun (v, s: (Sandwich_proto.Errors.t_TunnelError & string)) (out: t_ErrorCode) -> true);
-    f_from
-    =
-    fun (v, s: (Sandwich_proto.Errors.t_TunnelError & string)) ->
-      {
-        f_ec
-        =
-        Core.Convert.f_from #t_ProtoBasedErrorCode
-          #Sandwich_proto.Errors.t_TunnelError
-          #FStar.Tactics.Typeclasses.solve
-          v;
-        f_msg
-        =
-        Core.Option.Option_Some
-        (Core.Convert.f_into #string #Alloc.String.t_String #FStar.Tactics.Typeclasses.solve s)
-        <:
-        Core.Option.t_Option Alloc.String.t_String
-      }
-      <:
-      t_ErrorCode
-  }
-
-/// Instantiates an [`ErrorCode`] from an error enum and a [`String`].
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_130: Core.Convert.t_From t_ErrorCode
-  (Sandwich_proto.Errors.t_TunnelError & Alloc.String.t_String) =
-  {
-    f_from_pre = (fun (v, s: (Sandwich_proto.Errors.t_TunnelError & Alloc.String.t_String)) -> true);
-    f_from_post
-    =
-    (fun (v, s: (Sandwich_proto.Errors.t_TunnelError & Alloc.String.t_String)) (out: t_ErrorCode) ->
-        true);
-    f_from
-    =
-    fun (v, s: (Sandwich_proto.Errors.t_TunnelError & Alloc.String.t_String)) ->
-      {
-        f_ec
-        =
-        Core.Convert.f_from #t_ProtoBasedErrorCode
-          #Sandwich_proto.Errors.t_TunnelError
-          #FStar.Tactics.Typeclasses.solve
-          v;
-        f_msg = Core.Option.Option_Some s <: Core.Option.t_Option Alloc.String.t_String
       }
       <:
       t_ErrorCode

@@ -687,7 +687,7 @@ impl<'a> Context<'a> {
     where
         'b: 'a,
     {
-        let lib_ctx = ctx.borrow();
+        let lib_ctx = &ctx.ossl3_lib_ctx;
         let (mode, tls_options) = tls::support::configuration_get_mode_and_options(configuration)?;
         let ssl_ctx = new_ssl_context(ctx, mode)?;
         let ssl_ctx_wrapped = SslContext(ssl_ctx.as_nonnull());
@@ -697,7 +697,7 @@ impl<'a> Context<'a> {
         ssl_ctx_wrapped.set_min_and_max_tls_version(tls_options)?;
         ssl_ctx_wrapped.configure_tls12(tls_options.tls12.as_ref())?;
         ssl_ctx_wrapped.configure_tls13(tls_options.tls13.as_ref())?;
-        ssl_ctx_wrapped.set_alpn_protocols(tls_options.alpn_protocols.iter())?;
+        ssl_ctx_wrapped.set_alpn_protocols(&tls_options.alpn_protocols)?;
 
         let x509_verify_param = X509VerifyParam::try_from(&ssl_ctx)?;
         x509_verify_param.set_default_parameters()?;
@@ -715,7 +715,7 @@ impl<'a> Context<'a> {
         ssl_ctx_wrapped.set_verify_mode(verify_mode);
 
         let security_requirements = x509_verifier
-            .map(tls::TunnelSecurityRequirements::from)
+            .map(|x| tls::TunnelSecurityRequirements::from(x))
             .unwrap_or_default();
 
         Ok(Self {
@@ -740,6 +740,7 @@ impl<'a> Context<'a> {
         Ok(ssl)
     }
 
+    #[hax_lib::opaque]
     /// Returns the security requirements of the context.
     pub(crate) fn security_requirements(&self) -> &tls::TunnelSecurityRequirements {
         self.borrow()

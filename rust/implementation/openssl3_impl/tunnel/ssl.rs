@@ -88,13 +88,19 @@ impl Ssl {
             return Ok(());
         };
         let x509_verify_param = X509VerifyParam::try_from(self.0)?;
+        let mut res = Ok(());
         for san in san_verifier.alt_names.iter() {
-            let Some(san) = san.san.as_ref() else {
-                return Err((pb::TunnelError::TUNNELERROR_VERIFIER, "empty SANMatcher").into());
+            if let Some(san) = san.san.as_ref(){
+                let add_res = x509_verify_param.add_san(san);
+                if add_res.is_err() {
+                    res = add_res
+                }
+            } else {
+                res = Err((pb::TunnelError::TUNNELERROR_VERIFIER, "empty SANMatcher").into());
             };
-            x509_verify_param.add_san(san)?;
+            
         }
-        Ok(())
+        res
     }
 
     #[hax_lib::opaque]
@@ -466,6 +472,7 @@ impl<'a> TunnelBuilder<'a> {
     }
 
     /// Builds a tunnel.
+    #[hax_lib::opaque]
     pub(crate) fn build(self) -> TunnelBuilderResult<'a> {
         let ssl = match self.prepare_ssl() {
             Ok(ssl) => ssl,

@@ -10,17 +10,6 @@ type t_X509VerifyParam =
       Core.Marker.t_PhantomData Openssl3.t_X509_VERIFY_PARAM_st
     -> t_X509VerifyParam
 
-/// Instantiates an [`X509VerifyParam`] from an SSL object.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_3:Core.Convert.t_TryFrom t_X509VerifyParam (Core.Ptr.Non_null.t_NonNull Openssl3.t_ssl_st)
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-assume
-val impl_3': Core.Convert.t_TryFrom t_X509VerifyParam
-  (Core.Ptr.Non_null.t_NonNull Openssl3.t_ssl_st)
-
-let impl_3 = impl_3'
-
 /// Instantiates an [`X509VerifyParam`] from an SSL context.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 val impl_2:Core.Convert.t_TryFrom t_X509VerifyParam
@@ -43,13 +32,6 @@ val impl_4__update_certificate_chain_validation_depth_from_x509_verifier':
 
 let impl_4__update_certificate_chain_validation_depth_from_x509_verifier =
   impl_4__update_certificate_chain_validation_depth_from_x509_verifier'
-
-/// Adds a Subject Alternative Name (SAN).
-assume
-val impl_4__add_san': self: t_X509VerifyParam -> san: Sandwich_api_proto.Verifiers.Sanmatcher.t_San
-  -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
-
-let impl_4__add_san = impl_4__add_san'
 
 /// Applies the default parameters.
 /// This function sets the following default values:

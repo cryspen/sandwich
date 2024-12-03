@@ -71,6 +71,7 @@ impl<'a, T> Pimpl<'a, T> {
         }
     }
 
+    #[hax_lib::opaque]
     /// Returns a copy of the [`NonNull`] pointer.
     pub(crate) fn as_nonnull(&self) -> NonNull<T> {
         self.p

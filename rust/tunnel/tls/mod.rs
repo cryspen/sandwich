@@ -184,6 +184,7 @@ impl TunnelSecurityRequirements {
     }
 }
 
+#[hax_lib::opaque]
 /// Implements [`VerifierSanitizer`] for [`TunnelSecurityRequirements`]
 /// with the [`pb_api::SANVerifier`] verifier.
 impl VerifierSanitizer<pb_api::SANVerifier> for TunnelSecurityRequirements {
@@ -248,6 +249,7 @@ impl VerifierSanitizer<pb_api::SANVerifier> for TunnelSecurityRequirements {
     }
 }
 
+#[hax_lib::opaque]
 /// Implements [`VerifierSanitizer`] for [`TunnelSecurityRequirements`]
 /// with the [`pb_api::TunnelVerifier`] verifier.
 impl VerifierSanitizer<pb_api::TunnelVerifier> for TunnelSecurityRequirements {

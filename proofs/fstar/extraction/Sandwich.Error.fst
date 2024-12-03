@@ -72,24 +72,3 @@ val impl_18':
   -> Core.Convert.t_From t_Error (v_ErrorEnum & string)
 
 let impl_18 = impl_18'
-
-/// Instantiates an [`Error`] from an enum value and a string.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_19
-      (#v_ErrorEnum: Type0)
-      {| i1: Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum |}
-      {| i2:
-          Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode (v_ErrorEnum & Alloc.String.t_String)
-        |}
-    : Core.Convert.t_From t_Error (v_ErrorEnum & Alloc.String.t_String)
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-assume
-val impl_19':
-    #v_ErrorEnum: Type0 ->
-    {| i1: Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum |} ->
-    {| i2: Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode (v_ErrorEnum & Alloc.String.t_String)
-      |}
-  -> Core.Convert.t_From t_Error (v_ErrorEnum & Alloc.String.t_String)
-
-let impl_19 = impl_19'
