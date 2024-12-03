@@ -250,23 +250,26 @@ impl VerifierSanitizer<pb_api::SANVerifier> for TunnelSecurityRequirements {
 }
 
 #[hax_lib::opaque]
+fn run_sanitizer_checks(x: &TunnelSecurityRequirements, verifier: &pb_api::TunnelVerifier) -> crate::Result<()> {
+    match verifier.verifier.as_ref() {
+        Some(pb_api::verifiers::tunnel_verifier::Verifier::SanVerifier(san_verifier)) => {
+            x.run_sanitizer_checks(san_verifier)
+        }
+        Some(pb_api::verifiers::tunnel_verifier::Verifier::EmptyVerifier(_)) => Ok(()),
+        Some(_) => unreachable!(),
+        None => Err((
+            TunnelError::TUNNELERROR_VERIFIER,
+            "tunnel verifier must specify a verifier",
+        )
+            .into()),
+    }
+}
 /// Implements [`VerifierSanitizer`] for [`TunnelSecurityRequirements`]
 /// with the [`pb_api::TunnelVerifier`] verifier.
 impl VerifierSanitizer<pb_api::TunnelVerifier> for TunnelSecurityRequirements {
     /// Updates the current security requirements with a verifier `V`.
     fn run_sanitizer_checks(&self, verifier: &pb_api::TunnelVerifier) -> crate::Result<()> {
-        match verifier.verifier.as_ref() {
-            Some(pb_api::verifiers::tunnel_verifier::Verifier::SanVerifier(san_verifier)) => {
-                self.run_sanitizer_checks(san_verifier)
-            }
-            Some(pb_api::verifiers::tunnel_verifier::Verifier::EmptyVerifier(_)) => Ok(()),
-            Some(_) => unreachable!(),
-            None => Err((
-                TunnelError::TUNNELERROR_VERIFIER,
-                "tunnel verifier must specify a verifier",
-            )
-                .into()),
-        }
+        run_sanitizer_checks(&self, verifier)
     }
 }
 

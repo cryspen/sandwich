@@ -89,7 +89,7 @@ impl Ssl {
         };
         let x509_verify_param = X509VerifyParam::try_from(self.0)?;
         let mut res = Ok(());
-        for san in san_verifier.alt_names.iter() {
+        for san in &san_verifier.alt_names {
             if let Some(san) = san.san.as_ref(){
                 let add_res = x509_verify_param.add_san(san);
                 if add_res.is_err() {
@@ -472,7 +472,6 @@ impl<'a> TunnelBuilder<'a> {
     }
 
     /// Builds a tunnel.
-    #[hax_lib::opaque]
     pub(crate) fn build(self) -> TunnelBuilderResult<'a> {
         let ssl = match self.prepare_ssl() {
             Ok(ssl) => ssl,

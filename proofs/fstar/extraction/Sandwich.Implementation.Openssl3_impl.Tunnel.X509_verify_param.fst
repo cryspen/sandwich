@@ -21,6 +21,13 @@ val impl_4__update_certificate_chain_validation_depth_from_x509_verifier':
 let impl_4__update_certificate_chain_validation_depth_from_x509_verifier =
   impl_4__update_certificate_chain_validation_depth_from_x509_verifier'
 
+/// Adds a Subject Alternative Name (SAN).
+assume
+val impl_4__add_san': self: t_X509VerifyParam -> san: Sandwich_api_proto.Verifiers.Sanmatcher.t_San
+  -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+
+let impl_4__add_san = impl_4__add_san'
+
 /// Applies the default parameters.
 /// This function sets the following default values:
 ///  - Maximum depth for certificate chain validation
@@ -35,6 +42,12 @@ val try_from': ssl_ctx: Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st
   -> Core.Result.t_Result t_X509VerifyParam Sandwich.Error.t_Error
 
 let try_from = try_from'
+
+assume
+val try_from2': ssl: Core.Ptr.Non_null.t_NonNull Openssl3.t_ssl_st
+  -> Core.Result.t_Result t_X509VerifyParam Sandwich.Error.t_Error
+
+let try_from2 = try_from2'
 
 /// Instantiates an [`X509VerifyParam`] from an SSL context.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -53,4 +66,20 @@ let impl: Core.Convert.t_TryFrom t_X509VerifyParam
     f_try_from
     =
     fun (ssl_ctx: Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st) -> try_from ssl_ctx
+  }
+
+/// Instantiates an [`X509VerifyParam`] from an SSL object.
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_1: Core.Convert.t_TryFrom t_X509VerifyParam (Core.Ptr.Non_null.t_NonNull Openssl3.t_ssl_st) =
+  {
+    f_Error = Sandwich.Error.t_Error;
+    f_try_from_pre = (fun (ssl: Core.Ptr.Non_null.t_NonNull Openssl3.t_ssl_st) -> true);
+    f_try_from_post
+    =
+    (fun
+        (ssl: Core.Ptr.Non_null.t_NonNull Openssl3.t_ssl_st)
+        (out: Core.Result.t_Result t_X509VerifyParam Sandwich.Error.t_Error)
+        ->
+        true);
+    f_try_from = fun (ssl: Core.Ptr.Non_null.t_NonNull Openssl3.t_ssl_st) -> try_from2 ssl
   }

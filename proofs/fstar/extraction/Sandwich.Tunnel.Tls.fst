@@ -51,3 +51,58 @@ let impl: Core.Convert.t_From t_TunnelSecurityRequirements
       <:
       t_TunnelSecurityRequirements
   }
+
+/// A set of security requirements that can be updated with new requirements
+/// described in a given verifier `V`.
+/// A sanitizer check for security requirements described in a given verifier
+/// `V`.
+class t_VerifierSanitizer (v_Self: Type0) (v_V: Type0) = {
+  f_run_sanitizer_checks_pre:v_Self -> v_V -> Type0;
+  f_run_sanitizer_checks_post:
+      v_Self ->
+      v_V ->
+      Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+    -> Type0;
+  f_run_sanitizer_checks:x0: v_Self -> x1: v_V
+    -> Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+        (f_run_sanitizer_checks_pre x0 x1)
+        (fun result -> f_run_sanitizer_checks_post x0 x1 result)
+}
+
+assume
+val run_sanitizer_checks':
+    x: t_TunnelSecurityRequirements ->
+    verifier: Sandwich_api_proto.Verifiers.t_TunnelVerifier
+  -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+
+let run_sanitizer_checks = run_sanitizer_checks'
+
+/// Implements [`VerifierSanitizer`] for [`TunnelSecurityRequirements`]
+/// with the [`pb_api::TunnelVerifier`] verifier.
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_3: t_VerifierSanitizer t_TunnelSecurityRequirements
+  Sandwich_api_proto.Verifiers.t_TunnelVerifier =
+  {
+    f_run_sanitizer_checks_pre
+    =
+    (fun
+        (self: t_TunnelSecurityRequirements)
+        (verifier: Sandwich_api_proto.Verifiers.t_TunnelVerifier)
+        ->
+        true);
+    f_run_sanitizer_checks_post
+    =
+    (fun
+        (self: t_TunnelSecurityRequirements)
+        (verifier: Sandwich_api_proto.Verifiers.t_TunnelVerifier)
+        (out: Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+        ->
+        true);
+    f_run_sanitizer_checks
+    =
+    fun
+      (self: t_TunnelSecurityRequirements)
+      (verifier: Sandwich_api_proto.Verifiers.t_TunnelVerifier)
+      ->
+      run_sanitizer_checks self verifier
+  }
