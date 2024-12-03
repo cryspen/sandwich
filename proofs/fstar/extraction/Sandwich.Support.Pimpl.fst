@@ -5,7 +5,7 @@ open FStar.Mul
 
 /// Wrapper around an raw pointer.
 assume
-val t_Pimpl': v_T: Type0 -> Type0
+val t_Pimpl': v_T: Type0 -> eqtype
 
 let t_Pimpl = t_Pimpl'
 

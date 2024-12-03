@@ -10,18 +10,6 @@ type t_X509VerifyParam =
       Core.Marker.t_PhantomData Openssl3.t_X509_VERIFY_PARAM_st
     -> t_X509VerifyParam
 
-/// Instantiates an [`X509VerifyParam`] from an SSL context.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_2:Core.Convert.t_TryFrom t_X509VerifyParam
-  (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st)
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-assume
-val impl_2': Core.Convert.t_TryFrom t_X509VerifyParam
-  (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st)
-
-let impl_2 = impl_2'
-
 /// Updates the depth for the certificate validation using the
 /// `X509Verifier` configuration object.
 assume
@@ -41,3 +29,28 @@ val impl_4__set_default_parameters': self: t_X509VerifyParam
   -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
 
 let impl_4__set_default_parameters = impl_4__set_default_parameters'
+
+assume
+val try_from': ssl_ctx: Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st
+  -> Core.Result.t_Result t_X509VerifyParam Sandwich.Error.t_Error
+
+let try_from = try_from'
+
+/// Instantiates an [`X509VerifyParam`] from an SSL context.
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl: Core.Convert.t_TryFrom t_X509VerifyParam
+  (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st) =
+  {
+    f_Error = Sandwich.Error.t_Error;
+    f_try_from_pre = (fun (ssl_ctx: Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st) -> true);
+    f_try_from_post
+    =
+    (fun
+        (ssl_ctx: Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st)
+        (out: Core.Result.t_Result t_X509VerifyParam Sandwich.Error.t_Error)
+        ->
+        true);
+    f_try_from
+    =
+    fun (ssl_ctx: Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st) -> try_from ssl_ctx
+  }

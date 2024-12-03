@@ -1,4 +1,4 @@
-module Sandwich.Tunnel.Rec_bundle_522409734
+module Sandwich.Tunnel.Rec_bundle_850592272
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open Core
 open FStar.Mul
@@ -370,6 +370,68 @@ let x509_verifier_verify_emptiness
     Core.Result.t_Result (Core.Option.t_Option Sandwich_api_proto.Verifiers.t_X509Verifier)
       Sandwich.Error.t_Error
 
+/// A tunnel, wrapper around a SSL object.
+type t_Tunnel364847772 = {
+  f__ssl_ctx:t_Context116464909;
+  f_ssl:Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_st;
+  f_security_requirements:Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements;
+  f_io:Sandwich.Tunnel.Io.t_BoxedIO;
+  f_state:Sandwich_proto.Tunnel.t_State
+}
+
+/// Builds a tunnel.
+assume
+val build': self: t_TunnelBuilder
+  -> Core.Result.t_Result
+      (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel364847772 Alloc.Alloc.t_Global))
+      (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
+
+let build = build'
+
+/// Creates a new tunnel.
+let new_tunnel474967037
+      (self: t_Context116464909)
+      (io: Sandwich.Tunnel.Io.t_BoxedIO)
+      (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
+    : Core.Result.t_Result
+      (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel364847772 Alloc.Alloc.t_Global))
+      (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO) =
+  build ({ f_ssl_ctx = self; f_io = io; f_configuration = configuration } <: t_TunnelBuilder)
+
+/// A tunnel.
+type t_Tunnel70284935 =
+  | Tunnel70284935_OpenSSL3 :
+      Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel364847772 Alloc.Alloc.t_Global)
+    -> t_Tunnel70284935
+
+/// Creates a new tunnel from an I/O interface. See [`IO`] from [`crate::io`] module.
+/// The I/O interface must outlive the tunnel, as the tunnel makes use
+/// of it to send and receive data.
+/// If an error occured, the IO interface is returned to the user.
+let new_tunnel499954878
+      (self: t_Context665818913)
+      (io: Sandwich.Tunnel.Io.t_BoxedIO)
+      (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
+    : Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO) =
+  match self with
+  | (Context665818913_OpenSSL3 c) ->
+    match new_tunnel474967037 c io configuration with
+    | Core.Result.Result_Ok hoist1 ->
+      Core.Result.Result_Ok (Tunnel70284935_OpenSSL3 hoist1 <: t_Tunnel70284935)
+      <:
+      Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
+    | Core.Result.Result_Err err ->
+      Core.Result.Result_Err err
+      <:
+      Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
+
+let new_tunnel735299623
+      (context: t_Context665818913)
+      (io: Sandwich.Tunnel.Io.t_BoxedIO)
+      (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
+    : Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO) =
+  new_tunnel499954878 context io configuration
+
 /// Instantiates a new [`Context`] from a [protobuf configuration](`pb_api::Configuration`)
 /// and a top-level context.
 let try_from
@@ -579,65 +641,3 @@ let hax_try_from
       (ctx: Sandwich.t_Context)
       (configuration: Sandwich_api_proto.Configuration.t_Configuration)
     : Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error = try_from ctx configuration
-
-/// A tunnel, wrapper around a SSL object.
-type t_Tunnel364847772 = {
-  f__ssl_ctx:t_Context116464909;
-  f_ssl:Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_st;
-  f_security_requirements:Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements;
-  f_io:Sandwich.Tunnel.Io.t_BoxedIO;
-  f_state:Sandwich_proto.Tunnel.t_State
-}
-
-/// Builds a tunnel.
-assume
-val build': self: t_TunnelBuilder
-  -> Core.Result.t_Result
-      (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel364847772 Alloc.Alloc.t_Global))
-      (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
-
-let build = build'
-
-/// Creates a new tunnel.
-let new_tunnel474967037
-      (self: t_Context116464909)
-      (io: Sandwich.Tunnel.Io.t_BoxedIO)
-      (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
-    : Core.Result.t_Result
-      (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel364847772 Alloc.Alloc.t_Global))
-      (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO) =
-  build ({ f_ssl_ctx = self; f_io = io; f_configuration = configuration } <: t_TunnelBuilder)
-
-/// A tunnel.
-type t_Tunnel70284935 =
-  | Tunnel70284935_OpenSSL3 :
-      Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel364847772 Alloc.Alloc.t_Global)
-    -> t_Tunnel70284935
-
-/// Creates a new tunnel from an I/O interface. See [`IO`] from [`crate::io`] module.
-/// The I/O interface must outlive the tunnel, as the tunnel makes use
-/// of it to send and receive data.
-/// If an error occured, the IO interface is returned to the user.
-let new_tunnel499954878
-      (self: t_Context665818913)
-      (io: Sandwich.Tunnel.Io.t_BoxedIO)
-      (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
-    : Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO) =
-  match self with
-  | (Context665818913_OpenSSL3 c(*: t_Context665818913*)) ->
-    match new_tunnel474967037 c io configuration with
-    | Core.Result.Result_Ok hoist1 ->
-      Core.Result.Result_Ok (Tunnel70284935_OpenSSL3 hoist1 <: t_Tunnel70284935)
-      <:
-      Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
-    | Core.Result.Result_Err err ->
-      Core.Result.Result_Err err
-      <:
-      Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
-
-let new_tunnel735299623
-      (context: t_Context665818913)
-      (io: Sandwich.Tunnel.Io.t_BoxedIO)
-      (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
-    : Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO) =
-  new_tunnel499954878 context io configuration

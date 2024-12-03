@@ -5,6 +5,6 @@ open FStar.Mul
 
 /// BoxedIO
 assume
-val t_BoxedIO': Type0
+val t_BoxedIO': eqtype
 
 let t_BoxedIO = t_BoxedIO'

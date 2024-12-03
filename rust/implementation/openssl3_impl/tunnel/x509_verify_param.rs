@@ -22,34 +22,39 @@ pub(super) struct X509VerifyParam<'a>(
     NonNull<NativeX509VerifyParam>,
     PhantomData<&'a NativeX509VerifyParam>,
 );
-
 #[hax_lib::opaque]
-/// Instantiates an [`X509VerifyParam`] from an SSL context.
-impl<'a> TryFrom<&Pimpl<'a, NativeSslCtx>> for X509VerifyParam<'a> {
-    type Error = crate::Error;
-
-    fn try_from(ssl_ctx: &Pimpl<'a, NativeSslCtx>) -> Result<Self> {
+    fn try_from<'a>(ssl_ctx: &Pimpl<'a, NativeSslCtx>) -> Result<X509VerifyParam<'a>> {
         let ptr =
             NonNull::new(unsafe { openssl3::SSL_CTX_get0_param(ssl_ctx.as_nonnull().as_ptr()) })
                 .ok_or((
                     pb::SystemError::SYSTEMERROR_MEMORY,
                     "no X509_VERIFY_PARAM attached to the given SSL context",
                 ))?;
-        Ok(Self(ptr, PhantomData))
+        Ok(X509VerifyParam(ptr, PhantomData))
+    }
+/// Instantiates an [`X509VerifyParam`] from an SSL context.
+impl<'a> TryFrom<&Pimpl<'a, NativeSslCtx>> for X509VerifyParam<'a> {
+    type Error = crate::Error;
+
+    fn try_from(ssl_ctx: &Pimpl<'a, NativeSslCtx>) -> Result<Self> {
+        try_from(ssl_ctx)
     }
 }
-
 #[hax_lib::opaque]
+fn try_from2<'a>(ssl: NonNull<NativeSsl>) -> Result<X509VerifyParam<'a>> {
+    let ptr = NonNull::new(unsafe { openssl3::SSL_get0_param(ssl.as_ptr()) }).ok_or((
+        pb::SystemError::SYSTEMERROR_MEMORY,
+        "no X509_VERIFY_PARAM attached to the given SSL object",
+    ))?;
+    Ok(X509VerifyParam(ptr, PhantomData))
+}
 /// Instantiates an [`X509VerifyParam`] from an SSL object.
 impl<'a> TryFrom<NonNull<NativeSsl>> for X509VerifyParam<'a> {
     type Error = crate::Error;
 
+    #[hax_lib::opaque]
     fn try_from(ssl: NonNull<NativeSsl>) -> Result<Self> {
-        let ptr = NonNull::new(unsafe { openssl3::SSL_get0_param(ssl.as_ptr()) }).ok_or((
-            pb::SystemError::SYSTEMERROR_MEMORY,
-            "no X509_VERIFY_PARAM attached to the given SSL object",
-        ))?;
-        Ok(Self(ptr, PhantomData))
+        try_from2(ssl)
     }
 }
 
