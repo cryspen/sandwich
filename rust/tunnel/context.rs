@@ -106,6 +106,8 @@ impl<'a> Context<'a> {
     ///
     /// ```
     #[allow(unused_variables)]
+    #[hax_lib::fstar::before("assume val configured: t_Configuration -> bool ")]
+    #[hax_lib::requires(fstar!("configured(configuration)"))] // 
     pub fn try_from(
         context: &'a crate::Context,
         configuration: &pb_api::Configuration,

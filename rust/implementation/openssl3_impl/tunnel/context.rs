@@ -95,6 +95,7 @@ impl SslContext {
     }
 
     /// Defines the minimum TLS version to use.
+    #[hax_lib::requires(fstar!("exists c. configured c /\\ allows_tls_version c version"))]
     fn set_minimum_tls_version(&self, version: TlsVersion) -> Result<()> {
         // `SSL_CTX_set_min_proto_version` is a C macro.
         if unsafe {
