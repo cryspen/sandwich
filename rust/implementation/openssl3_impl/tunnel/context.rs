@@ -79,10 +79,10 @@ impl std::fmt::Debug for SslContext {
     }
 }
 
-#[hax_lib::opaque]
 #[hax_lib::attributes]
 impl SslContext {
     /// Disables session caching on a SSL context.
+    #[hax_lib::opaque]
     fn disable_session_cache_mode(&self) {
         // `SSL_CTX_set_session_cache_mode` is a C macro.
         unsafe {
@@ -97,6 +97,7 @@ impl SslContext {
 
     /// Defines the minimum TLS version to use.
     #[hax_lib::requires(fstar!("exists c. configured c /\\ allows_tls_version c version"))]
+    #[hax_lib::opaque]
     fn set_minimum_tls_version(&self, version: TlsVersion) -> Result<()> {
         // `SSL_CTX_set_min_proto_version` is a C macro.
         if unsafe {
@@ -122,6 +123,7 @@ impl SslContext {
     }
 
     /// Defines the maximum TLS version to use.
+    #[hax_lib::opaque]
     fn set_maximum_tls_version(&self, version: TlsVersion) -> Result<()> {
         // `SSL_CTX_set_max_proto_version` is a C macro.
         if unsafe {
@@ -155,6 +157,7 @@ impl SslContext {
     }
 
     /// Initializes the trusted certificate store.
+    #[hax_lib::opaque]
     fn initialize_trusted_cert_store(&self) -> Result<()> {
         let x509_store = NonNull::new(unsafe { openssl3::X509_STORE_new() }).ok_or((
             pb::SystemError::SYSTEMERROR_MEMORY,
@@ -170,6 +173,7 @@ impl SslContext {
 
     /// Sets the trust parameter on the verification parameters object, depending
     /// on the execution mode.
+    #[hax_lib::opaque]
     fn set_trust(&self, mode: Mode) -> Result<()> {
         if unsafe {
             openssl3::SSL_CTX_set_trust(
@@ -195,6 +199,7 @@ impl SslContext {
     ///
     /// See <https://www.openssl.org/docs/man3.2/man3/SSL_CTX_set_mode.html#SSL_MODE_RELEASE_BUFFERS>
     /// for more information.
+    #[hax_lib::opaque]
     fn set_mode_release_buffers(&self) {
         // `SSL_CTX_set_mode` is a C macro.
         unsafe {
@@ -208,6 +213,7 @@ impl SslContext {
     }
 
     /// Sets the default parameters for a SSL context.
+    #[hax_lib::opaque]
     fn set_default_parameters(&self) -> Result<()> {
         const DISABLED: c_int = 0;
 
@@ -223,6 +229,7 @@ impl SslContext {
     /// Sets the list of available ciphers.
     /// This function is only used for TLS 1.2.
     /// Names will be converted to OpenSSL names using `OPENSSL_cipher_name`.
+    #[hax_lib::opaque]
     fn set_cipher_list<S>(&self, ciphers: impl IntoIterator<Item = S>) -> Result<()>
     where
         S: AsRef<str>,
@@ -251,6 +258,7 @@ impl SslContext {
     /// Sets the list of available ciphers using the default list provided
     /// by OpenSSL.
     /// This function is only useful for TLS 1.2.
+    #[hax_lib::opaque]
     fn set_default_cipher_list(&self) -> Result<()> {
         let cstr =
             NonNull::new(unsafe { openssl3::OSSL_default_cipher_list() }.cast_mut()).ok_or((
@@ -269,6 +277,7 @@ impl SslContext {
     }
 
     /// Sets the list of available ciphersuites for TLS 1.3.
+    #[hax_lib::opaque]
     fn set_ciphersuites<S>(&self, ciphers: impl IntoIterator<Item = S>) -> Result<()>
     where
         S: AsRef<str>,
@@ -295,6 +304,7 @@ impl SslContext {
     /// Sets the list of available ciphersuites using the default list provided
     /// by OpenSSL.
     /// This function is only useful for TLS 1.3.
+    #[hax_lib::opaque]
     fn set_default_ciphersuites(&self) -> Result<()> {
         let cstr = NonNull::new(unsafe { openssl3::OSSL_default_ciphersuites() }.cast_mut())
             .ok_or((
@@ -313,6 +323,7 @@ impl SslContext {
     }
 
     /// Configures TLS 1.2.
+    #[hax_lib::opaque]
     fn configure_tls12(&self, tls12_config: Option<&pb_api::TLSv12Config>) -> Result<()> {
         let Some(config) = tls12_config else {
             return Ok(());
@@ -327,6 +338,7 @@ impl SslContext {
     }
 
     /// Configures TLS 1.3.
+    #[hax_lib::opaque]
     fn configure_tls13(&self, tls13_config: Option<&pb_api::TLSv13Config>) -> Result<()> {
         let Some(config) = tls13_config else {
             return Ok(());
@@ -344,6 +356,7 @@ impl SslContext {
     }
 
     /// Sets the KEs to an SSL context.
+    #[hax_lib::opaque]
     fn set_kes(&self, kes: &[impl AsRef<str>]) -> Result<()> {
         if kes.is_empty() {
             return Err((pb::KEMError::KEMERROR_INVALID, "no KE specified").into());
@@ -374,6 +387,7 @@ impl SslContext {
     }
 
     /// Sets supported application protocols (ALPN).
+    #[hax_lib::opaque]
     fn set_alpn_protocols<S>(&self, protocols: impl IntoIterator<Item = S>) -> Result<()>
     where
         S: AsRef<str>,
@@ -428,6 +442,7 @@ impl SslContext {
 
     /// Sets the certificate to use when the remote peer requests an authentication.
     /// This is used in server mode and in client mode when mTLS is enabled.
+    #[hax_lib::opaque]
     fn set_certificate(&self, certificate: NonNull<NativeX509Certificate>) -> Result<()> {
         if unsafe { openssl3::SSL_CTX_use_certificate(self.0.as_ptr(), certificate.as_ptr()) } == 1
         {
@@ -450,6 +465,7 @@ impl SslContext {
     /// This method also checks the consistency between the provided certificate
     /// and the private key.
     /// The certificate is provided using [`SslContext::set_certificate`].
+    #[hax_lib::opaque]
     fn set_private_key(&self, private_key: NonNull<NativePrivateKey>) -> Result<()> {
         if unsafe { openssl3::SSL_CTX_use_PrivateKey(self.0.as_ptr(), private_key.as_ptr()) } != 1 {
             return Err((
@@ -475,6 +491,7 @@ impl SslContext {
     ///
     /// This function takes a [`Pimpl`] as input since [`SSL_CTX_add_extra_chain_cert`]
     /// takes the ownership of the `X509` object.
+    #[hax_lib::opaque]
     fn add_extra_chain_cert<'a, 'b>(
         &self,
         extra_certificate: Pimpl<'b, NativeX509Certificate>,
@@ -512,6 +529,7 @@ impl SslContext {
     /// If the client sets an X.509 identity, then it will expect a client
     /// certificate request from the server, in order to establish a mutual
     /// TLS tunnel (mTLS).
+    #[hax_lib::opaque]
     fn set_identity(
         &self,
         lib_ctx: &LibCtx<'_>,
@@ -558,6 +576,7 @@ impl SslContext {
 
     /// Imports the trusted certificates from the protobuf configuration to the
     /// OpenSSL SSL context.
+    #[hax_lib::opaque]
     fn fill_certificate_trust_store(
         &self,
         lib_ctx: &LibCtx<'_>,
@@ -589,6 +608,7 @@ impl SslContext {
     }
 
     /// Loads the OpenSSL system-default trust anchors into context store.
+    #[hax_lib::opaque]
     fn fill_certificate_trust_store_with_default_cas(
         &self,
         x509_verifier: Option<&pb_api::X509Verifier>,
@@ -616,6 +636,7 @@ impl SslContext {
     /// If a `X509Verifier` structure is present in the protobuf configuration,
     /// then `SSL_VERIFY_PEER` is used in client mode, and `SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT`
     /// is used in server mode.
+    #[hax_lib::opaque]
     fn set_verify_mode(&self, verify_mode: VerifyMode) {
         let flag = match verify_mode {
             VerifyMode::None => openssl3::SSL_VERIFY_NONE,

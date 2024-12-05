@@ -3,6 +3,11 @@ module Sandwich.Tunnel.Tls
 open Core
 open FStar.Mul
 
+/// Supported TLS Protocol versions.
+type t_TlsVersion =
+  | TlsVersion_Tls12 : t_TlsVersion
+  | TlsVersion_Tls13 : t_TlsVersion
+
 /// Security requirements to enforce on TLS tunnels.
 /// These requirements are described by the verifiers that comes with the
 /// `TLSOptions` configuration message.

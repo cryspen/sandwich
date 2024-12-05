@@ -33,6 +33,39 @@ type t_Context116464909 = {
   f_mode:t_Mode
 }
 
+/// Returns the minimum and the maximum TLS versions depending on a given TLS config.
+let tls_options_get_min_max_tls_version (tls_options: Sandwich_api_proto.Tls.t_TLSOptions)
+    : (Sandwich.Tunnel.Tls.t_TlsVersion & Sandwich.Tunnel.Tls.t_TlsVersion) =
+  match
+    Protobuf.Message_field.impl__is_some #Sandwich_api_proto.Tls.t_TLSv12Config
+      tls_options.Sandwich_api_proto.Tls.f_tls12,
+    Protobuf.Message_field.impl__is_some #Sandwich_api_proto.Tls.t_TLSv13Config
+      tls_options.Sandwich_api_proto.Tls.f_tls13
+    <:
+    (bool & bool)
+  with
+  | false, false ->
+    (Sandwich.Tunnel.Tls.TlsVersion_Tls13 <: Sandwich.Tunnel.Tls.t_TlsVersion),
+    (Sandwich.Tunnel.Tls.TlsVersion_Tls13 <: Sandwich.Tunnel.Tls.t_TlsVersion)
+    <:
+    (Sandwich.Tunnel.Tls.t_TlsVersion & Sandwich.Tunnel.Tls.t_TlsVersion)
+  | true, false ->
+    (Sandwich.Tunnel.Tls.TlsVersion_Tls12 <: Sandwich.Tunnel.Tls.t_TlsVersion),
+    (Sandwich.Tunnel.Tls.TlsVersion_Tls12 <: Sandwich.Tunnel.Tls.t_TlsVersion)
+    <:
+    (Sandwich.Tunnel.Tls.t_TlsVersion & Sandwich.Tunnel.Tls.t_TlsVersion)
+  | false, true ->
+    (Sandwich.Tunnel.Tls.TlsVersion_Tls13 <: Sandwich.Tunnel.Tls.t_TlsVersion),
+    (Sandwich.Tunnel.Tls.TlsVersion_Tls13 <: Sandwich.Tunnel.Tls.t_TlsVersion)
+    <:
+    (Sandwich.Tunnel.Tls.t_TlsVersion & Sandwich.Tunnel.Tls.t_TlsVersion)
+  | true, true ->
+    (Sandwich.Tunnel.Tls.TlsVersion_Tls12 <: Sandwich.Tunnel.Tls.t_TlsVersion),
+    (Sandwich.Tunnel.Tls.TlsVersion_Tls13 <: Sandwich.Tunnel.Tls.t_TlsVersion)
+    <:
+    (Sandwich.Tunnel.Tls.t_TlsVersion & Sandwich.Tunnel.Tls.t_TlsVersion)
+
+
 /// Returns the security requirements of the context.
 assume
 val security_requirements': self: t_Context116464909
@@ -152,14 +185,37 @@ val set_identity':
 
 let set_identity = set_identity'
 
-/// Sets the minimum and the maximum TLS versions to use.
+
+/// Defines the maximum TLS version to use.
 assume
-val set_min_and_max_tls_version':
-    self: t_SslContext ->
-    tls_options: Sandwich_api_proto.Tls.t_TLSOptions
+val set_maximum_tls_version': self: t_SslContext -> version: Sandwich.Tunnel.Tls.t_TlsVersion
   -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
 
-let set_min_and_max_tls_version = set_min_and_max_tls_version'
+let set_maximum_tls_version = set_maximum_tls_version'
+
+assume val configured: Sandwich_api_proto.Configuration.t_Configuration -> bool
+/// Defines the minimum TLS version to use.
+assume
+val set_minimum_tls_version': self: t_SslContext -> version: Sandwich.Tunnel.Tls.t_TlsVersion
+  -> Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+      (requires exists c. configured c (*/\ allows_tls_version c version*))
+      (fun _ -> Prims.l_True)
+
+let set_minimum_tls_version = set_minimum_tls_version'
+
+/// Sets the minimum and the maximum TLS versions to use.
+let set_min_and_max_tls_version
+      (self: t_SslContext)
+      (tls_options: Sandwich_api_proto.Tls.t_TLSOptions)
+    : Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
+  let min_version, max_version:(Sandwich.Tunnel.Tls.t_TlsVersion & Sandwich.Tunnel.Tls.t_TlsVersion)
+  =
+    tls_options_get_min_max_tls_version tls_options
+  in
+  match set_minimum_tls_version self min_version with
+  | Core.Result.Result_Ok _ -> set_maximum_tls_version self max_version
+  | Core.Result.Result_Err err ->
+    Core.Result.Result_Err err <: Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
 
 /// Sets the trust parameter on the verification parameters object, depending
 /// on the execution mode.
@@ -919,7 +975,6 @@ let new_tunnel779812561
       <:
       Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
 
-assume val configured: Sandwich_api_proto.Configuration.t_Configuration -> bool
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume val impl_missing: Protobuf.Enums.t_Enum Sandwich_api_proto.Configuration.t_Implementation

@@ -42,6 +42,7 @@ pub(crate) enum DataSource<'data> {
 ///
 /// If the protobuf `DataSource` message doesn't provide any source type,
 /// then `DataSourceError::DATASOURCEERROR_INVALID_CASE` is returned.
+#[hax_lib::opaque]
 impl<'ds: 'data, 'data> TryFrom<&'ds pb_api::DataSource> for DataSource<'data> {
     type Error = Error;
 
@@ -63,6 +64,7 @@ impl<'ds: 'data, 'data> TryFrom<&'ds pb_api::DataSource> for DataSource<'data> {
 }
 
 /// Returns the data holds by the [`DataSource`] as a slice of bytes.
+#[hax_lib::opaque]
 impl<'data> AsRef<[u8]> for DataSource<'data> {
     fn as_ref(&self) -> &[u8] {
         match *self {
