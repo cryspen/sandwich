@@ -27,6 +27,77 @@ type t_VerifyMode =
   | VerifyMode_Peer : t_VerifyMode
   | VerifyMode_Mutual : t_VerifyMode
 
+/// Retrieves the configuration for TLS 1.3, if exists.
+let get_tls13_config (cfg: Sandwich_api_proto.Configuration.t_Configuration)
+    : Core.Option.t_Option Sandwich_api_proto.Tls.t_TLSv13Config =
+  match
+    Core.Option.impl__as_ref #Sandwich_api_proto.Configuration.t_Opts
+      cfg.Sandwich_api_proto.Configuration.f_opts
+  with
+  | Core.Option.Option_Some opts ->
+    (match opts with
+      | Sandwich_api_proto.Configuration.Opts_Client c ->
+        (match
+            Core.Option.impl__as_ref #Sandwich_api_proto.Configuration.Client_options.t_Opts
+              c.Sandwich_api_proto.Configuration.f_opts
+          with
+          | Core.Option.Option_Some opts ->
+            (match opts with
+              | Sandwich_api_proto.Configuration.Client_options.Opts_Tls tls ->
+                Core.Option.impl__and_then #Sandwich_api_proto.Tls.t_TLSOptions
+                  #Sandwich_api_proto.Tls.t_TLSv13Config
+                  (Protobuf.Message_field.impl__as_ref #Sandwich_api_proto.Tls.t_TLSOptions
+                      tls.Sandwich_api_proto.Tls.f_common_options
+                    <:
+                    Core.Option.t_Option Sandwich_api_proto.Tls.t_TLSOptions)
+                  (fun opt ->
+                      let opt:Sandwich_api_proto.Tls.t_TLSOptions = opt in
+                      Protobuf.Message_field.impl__as_ref #Sandwich_api_proto.Tls.t_TLSv13Config
+                        opt.Sandwich_api_proto.Tls.f_tls13
+                      <:
+                      Core.Option.t_Option Sandwich_api_proto.Tls.t_TLSv13Config)
+              | _ ->
+                Rust_primitives.Hax.never_to_any (Core.Panicking.panic "internal error: entered unreachable code"
+
+                    <:
+                    Rust_primitives.Hax.t_Never))
+          | Core.Option.Option_None  ->
+            Core.Option.Option_None <: Core.Option.t_Option Sandwich_api_proto.Tls.t_TLSv13Config)
+      | Sandwich_api_proto.Configuration.Opts_Server c ->
+        (match
+            Core.Option.impl__as_ref #Sandwich_api_proto.Configuration.Server_options.t_Opts
+              c.Sandwich_api_proto.Configuration.f_opts
+          with
+          | Core.Option.Option_Some opts ->
+            (match opts with
+              | Sandwich_api_proto.Configuration.Server_options.Opts_Tls tls ->
+                Core.Option.impl__and_then #Sandwich_api_proto.Tls.t_TLSOptions
+                  #Sandwich_api_proto.Tls.t_TLSv13Config
+                  (Protobuf.Message_field.impl__as_ref #Sandwich_api_proto.Tls.t_TLSOptions
+                      tls.Sandwich_api_proto.Tls.f_common_options
+                    <:
+                    Core.Option.t_Option Sandwich_api_proto.Tls.t_TLSOptions)
+                  (fun opt ->
+                      let opt:Sandwich_api_proto.Tls.t_TLSOptions = opt in
+                      Protobuf.Message_field.impl__as_ref #Sandwich_api_proto.Tls.t_TLSv13Config
+                        opt.Sandwich_api_proto.Tls.f_tls13
+                      <:
+                      Core.Option.t_Option Sandwich_api_proto.Tls.t_TLSv13Config)
+              | _ ->
+                Rust_primitives.Hax.never_to_any (Core.Panicking.panic "internal error: entered unreachable code"
+
+                    <:
+                    Rust_primitives.Hax.t_Never))
+          | Core.Option.Option_None  ->
+            Core.Option.Option_None <: Core.Option.t_Option Sandwich_api_proto.Tls.t_TLSv13Config)
+      | _ ->
+        Rust_primitives.Hax.never_to_any (Core.Panicking.panic "internal error: entered unreachable code"
+
+            <:
+            Rust_primitives.Hax.t_Never))
+  | Core.Option.Option_None  ->
+    Core.Option.Option_None <: Core.Option.t_Option Sandwich_api_proto.Tls.t_TLSv13Config
+
 /// Instantiates a [`TunnelSecurityRequirements`] from a [`pb_api::X509Verifier`].
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl: Core.Convert.t_From t_TunnelSecurityRequirements

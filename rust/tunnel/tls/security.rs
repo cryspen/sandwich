@@ -152,6 +152,7 @@ impl TryFrom<&str> for KESettings {
 }
 
 /// Checks if the TLS 1.3 Key Exchange (KE) are satified the compliance
+#[hax_lib::opaque]
 fn assert_tls13_ke_compliance(
     kes: impl IntoIterator<Item = impl AsRef<str>>,
     classical_choice: ClassicalAlgoChoice,
@@ -201,6 +202,7 @@ fn assert_tls13_ke_compliance(
 }
 
 /// Checks that the TLS 1.3 Key Exchange (KE) and Ciphersuite are satisfied by the configuration.
+#[hax_lib::opaque]
 fn assert_tls13_compliance(tls13_config: &TLSv13Config) -> crate::Result<()> {
     let kes: &Vec<String> = &tls13_config.ke;
     let compliance = tls13_config.compliance.as_ref().unwrap_or_default();

@@ -20,7 +20,7 @@ use crate::implementation::ossl;
 
 use super::Tunnel;
 
-use crate::tunnel::{tls, IO, BoxedIO};
+use crate::{io::listener::try_from, tunnel::{tls, BoxedIO, IO}};
 
 /// Mode for a [`Context`].
 ///
@@ -44,6 +44,7 @@ pub(crate) enum Mode {
 pub type TunnelResult<'a> = Result<Tunnel<'a>, (crate::Error, BoxedIO)>;
 
 /// A Sandwich context.
+//#[hax_lib::fstar::before("assume val configured: t_Configuration -> bool")]
 pub enum Context<'a> {
     /// OpenSSL 1.1.1 context.
     #[cfg(feature = "openssl1_1_1")]
@@ -71,6 +72,56 @@ impl std::fmt::Debug for Context<'_> {
     }
 }
 
+#[hax_lib::opaque]
+fn shr_hax(e1: crate::Error, e: ConfigurationError) -> crate::Error {
+  e1 >> e
+}
+#[hax_lib::opaque]
+fn shr_hax_api(e1: crate::Error, e: pb::APIError) -> crate::Error {
+  e1 >> e
+}
+
+use std::ops::Shr;
+#[allow(unused_variables)]
+//#[hax_lib::fstar::before(impl, "assume val configured: t_Configuration -> bool")]
+#[hax_lib::requires(fstar!("configured(configuration)"))]
+fn hax_try_from<'a> (
+  context: &'a crate::Context,
+  configuration: &pb_api::Configuration,
+) -> crate::Result<Context<'a>> {
+        tls::assert_compliance(configuration)?;
+        configuration
+        .impl_
+        .enum_value()
+        .map_err(|_| shr_hax(shr_hax(crate::Error::new(), ConfigurationError::CONFIGURATIONERROR_INVALID_IMPLEMENTATION), ConfigurationError::CONFIGURATIONERROR_INVALID))
+        .and_then(|v| match v {
+            #[cfg(feature = "openssl1_1_1")]
+            pb_api::Implementation::IMPL_OPENSSL1_1_1_OQS => {
+                ossl::openssl1_1_1::Context::try_from(configuration)
+                    .map(Self::OpenSSL1_1_1)
+                    .map_err(|e| shr_hax(e, ConfigurationError::CONFIGURATIONERROR_INVALID))
+            }
+            #[cfg(feature = "boringssl")]
+            pb_api::Implementation::IMPL_BORINGSSL_OQS => {
+                ossl::boringssl::Context::try_from(configuration)
+                    .map(Self::BoringSSL)
+                    .map_err(|e| shr_hax(e, ConfigurationError::CONFIGURATIONERROR_INVALID))
+            }
+            #[cfg(feature = "openssl3")]
+            pb_api::Implementation::IMPL_OPENSSL3_OQS_PROVIDER => {
+                crate::ossl3::tunnel::Context::try_from(context, configuration)
+                    .map(Context::OpenSSL3)
+                    .map_err(|e| shr_hax(e, ConfigurationError::CONFIGURATIONERROR_INVALID))
+            }
+            _ => Err(
+              shr_hax(shr_hax(crate::Error::new(), ConfigurationError::CONFIGURATIONERROR_INVALID_IMPLEMENTATION), ConfigurationError::CONFIGURATIONERROR_INVALID)
+            ),
+        })
+        .map_err(|e| shr_hax_api(e, pb::APIError::APIERROR_CONFIGURATION))
+    
+}
+
+#[hax_lib::attributes]
 impl<'a> Context<'a> {
     /// Instantiates a [`Context`] from a protobuf configuration message.
     ///
@@ -106,41 +157,12 @@ impl<'a> Context<'a> {
     ///
     /// ```
     #[allow(unused_variables)]
-    #[hax_lib::fstar::before("assume val configured: t_Configuration -> bool ")]
-    #[hax_lib::requires(fstar!("configured(configuration)"))] // 
+    #[hax_lib::requires(fstar!("configured(configuration)"))] 
     pub fn try_from(
         context: &'a crate::Context,
         configuration: &pb_api::Configuration,
     ) -> crate::Result<Self> {
-        tls::assert_compliance(configuration)?;
-        configuration
-        .impl_
-        .enum_value()
-        .map_err(|_| errors!{ConfigurationError::CONFIGURATIONERROR_INVALID_IMPLEMENTATION => ConfigurationError::CONFIGURATIONERROR_INVALID})
-        .and_then(|v| match v {
-            #[cfg(feature = "openssl1_1_1")]
-            pb_api::Implementation::IMPL_OPENSSL1_1_1_OQS => {
-                ossl::openssl1_1_1::Context::try_from(configuration)
-                    .map(Self::OpenSSL1_1_1)
-                    .map_err(|e| e >> ConfigurationError::CONFIGURATIONERROR_INVALID)
-            }
-            #[cfg(feature = "boringssl")]
-            pb_api::Implementation::IMPL_BORINGSSL_OQS => {
-                ossl::boringssl::Context::try_from(configuration)
-                    .map(Self::BoringSSL)
-                    .map_err(|e| e >> ConfigurationError::CONFIGURATIONERROR_INVALID)
-            }
-            #[cfg(feature = "openssl3")]
-            pb_api::Implementation::IMPL_OPENSSL3_OQS_PROVIDER => {
-                crate::ossl3::tunnel::Context::try_from(context, configuration)
-                    .map(Self::OpenSSL3)
-                    .map_err(|e| e >> ConfigurationError::CONFIGURATIONERROR_INVALID)
-            }
-            _ => Err(
-                errors!{ConfigurationError::CONFIGURATIONERROR_INVALID_IMPLEMENTATION => ConfigurationError::CONFIGURATIONERROR_INVALID}
-            ),
-        })
-        .map_err(|e| e >> pb::APIError::APIERROR_CONFIGURATION)
+        hax_try_from(context, configuration)
     }
 
     /// Creates a new tunnel from an I/O interface. See [`IO`] from [`crate::io`] module.

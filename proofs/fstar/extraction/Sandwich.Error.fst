@@ -55,9 +55,13 @@ let impl
       t_Error
   }
 
+/// Instantiates an empty [`Error`].
+let impl__Error__new (_: Prims.unit) : t_Error =
+  Error (Alloc.Vec.impl__new #Sandwich.Error.Code.t_ErrorCode ()) <: t_Error
+
 /// Instantiates an [`Error`] from an enum value and a string.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_18
+val impl_7
       (#v_ErrorEnum: Type0)
       {| i1: Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum |}
       {| i2: Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode (v_ErrorEnum & string) |}
@@ -65,10 +69,18 @@ val impl_18
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_18':
+val impl_7':
     #v_ErrorEnum: Type0 ->
     {| i1: Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum |} ->
     {| i2: Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode (v_ErrorEnum & string) |}
   -> Core.Convert.t_From t_Error (v_ErrorEnum & string)
 
-let impl_18 = impl_18'
+let impl_7
+      (#v_ErrorEnum: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i1:
+          Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i2:
+          Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode (v_ErrorEnum & string))
+     = impl_7' #v_ErrorEnum #i1 #i2

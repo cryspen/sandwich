@@ -1,4 +1,4 @@
-module Sandwich.Tunnel.Rec_bundle_110524815
+module Sandwich.Tunnel.Rec_bundle_985043041
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open Core
 open FStar.Mul
@@ -10,8 +10,6 @@ let _ =
   let open Sandwich.Error.Code in
   let open Sandwich.Implementation.Openssl3_impl.Tunnel.X509_verify_param in
   let open Sandwich.Tunnel.Tls in
-  let open Alloc.Vec in
-  let open Core.Iter.Traits.Collect in
   ()
 
 /// Convenient wrapper around a `SSL_CTX`.
@@ -130,8 +128,9 @@ val set_alpn_protocols':
     protocols: impl_995885649_
   -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
 
-let set_alpn_protocols #v_S #impl_995885649_ = 
-  set_alpn_protocols' #v_S #impl_995885649_ 
+let set_alpn_protocols
+      (#v_S #impl_995885649_: Type0)
+     = set_alpn_protocols' #v_S #impl_995885649_ 
 
 /// Sets the default parameters for a SSL context.
 assume
@@ -193,8 +192,10 @@ val set_server_name_indication':
     sni: impl_488124255_
   -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
 
-let set_server_name_indication #impl_488124255_ {| i9: Core.Convert.t_AsRef impl_488124255_ string |} = 
-  set_server_name_indication' #impl_488124255_ #i9
+let set_server_name_indication
+      (#impl_488124255_: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i9: Core.Convert.t_AsRef impl_488124255_ string)
+     = set_server_name_indication' #impl_488124255_ #i9
 
 /// Returns the execution mode (Client or Server) and the tls options (`TLSOptions`).
 let configuration_get_mode_and_options
@@ -665,11 +666,6 @@ let try_from
   | Core.Result.Result_Err err ->
     Core.Result.Result_Err err <: Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error
 
-let hax_try_from
-      (ctx: Sandwich.t_Context)
-      (configuration: Sandwich_api_proto.Configuration.t_Configuration)
-    : Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error = try_from ctx configuration
-
 /// Sets the required Subject Alternative Names (SAN) specified in the [`pb_api::TunnelVerifier`]
 /// object.
 let set_subject_alternative_names
@@ -900,11 +896,13 @@ let new_tunnel474967037
       (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO) =
   build ({ f_ssl_ctx = self; f_io = io; f_configuration = configuration } <: t_TunnelBuilder)
 
+
+
 /// Creates a new tunnel from an I/O interface. See [`IO`] from [`crate::io`] module.
 /// The I/O interface must outlive the tunnel, as the tunnel makes use
 /// of it to send and receive data.
 /// If an error occured, the IO interface is returned to the user.
-let new_tunnel499954878
+let new_tunnel779812561
       (self: t_Context665818913)
       (io: Sandwich.Tunnel.Io.t_BoxedIO)
       (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
@@ -921,9 +919,117 @@ let new_tunnel499954878
       <:
       Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
 
+assume val configured: Sandwich_api_proto.Configuration.t_Configuration -> bool
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume val impl_missing: Protobuf.Enums.t_Enum Sandwich_api_proto.Configuration.t_Implementation
+
+assume
+val shr_hax': e1: Sandwich.Error.t_Error -> e: Sandwich_proto.Errors.t_ConfigurationError
+  -> Sandwich.Error.t_Error
+
+let shr_hax = shr_hax'
+
+assume
+val shr_hax_api': e1: Sandwich.Error.t_Error -> e: Sandwich_proto.Errors.t_APIError
+  -> Sandwich.Error.t_Error
+
+let shr_hax_api = shr_hax_api'
+
+let hax_try_from
+      (context: Sandwich.t_Context)
+      (configuration: Sandwich_api_proto.Configuration.t_Configuration)
+    : Prims.Pure (Core.Result.t_Result t_Context665818913 Sandwich.Error.t_Error)
+      (requires configured (configuration))
+      (fun _ -> Prims.l_True) =
+  match Sandwich.Tunnel.Tls.Security.assert_compliance configuration with
+  | Core.Result.Result_Ok _ ->
+    Core.Result.impl__map_err #t_Context665818913
+      #Sandwich.Error.t_Error
+      #Sandwich.Error.t_Error
+      (Core.Result.impl__and_then #Sandwich_api_proto.Configuration.t_Implementation
+          #Sandwich.Error.t_Error
+          #t_Context665818913
+          (Core.Result.impl__map_err #Sandwich_api_proto.Configuration.t_Implementation
+              #i32
+              #Sandwich.Error.t_Error
+              (Protobuf.Enum_or_unknown.impl_1__enum_value #Sandwich_api_proto.Configuration.t_Implementation
+                  configuration.Sandwich_api_proto.Configuration.f_impl___
+                <:
+                Core.Result.t_Result Sandwich_api_proto.Configuration.t_Implementation i32)
+              (fun temp_0_ ->
+                  let _:i32 = temp_0_ in
+                  shr_hax (shr_hax (Sandwich.Error.impl__Error__new () <: Sandwich.Error.t_Error)
+                        (Sandwich_proto.Errors.ConfigurationError_CONFIGURATIONERROR_INVALID_IMPLEMENTATION
+                          <:
+                          Sandwich_proto.Errors.t_ConfigurationError)
+                      <:
+                      Sandwich.Error.t_Error)
+                    (Sandwich_proto.Errors.ConfigurationError_CONFIGURATIONERROR_INVALID
+                      <:
+                      Sandwich_proto.Errors.t_ConfigurationError)
+                  <:
+                  Sandwich.Error.t_Error)
+            <:
+            Core.Result.t_Result Sandwich_api_proto.Configuration.t_Implementation
+              Sandwich.Error.t_Error)
+          (fun v ->
+              let v:Sandwich_api_proto.Configuration.t_Implementation = v in
+              match v with
+              | Sandwich_api_proto.Configuration.Implementation_IMPL_OPENSSL3_OQS_PROVIDER  ->
+                Core.Result.impl__map_err #t_Context665818913
+                  #Sandwich.Error.t_Error
+                  #Sandwich.Error.t_Error
+                  (Core.Result.impl__map #t_Context116464909
+                      #Sandwich.Error.t_Error
+                      #t_Context665818913
+                      (try_from context configuration
+                        <:
+                        Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error)
+                      Context665818913_OpenSSL3
+                    <:
+                    Core.Result.t_Result t_Context665818913 Sandwich.Error.t_Error)
+                  (fun e ->
+                      let e:Sandwich.Error.t_Error = e in
+                      shr_hax e
+                        (Sandwich_proto.Errors.ConfigurationError_CONFIGURATIONERROR_INVALID
+                          <:
+                          Sandwich_proto.Errors.t_ConfigurationError)
+                      <:
+                      Sandwich.Error.t_Error)
+                <:
+                Core.Result.t_Result t_Context665818913 Sandwich.Error.t_Error
+              | _ ->
+                Core.Result.Result_Err
+                (shr_hax (shr_hax (Sandwich.Error.impl__Error__new () <: Sandwich.Error.t_Error)
+                        (Sandwich_proto.Errors.ConfigurationError_CONFIGURATIONERROR_INVALID_IMPLEMENTATION
+                          <:
+                          Sandwich_proto.Errors.t_ConfigurationError)
+                      <:
+                      Sandwich.Error.t_Error)
+                    (Sandwich_proto.Errors.ConfigurationError_CONFIGURATIONERROR_INVALID
+                      <:
+                      Sandwich_proto.Errors.t_ConfigurationError)
+                  <:
+                  Sandwich.Error.t_Error)
+                <:
+                Core.Result.t_Result t_Context665818913 Sandwich.Error.t_Error)
+        <:
+        Core.Result.t_Result t_Context665818913 Sandwich.Error.t_Error)
+      (fun e ->
+          let e:Sandwich.Error.t_Error = e in
+          shr_hax_api e
+            (Sandwich_proto.Errors.APIError_APIERROR_CONFIGURATION
+              <:
+              Sandwich_proto.Errors.t_APIError)
+          <:
+          Sandwich.Error.t_Error)
+  | Core.Result.Result_Err err ->
+    Core.Result.Result_Err err <: Core.Result.t_Result t_Context665818913 Sandwich.Error.t_Error
+
 let new_tunnel735299623
       (context: t_Context665818913)
       (io: Sandwich.Tunnel.Io.t_BoxedIO)
       (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
     : Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO) =
-  new_tunnel499954878 context io configuration
+  new_tunnel779812561 context io configuration

@@ -134,6 +134,7 @@ impl From<ErrorCode> for Error {
 ///   // It is read as "a certificate error occurred: malformed certificate,
 ///   // because: an ASN.1 error occurred: invalid format".
 /// ```
+#[hax_lib::opaque]
 impl<ErrorEnum: code::AllowedProtoBasedErrorCodeEnum> std::ops::Shr<ErrorEnum> for Error
 where
     ErrorCode: From<ErrorEnum>,
@@ -147,6 +148,7 @@ where
     }
 }
 
+#[hax_lib::opaque]
 /// Appends an [`Error`] into the chain, using the `>>` operator and a string.
 impl<'s, ErrorEnum: code::AllowedProtoBasedErrorCodeEnum, S> std::ops::Shr<(ErrorEnum, &'s S)>
     for Error
@@ -163,6 +165,7 @@ where
     }
 }
 
+#[hax_lib::opaque]
 /// Appends an [`Error`] into the chain, using the `>>` operator and a string.
 impl<'s, ErrorEnum: code::AllowedProtoBasedErrorCodeEnum> std::ops::Shr<(ErrorEnum, &'s str)>
     for Error
@@ -178,6 +181,7 @@ where
     }
 }
 
+#[hax_lib::opaque]
 /// Appends an [`Error`] into the chain, using the `>>` operator and a string.
 impl<ErrorEnum: code::AllowedProtoBasedErrorCodeEnum> std::ops::Shr<(ErrorEnum, String)> for Error
 where
@@ -192,6 +196,7 @@ where
     }
 }
 
+#[hax_lib::opaque]
 /// Appends an [`Error`] into the chain, using the `>>` operator.
 impl std::ops::Shr<ProtoBasedErrorCode> for Error {
     type Output = Self;
@@ -203,6 +208,7 @@ impl std::ops::Shr<ProtoBasedErrorCode> for Error {
     }
 }
 
+#[hax_lib::opaque]
 /// Appends an [`Error`] into the chain, using the `>>` operator and a string.
 impl<S> std::ops::Shr<(ProtoBasedErrorCode, &S)> for Error
 where
@@ -217,6 +223,7 @@ where
     }
 }
 
+#[hax_lib::opaque]
 /// Appends an [`Error`] into the chain, using the `>>` operator and a string.
 impl std::ops::Shr<(ProtoBasedErrorCode, &str)> for Error {
     type Output = Self;
@@ -228,6 +235,7 @@ impl std::ops::Shr<(ProtoBasedErrorCode, &str)> for Error {
     }
 }
 
+#[hax_lib::opaque]
 /// Appends an [`Error`] into the chain, using the `>>` operator.
 impl std::ops::Shr<(ProtoBasedErrorCode, String)> for Error {
     type Output = Self;
@@ -239,6 +247,7 @@ impl std::ops::Shr<(ProtoBasedErrorCode, String)> for Error {
     }
 }
 
+#[hax_lib::opaque]
 /// Appends an [`Error`] into the chain, using the `>>` operator.
 impl std::ops::Shr<ErrorCode> for Error {
     type Output = Self;
@@ -250,6 +259,7 @@ impl std::ops::Shr<ErrorCode> for Error {
     }
 }
 
+#[hax_lib::opaque]
 /// Implements [`std::fmt::Display`] for [`Error`].
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
@@ -260,6 +270,7 @@ impl std::fmt::Display for Error {
     }
 }
 
+#[hax_lib::opaque]
 /// Implements [`std::fmt::Debug`] for [`Error`].
 impl std::fmt::Debug for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
