@@ -149,6 +149,7 @@ impl SslContext {
     }
 
     /// Sets the minimum and the maximum TLS versions to use.
+    #[hax_lib::requires(fstar!("configured(configuration)"))]
     fn set_min_and_max_tls_version(&self, tls_options: &pb_api::TLSOptions) -> Result<()> {
         let (min_version, max_version) =
             tls::support::tls_options_get_min_max_tls_version(tls_options);
@@ -694,9 +695,11 @@ fn get_verify_mode_from_mode_and_x509_verifier(
 pub(crate) type PinnedTunnel<'a> = Pin<Box<Tunnel<'a>>>;
 
 
+#[hax_lib::attributes]
 impl<'a> Context<'a> {
     /// Instantiates a new [`Context`] from a [protobuf configuration](`pb_api::Configuration`)
     /// and a top-level context.
+    #[hax_lib::requires(fstar!("configured(configuration)"))]
     pub(crate) fn try_from<'b>(
         ctx: &'a crate::Context,
         configuration: &pb_api::Configuration,

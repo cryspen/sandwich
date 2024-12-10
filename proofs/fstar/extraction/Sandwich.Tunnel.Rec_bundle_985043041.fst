@@ -193,66 +193,6 @@ val set_maximum_tls_version': self: t_SslContext -> version: Sandwich.Tunnel.Tls
 
 let set_maximum_tls_version = set_maximum_tls_version'
 
-assume val configured: Sandwich_api_proto.Configuration.t_Configuration -> bool
-/// Defines the minimum TLS version to use.
-assume
-val set_minimum_tls_version': self: t_SslContext -> version: Sandwich.Tunnel.Tls.t_TlsVersion
-  -> Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
-      (requires exists c. configured c (*/\ allows_tls_version c version*))
-      (fun _ -> Prims.l_True)
-
-let set_minimum_tls_version = set_minimum_tls_version'
-
-/// Sets the minimum and the maximum TLS versions to use.
-let set_min_and_max_tls_version
-      (self: t_SslContext)
-      (tls_options: Sandwich_api_proto.Tls.t_TLSOptions)
-    : Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
-  let min_version, max_version:(Sandwich.Tunnel.Tls.t_TlsVersion & Sandwich.Tunnel.Tls.t_TlsVersion)
-  =
-    tls_options_get_min_max_tls_version tls_options
-  in
-  match set_minimum_tls_version self min_version with
-  | Core.Result.Result_Ok _ -> set_maximum_tls_version self max_version
-  | Core.Result.Result_Err err ->
-    Core.Result.Result_Err err <: Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
-
-/// Sets the trust parameter on the verification parameters object, depending
-/// on the execution mode.
-assume
-val set_trust': self: t_SslContext -> mode: t_Mode
-  -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
-
-let set_trust = set_trust'
-
-/// Instantiates a new SSL context (`SSL_CTX`).
-assume
-val new_ssl_context': ctx: Sandwich.t_Context -> mode: t_Mode
-  -> Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st)
-      Sandwich.Error.t_Error
-
-let new_ssl_context = new_ssl_context'
-
-/// Creates a new Sandwich BIO and attach it to the SSL object.
-assume
-val create_and_attach_bio': self: t_Ssl -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
-
-let create_and_attach_bio = create_and_attach_bio'
-
-/// Sets the server name indication (SNI).
-assume
-val set_server_name_indication':
-    #impl_488124255_: Type0 ->
-    {| i9: Core.Convert.t_AsRef impl_488124255_ string |} ->
-    self: t_Ssl ->
-    sni: impl_488124255_
-  -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
-
-let set_server_name_indication
-      (#impl_488124255_: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i9: Core.Convert.t_AsRef impl_488124255_ string)
-     = set_server_name_indication' #impl_488124255_ #i9
-
 /// Returns the execution mode (Client or Server) and the tls options (`TLSOptions`).
 let configuration_get_mode_and_options
       (configuration: Sandwich_api_proto.Configuration.t_Configuration)
@@ -365,6 +305,77 @@ let configuration_get_mode_and_options
           Sandwich_proto.Errors.t_TLSConfigurationError)
       <:
       Sandwich.Error.t_Error)
+
+
+assume val configured: Sandwich_api_proto.Configuration.t_Configuration -> bool
+/// Defines the minimum TLS version to use.
+assume
+val set_minimum_tls_version': self: t_SslContext -> version: Sandwich.Tunnel.Tls.t_TlsVersion
+  -> Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+      (requires exists c mode max_version tls_options. 
+        configured c /\ 
+        configuration_get_mode_and_options c ==
+        Core.Result.Result_Ok (mode, tls_options) /\
+        (tls_options_get_min_max_tls_version tls_options == (version, max_version)))
+      (fun _ -> Prims.l_True)
+
+let set_minimum_tls_version = set_minimum_tls_version'
+
+/// Sets the minimum and the maximum TLS versions to use.
+let set_min_and_max_tls_version
+      (self: t_SslContext)
+      (tls_options: Sandwich_api_proto.Tls.t_TLSOptions)
+    : Prims.Pure (Core.Result.t_Result Prims.unit Sandwich.Error.t_Error)
+      (requires exists c mode. configured c /\ 
+        configuration_get_mode_and_options c ==
+        Core.Result.Result_Ok (mode, tls_options))
+      (fun _ -> Prims.l_True) =
+  let min_version, max_version:(Sandwich.Tunnel.Tls.t_TlsVersion & Sandwich.Tunnel.Tls.t_TlsVersion)
+  =
+    tls_options_get_min_max_tls_version tls_options
+  in
+  match set_minimum_tls_version self min_version with
+  | Core.Result.Result_Ok _ -> set_maximum_tls_version self max_version
+  | Core.Result.Result_Err err ->
+    Core.Result.Result_Err err <: Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+
+/// Sets the trust parameter on the verification parameters object, depending
+/// on the execution mode.
+assume
+val set_trust': self: t_SslContext -> mode: t_Mode
+  -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+
+let set_trust = set_trust'
+
+/// Instantiates a new SSL context (`SSL_CTX`).
+assume
+val new_ssl_context': ctx: Sandwich.t_Context -> mode: t_Mode
+  -> Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st)
+      Sandwich.Error.t_Error
+
+let new_ssl_context = new_ssl_context'
+
+/// Creates a new Sandwich BIO and attach it to the SSL object.
+assume
+val create_and_attach_bio': self: t_Ssl -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+
+let create_and_attach_bio = create_and_attach_bio'
+
+/// Sets the server name indication (SNI).
+assume
+val set_server_name_indication':
+    #impl_488124255_: Type0 ->
+    {| i9: Core.Convert.t_AsRef impl_488124255_ string |} ->
+    self: t_Ssl ->
+    sni: impl_488124255_
+  -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+
+let set_server_name_indication
+      (#impl_488124255_: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i9: Core.Convert.t_AsRef impl_488124255_ string)
+     = set_server_name_indication' #impl_488124255_ #i9
+
+
 
 /// Returns the X.509 verifier if exists.
 /// If no X.509 verifier is found, and `EmptyVerifier` isn't specified, then
@@ -520,9 +531,11 @@ type t_Tunnel70284935 =
 /// Instantiates a new [`Context`] from a [protobuf configuration](`pb_api::Configuration`)
 /// and a top-level context.
 let try_from
-      (ctx: Sandwich.t_Context)
-      (configuration: Sandwich_api_proto.Configuration.t_Configuration)
-    : Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error =
+(ctx: Sandwich.t_Context)
+(configuration: Sandwich_api_proto.Configuration.t_Configuration)
+: Prims.Pure (Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error)
+(requires configured (configuration))
+(fun _ -> Prims.l_True) =
   let lib_ctx:Sandwich.Implementation.Openssl3_impl.t_LibCtx = ctx.Sandwich.f_ossl3_lib_ctx in
   match configuration_get_mode_and_options configuration with
   | Core.Result.Result_Ok (mode, tls_options) ->
