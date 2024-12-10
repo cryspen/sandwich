@@ -96,7 +96,11 @@ impl SslContext {
     }
 
     /// Defines the minimum TLS version to use.
-    #[hax_lib::requires(fstar!("exists c. configured c /\\ allows_tls_version c version"))]
+    #[hax_lib::requires(fstar!("exists c mode max_version tls_options. 
+        configured c /\\
+        configuration_get_mode_and_options c ==
+        Core.Result.Result_Ok (mode, tls_options) /\\
+        (tls_options_get_min_max_tls_version tls_options == (version, max_version))"))]
     #[hax_lib::opaque]
     fn set_minimum_tls_version(&self, version: TlsVersion) -> Result<()> {
         // `SSL_CTX_set_min_proto_version` is a C macro.
@@ -149,7 +153,9 @@ impl SslContext {
     }
 
     /// Sets the minimum and the maximum TLS versions to use.
-    #[hax_lib::requires(fstar!("configured(configuration)"))]
+    #[hax_lib::requires(fstar!("exists c mode. configured c /\\
+        configuration_get_mode_and_options c ==
+        Core.Result.Result_Ok (mode, tls_options)"))]
     fn set_min_and_max_tls_version(&self, tls_options: &pb_api::TLSOptions) -> Result<()> {
         let (min_version, max_version) =
             tls::support::tls_options_get_min_max_tls_version(tls_options);
