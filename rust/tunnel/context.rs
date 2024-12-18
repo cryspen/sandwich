@@ -83,7 +83,9 @@ fn shr_hax_api(e1: crate::Error, e: pb::APIError) -> crate::Error {
 
 use std::ops::Shr;
 #[allow(unused_variables)]
-//#[hax_lib::fstar::before(impl, "assume val configured: t_Configuration -> bool")]
+//#[hax_lib::fstar::before(impl, "assume val configured: Sandwich_api_proto.Configuration.t_Configuration -> bool")]
+/*#[hax_lib::fstar::before(impl, "[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume val missing_impl: Protobuf.Enums.t_Enum Sandwich_api_proto.Configuration.t_Implementation")]*/
 #[hax_lib::requires(fstar!("configured(configuration)"))]
 fn hax_try_from<'a> (
   context: &'a crate::Context,

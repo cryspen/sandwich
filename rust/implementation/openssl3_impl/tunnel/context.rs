@@ -98,7 +98,7 @@ impl SslContext {
     /// Defines the minimum TLS version to use.
     #[hax_lib::requires(fstar!("exists c mode max_version tls_options. 
         configured c /\\
-        configuration_get_mode_and_options c ==
+        $tls::support::configuration_get_mode_and_options c ==
         Core.Result.Result_Ok (mode, tls_options) /\\
         (tls_options_get_min_max_tls_version tls_options == (version, max_version))"))]
     #[hax_lib::opaque]

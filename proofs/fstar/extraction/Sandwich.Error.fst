@@ -61,13 +61,6 @@ let impl__Error__new (_: Prims.unit) : t_Error =
 
 /// Instantiates an [`Error`] from an enum value and a string.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_7
-      (#v_ErrorEnum: Type0)
-      {| i1: Sandwich.Error.Code.t_AllowedProtoBasedErrorCodeEnum v_ErrorEnum |}
-      {| i2: Core.Convert.t_From Sandwich.Error.Code.t_ErrorCode (v_ErrorEnum & string) |}
-    : Core.Convert.t_From t_Error (v_ErrorEnum & string)
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
 val impl_7':
     #v_ErrorEnum: Type0 ->

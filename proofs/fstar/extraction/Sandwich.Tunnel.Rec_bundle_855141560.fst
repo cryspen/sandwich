@@ -1,9 +1,7 @@
-module Sandwich.Tunnel.Rec_bundle_379535432
+module Sandwich.Tunnel.Rec_bundle_855141560
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open Core
 open FStar.Mul
-
-assume val configured: Sandwich_api_proto.Configuration.t_Configuration -> bool
 
 let _ =
   (* This module has implicit dependencies, here we make them explicit. *)
@@ -13,6 +11,11 @@ let _ =
   let open Sandwich.Implementation.Openssl3_impl.Tunnel.X509_verify_param in
   let open Sandwich.Tunnel.Tls in
   ()
+
+assume val configured: Sandwich_api_proto.Configuration.t_Configuration -> bool
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume val missing_impl: Protobuf.Enums.t_Enum Sandwich_api_proto.Configuration.t_Implementation
 
 /// Convenient wrapper around a `SSL_CTX`.
 type t_SslContext = | SslContext : Core.Ptr.Non_null.t_NonNull Openssl3.t_ssl_ctx_st -> t_SslContext
@@ -26,6 +29,12 @@ type t_Ssl = | Ssl : Core.Ptr.Non_null.t_NonNull Openssl3.t_ssl_st -> t_Ssl
 type t_Mode =
   | Mode_Client : t_Mode
   | Mode_Server : t_Mode
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_2': Core.Cmp.t_PartialEq t_Mode t_Mode
+
+let impl_2 = impl_2'
 
 /// Tunnel context.
 type t_Context116464909 = {
@@ -151,13 +160,15 @@ assume
 val set_alpn_protocols':
     #v_S: Type0 ->
     #impl_995885649_: Type0 ->
+    {| i2: Core.Convert.t_AsRef v_S string |} ->
     self: t_SslContext ->
     protocols: impl_995885649_
   -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
 
 let set_alpn_protocols
       (#v_S #impl_995885649_: Type0)
-     = set_alpn_protocols' #v_S #impl_995885649_
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core.Convert.t_AsRef v_S string)
+     = set_alpn_protocols' #v_S #impl_995885649_ #i2
 
 /// Sets the default parameters for a SSL context.
 assume
@@ -179,7 +190,67 @@ val set_identity':
 
 let set_identity = set_identity'
 
+/// Defines the maximum TLS version to use.
+assume
+val set_maximum_tls_version': self: t_SslContext -> version: Sandwich.Tunnel.Tls.t_TlsVersion
+  -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
 
+let set_maximum_tls_version = set_maximum_tls_version'
+
+/// Sets the trust parameter on the verification parameters object, depending
+/// on the execution mode.
+assume
+val set_trust': self: t_SslContext -> mode: t_Mode
+  -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+
+let set_trust = set_trust'
+
+/// Instantiates a new SSL object.
+assume
+val new_ssl': self: t_Context116464909
+  -> Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_st) Sandwich.Error.t_Error
+
+let new_ssl = new_ssl'
+
+/// Instantiates a new SSL context (`SSL_CTX`).
+assume
+val new_ssl_context': ctx: Sandwich.t_Context -> mode: t_Mode
+  -> Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st)
+      Sandwich.Error.t_Error
+
+let new_ssl_context = new_ssl_context'
+
+/// Creates a new Sandwich BIO and attach it to the SSL object.
+assume
+val create_and_attach_bio': self: t_Ssl -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+
+let create_and_attach_bio = create_and_attach_bio'
+
+/// Sets the server name indication (SNI).
+assume
+val set_server_name_indication':
+    #impl_488124255_: Type0 ->
+    {| i9: Core.Convert.t_AsRef impl_488124255_ string |} ->
+    self: t_Ssl ->
+    sni: impl_488124255_
+  -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+
+let set_server_name_indication
+      (#impl_488124255_: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i9: Core.Convert.t_AsRef impl_488124255_ string)
+     = set_server_name_indication' #impl_488124255_ #i9
+
+assume
+val shr_hax': e1: Sandwich.Error.t_Error -> e: Sandwich_proto.Errors.t_ConfigurationError
+  -> Sandwich.Error.t_Error
+
+let shr_hax = shr_hax'
+
+assume
+val shr_hax_api': e1: Sandwich.Error.t_Error -> e: Sandwich_proto.Errors.t_APIError
+  -> Sandwich.Error.t_Error
+
+let shr_hax_api = shr_hax_api'
 
 /// Returns the execution mode (Client or Server) and the tls options (`TLSOptions`).
 let configuration_get_mode_and_options
@@ -294,14 +365,6 @@ let configuration_get_mode_and_options
       <:
       Sandwich.Error.t_Error)
 
-
-/// Defines the maximum TLS version to use.
-assume
-val set_maximum_tls_version': self: t_SslContext -> version: Sandwich.Tunnel.Tls.t_TlsVersion
-  -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
-
-let set_maximum_tls_version = set_maximum_tls_version'
-
 /// Defines the minimum TLS version to use.
 assume
 val set_minimum_tls_version': self: t_SslContext -> version: Sandwich.Tunnel.Tls.t_TlsVersion
@@ -309,7 +372,8 @@ val set_minimum_tls_version': self: t_SslContext -> version: Sandwich.Tunnel.Tls
       (requires
         exists c mode max_version tls_options.
           configured c /\
-          configuration_get_mode_and_options c == Core.Result.Result_Ok (mode, tls_options) /\
+          configuration_get_mode_and_options c ==
+          Core.Result.Result_Ok (mode, tls_options) /\
           (tls_options_get_min_max_tls_version tls_options == (version, max_version)))
       (fun _ -> Prims.l_True)
 
@@ -333,62 +397,6 @@ let set_min_and_max_tls_version
   | Core.Result.Result_Ok _ -> set_maximum_tls_version self max_version
   | Core.Result.Result_Err err ->
     Core.Result.Result_Err err <: Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
-
-/// Sets the trust parameter on the verification parameters object, depending
-/// on the execution mode.
-assume
-val set_trust': self: t_SslContext -> mode: t_Mode
-  -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
-
-let set_trust = set_trust'
-
-/// Instantiates a new SSL object.
-assume
-val new_ssl': self: t_Context116464909
-  -> Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_st) Sandwich.Error.t_Error
-
-let new_ssl = new_ssl'
-
-/// Instantiates a new SSL context (`SSL_CTX`).
-assume
-val new_ssl_context': ctx: Sandwich.t_Context -> mode: t_Mode
-  -> Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st)
-      Sandwich.Error.t_Error
-
-let new_ssl_context = new_ssl_context'
-
-/// Creates a new Sandwich BIO and attach it to the SSL object.
-assume
-val create_and_attach_bio': self: t_Ssl -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
-
-let create_and_attach_bio = create_and_attach_bio'
-
-/// Sets the server name indication (SNI).
-assume
-val set_server_name_indication':
-    #impl_488124255_: Type0 ->
-    {| i9: Core.Convert.t_AsRef impl_488124255_ string |} ->
-    self: t_Ssl ->
-    sni: impl_488124255_
-  -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
-
-let set_server_name_indication
-      (#impl_488124255_: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i9: Core.Convert.t_AsRef impl_488124255_ string)
-     = set_server_name_indication' #impl_488124255_ #i9
-
-assume
-val shr_hax': e1: Sandwich.Error.t_Error -> e: Sandwich_proto.Errors.t_ConfigurationError
-  -> Sandwich.Error.t_Error
-
-let shr_hax = shr_hax'
-
-assume
-val shr_hax_api': e1: Sandwich.Error.t_Error -> e: Sandwich_proto.Errors.t_APIError
-  -> Sandwich.Error.t_Error
-
-let shr_hax_api = shr_hax_api'
-
 
 /// Returns the X.509 verifier if exists.
 /// If no X.509 verifier is found, and `EmptyVerifier` isn't specified, then
@@ -988,7 +996,7 @@ let new_tunnel779812561
       (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
     : Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO) =
   match self with
-  | (Context665818913_OpenSSL3 c) ->
+  | Context665818913_OpenSSL3 c ->
     match new_tunnel235737456 c io configuration with
     | Core.Result.Result_Ok hoist4 ->
       Core.Result.Result_Ok (Tunnel70284935_OpenSSL3 hoist4 <: t_Tunnel70284935)
@@ -998,10 +1006,6 @@ let new_tunnel779812561
       Core.Result.Result_Err err
       <:
       Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-assume val impl_missing: Protobuf.Enums.t_Enum Sandwich_api_proto.Configuration.t_Implementation
-
 
 let hax_try_from
       (context: Sandwich.t_Context)

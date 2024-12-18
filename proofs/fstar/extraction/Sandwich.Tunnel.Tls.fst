@@ -26,6 +26,12 @@ let impl_1: Core.Default.t_Default t_TunnelSecurityRequirements =
     f_default = fun (_: Prims.unit) -> impl__TunnelSecurityRequirements__new ()
   }
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_12': Core.Clone.t_Clone t_TunnelSecurityRequirements
+
+let impl_12 = impl_12'
+
 /// Verify mode.
 type t_VerifyMode =
   | VerifyMode_None : t_VerifyMode
