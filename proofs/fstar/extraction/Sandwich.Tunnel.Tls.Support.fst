@@ -3,10 +3,10 @@ module Sandwich.Tunnel.Tls.Support
 open Core
 open FStar.Mul
 
-include Sandwich.Tunnel.Rec_bundle_855141560 {tls_options_get_min_max_tls_version as tls_options_get_min_max_tls_version}
+include Sandwich.Tunnel.Rec_bundle_54252925 {tls_options_get_min_max_tls_version as tls_options_get_min_max_tls_version}
 
-include Sandwich.Tunnel.Rec_bundle_855141560 {configuration_get_mode_and_options as configuration_get_mode_and_options}
+include Sandwich.Tunnel.Rec_bundle_54252925 {configuration_get_mode_and_options as configuration_get_mode_and_options}
 
-include Sandwich.Tunnel.Rec_bundle_855141560 {tls_options_get_x509_verifier as tls_options_get_x509_verifier}
+include Sandwich.Tunnel.Rec_bundle_54252925 {tls_options_get_x509_verifier as tls_options_get_x509_verifier}
 
-include Sandwich.Tunnel.Rec_bundle_855141560 {x509_verifier_verify_emptiness as x509_verifier_verify_emptiness}
+include Sandwich.Tunnel.Rec_bundle_54252925 {x509_verifier_verify_emptiness as x509_verifier_verify_emptiness}

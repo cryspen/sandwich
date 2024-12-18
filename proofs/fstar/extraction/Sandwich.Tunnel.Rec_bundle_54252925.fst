@@ -1,4 +1,4 @@
-module Sandwich.Tunnel.Rec_bundle_855141560
+module Sandwich.Tunnel.Rec_bundle_54252925
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open Core
 open FStar.Mul
@@ -16,6 +16,9 @@ assume val configured: Sandwich_api_proto.Configuration.t_Configuration -> bool
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume val missing_impl: Protobuf.Enums.t_Enum Sandwich_api_proto.Configuration.t_Implementation
+
+assume
+val set_verify_mode_called: verify_mode: Sandwich.Tunnel.Tls.t_VerifyMode -> Type0
 
 /// Convenient wrapper around a `SSL_CTX`.
 type t_SslContext = | SslContext : Core.Ptr.Non_null.t_NonNull Openssl3.t_ssl_ctx_st -> t_SslContext
@@ -54,16 +57,18 @@ let security_requirements = security_requirements'
 /// A Sandwich context.
 type t_Context665818913 = | Context665818913_OpenSSL3 : t_Context116464909 -> t_Context665818913
 
-assume
-val set_verify_mode_called: verify_mode: Sandwich.Tunnel.Tls.t_VerifyMode -> Type0
-
 /// Sets the verification mode.
 /// If a `X509Verifier` structure is present in the protobuf configuration,
 /// then `SSL_VERIFY_PEER` is used in client mode, and `SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT`
 /// is used in server mode.
 assume
 val set_verify_mode': self: t_SslContext -> verify_mode: Sandwich.Tunnel.Tls.t_VerifyMode
-  -> Pure Prims.unit (requires True) (ensures fun _ -> set_verify_mode_called verify_mode)
+  -> Prims.Pure Prims.unit
+      Prims.l_True
+      (ensures
+        fun temp_0_ ->
+          let _:Prims.unit = temp_0_ in
+          set_verify_mode_called verify_mode)
 
 let set_verify_mode = set_verify_mode'
 
@@ -559,7 +564,10 @@ let try_from
       (configuration: Sandwich_api_proto.Configuration.t_Configuration)
     : Prims.Pure (Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error)
       (requires configured (configuration))
-      (ensures fun result -> exists mode. Core.Result.Result_Ok? result ==> set_verify_mode_called mode) =
+      (ensures
+        fun result ->
+          let result:Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error = result in
+          exists mode. Core.Result.Result_Ok? result ==> set_verify_mode_called mode) =
   let lib_ctx:Sandwich.Implementation.Openssl3_impl.t_LibCtx = ctx.Sandwich.f_ossl3_lib_ctx in
   match configuration_get_mode_and_options configuration with
   | Core.Result.Result_Ok (mode, tls_options) ->
@@ -1015,7 +1023,7 @@ let hax_try_from
       (configuration: Sandwich_api_proto.Configuration.t_Configuration)
     : Prims.Pure (Core.Result.t_Result t_Context665818913 Sandwich.Error.t_Error)
       (requires configured (configuration))
-      (ensures fun result -> exists mode. Core.Result.Result_Ok? result ==> set_verify_mode_called mode) =
+      (fun _ -> Prims.l_True) =
   match Sandwich.Tunnel.Tls.Security.assert_compliance configuration with
   | Core.Result.Result_Ok _ ->
     Core.Result.impl__map_err #t_Context665818913

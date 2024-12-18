@@ -644,6 +644,7 @@ impl SslContext {
     /// then `SSL_VERIFY_PEER` is used in client mode, and `SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT`
     /// is used in server mode.
     #[hax_lib::opaque]
+    #[hax_lib::ensures(|_| fstar!("set_verify_mode_called verify_mode"))]
     fn set_verify_mode(&self, verify_mode: VerifyMode) {
         let flag = match verify_mode {
             VerifyMode::None => openssl3::SSL_VERIFY_NONE,
@@ -706,6 +707,7 @@ impl<'a> Context<'a> {
     /// Instantiates a new [`Context`] from a [protobuf configuration](`pb_api::Configuration`)
     /// and a top-level context.
     #[hax_lib::requires(fstar!("configured(configuration)"))]
+    #[hax_lib::ensures(|result| fstar!("exists mode. Core.Result.Result_Ok? result ==> set_verify_mode_called mode"))]
     pub(crate) fn try_from<'b>(
         ctx: &'a crate::Context,
         configuration: &pb_api::Configuration,
