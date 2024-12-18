@@ -1,0 +1,3 @@
+cargo hax into -i '-** +sandwich::implementation::io::IO +sandwich::tunnel::context::hax_try_from +sandwich::tunnel::context::new_tunnel -sandwich::implementation::openssl3_impl::tunnel::bio_method::** +:sandwich::implementation::openssl3_impl::tunnel::X509_verify_param::** +:sandwich::implementation::openssl3_impl::tunnel::verify_callback::** +~sandwich::implementation::openssl3_impl::tunnel::new_tunnel' fstar --interfaces '+!sandwich::implementation::openssl3_impl::tunnel::X509_verify_param::** +!sandwich::implementation::openssl3_impl::tunnel::verify_callback::**'
+rm proofs/fstar/extraction/Sandwich.Implementation.Openssl3_impl.Tunnel.Verify_callback.fst
+patch -p0 -R -u -i hax.patch
