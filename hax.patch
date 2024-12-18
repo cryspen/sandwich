@@ -1,8 +1,8 @@
-diff --git a/proofs/fstar/extraction/Sandwich.Tunnel.Rec_bundle_855141560.fst b/proofs/fstar/extraction/Sandwich.Tunnel.Rec_bundle_855141560.fst
-index 78b563b..880c08d 100644
---- proofs/fstar/extraction/Sandwich.Tunnel.Rec_bundle_855141560.fst
-+++ proofs/fstar/extraction/Sandwich.Tunnel.Rec_bundle_855141560.fst
-@@ -12,11 +12,6 @@ let _ =
+diff --git a/proofs/fstar/extraction/Sandwich.Tunnel.Rec_bundle_54252925.fst b/proofs/fstar/extraction/Sandwich.Tunnel.Rec_bundle_54252925.fst
+index 82233dc..0e964c8 100644
+--- proofs/fstar/extraction/Sandwich.Tunnel.Rec_bundle_54252925.fst
++++ proofs/fstar/extraction/Sandwich.Tunnel.Rec_bundle_54252925.fst
+@@ -12,14 +12,6 @@ let _ =
    let open Sandwich.Tunnel.Tls in
    ()
  
@@ -11,10 +11,13 @@ index 78b563b..880c08d 100644
 -[@@ FStar.Tactics.Typeclasses.tcinstance]
 -assume val missing_impl: Protobuf.Enums.t_Enum Sandwich_api_proto.Configuration.t_Implementation
 -
+-assume
+-val set_verify_mode_called: verify_mode: Sandwich.Tunnel.Tls.t_VerifyMode -> Type0
+-
  /// Convenient wrapper around a `SSL_CTX`.
  type t_SslContext = | SslContext : Core.Ptr.Non_null.t_NonNull Openssl3.t_ssl_ctx_st -> t_SslContext
  
-@@ -161,6 +156,7 @@ val set_alpn_protocols':
+@@ -169,6 +161,7 @@ val set_alpn_protocols':
      #v_S: Type0 ->
      #impl_995885649_: Type0 ->
      {| i2: Core.Convert.t_AsRef v_S string |} ->
@@ -22,7 +25,7 @@ index 78b563b..880c08d 100644
      self: t_SslContext ->
      protocols: impl_995885649_
    -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
-@@ -168,7 +164,10 @@ val set_alpn_protocols':
+@@ -176,7 +169,10 @@ val set_alpn_protocols':
  let set_alpn_protocols
        (#v_S #impl_995885649_: Type0)
        (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core.Convert.t_AsRef v_S string)
@@ -34,7 +37,7 @@ index 78b563b..880c08d 100644
  
  /// Sets the default parameters for a SSL context.
  assume
-@@ -258,16 +257,16 @@ let configuration_get_mode_and_options
+@@ -266,16 +262,16 @@ let configuration_get_mode_and_options
      : Core.Result.t_Result (t_Mode & Sandwich_api_proto.Tls.t_TLSOptions) Sandwich.Error.t_Error =
    Core.Option.impl__ok_or #(t_Mode & Sandwich_api_proto.Tls.t_TLSOptions)
      #Sandwich.Error.t_Error
@@ -56,7 +59,7 @@ index 78b563b..880c08d 100644
                Core.Option.impl__map #Sandwich_api_proto.Tls.t_TLSOptions
                  #(t_Mode & Sandwich_api_proto.Tls.t_TLSOptions)
                  (Core.Option.impl__and_then #Sandwich_api_proto.Tls.t_TLSClientOptions
-@@ -307,7 +306,7 @@ let configuration_get_mode_and_options
+@@ -315,7 +311,7 @@ let configuration_get_mode_and_options
                      (Mode_Client <: t_Mode), tls <: (t_Mode & Sandwich_api_proto.Tls.t_TLSOptions))
                <:
                Core.Option.t_Option (t_Mode & Sandwich_api_proto.Tls.t_TLSOptions)
@@ -65,7 +68,7 @@ index 78b563b..880c08d 100644
                Core.Option.impl__map #Sandwich_api_proto.Tls.t_TLSOptions
                  #(t_Mode & Sandwich_api_proto.Tls.t_TLSOptions)
                  (Core.Option.impl__and_then #Sandwich_api_proto.Tls.t_TLSServerOptions
-@@ -372,7 +371,7 @@ val set_minimum_tls_version': self: t_SslContext -> version: Sandwich.Tunnel.Tls
+@@ -380,7 +376,7 @@ val set_minimum_tls_version': self: t_SslContext -> version: Sandwich.Tunnel.Tls
        (requires
          exists c mode max_version tls_options.
            configured c /\
@@ -74,7 +77,7 @@ index 78b563b..880c08d 100644
            Core.Result.Result_Ok (mode, tls_options) /\
            (tls_options_get_min_max_tls_version tls_options == (version, max_version)))
        (fun _ -> Prims.l_True)
-@@ -563,7 +562,7 @@ let try_from
+@@ -574,7 +570,7 @@ let try_from
      (match new_ssl_context ctx mode with
        | Core.Result.Result_Ok ssl_ctx ->
          let ssl_ctx_wrapped:t_SslContext =
@@ -83,7 +86,7 @@ index 78b563b..880c08d 100644
            <:
            t_SslContext
          in
-@@ -852,7 +851,7 @@ let prepare_ssl (self: t_TunnelBuilder)
+@@ -863,7 +859,7 @@ let prepare_ssl (self: t_TunnelBuilder)
      (match new_ssl self.f_ssl_ctx with
        | Core.Result.Result_Ok ssl ->
          let ssl_wrapped:t_Ssl =
