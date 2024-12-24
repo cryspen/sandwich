@@ -3,24 +3,24 @@ module Sandwich.Implementation.Openssl3_impl.Tunnel
 open Core
 open FStar.Mul
 
-include Sandwich.Tunnel.Rec_bundle_54252925 {t_Context116464909 as t_Context}
+include Sandwich.Tunnel.Cyclic_bundle_473584177 {t_Context_116464909 as t_Context}
 
-include Sandwich.Tunnel.Rec_bundle_54252925 {f__lib_ctx as f__lib_ctx}
+include Sandwich.Tunnel.Cyclic_bundle_473584177 {f__lib_ctx as f__lib_ctx}
 
-include Sandwich.Tunnel.Rec_bundle_54252925 {f_ssl_ctx as f_ssl_ctx}
+include Sandwich.Tunnel.Cyclic_bundle_473584177 {f_ssl_ctx as f_ssl_ctx}
 
-include Sandwich.Tunnel.Rec_bundle_54252925 {f_security_requirements as f_security_requirements}
+include Sandwich.Tunnel.Cyclic_bundle_473584177 {f_security_requirements as f_security_requirements}
 
-include Sandwich.Tunnel.Rec_bundle_54252925 {f_mode as f_mode}
+include Sandwich.Tunnel.Cyclic_bundle_473584177 {f_mode as f_mode}
 
-include Sandwich.Tunnel.Rec_bundle_54252925 {t_Tunnel364847772 as t_Tunnel}
+include Sandwich.Tunnel.Cyclic_bundle_473584177 {t_Tunnel_364847772 as t_Tunnel}
 
-include Sandwich.Tunnel.Rec_bundle_54252925 {f__ssl_ctx as f__ssl_ctx}
+include Sandwich.Tunnel.Cyclic_bundle_473584177 {f__ssl_ctx as f__ssl_ctx}
 
-include Sandwich.Tunnel.Rec_bundle_54252925 {f_ssl as f_ssl}
+include Sandwich.Tunnel.Cyclic_bundle_473584177 {f_ssl as f_ssl}
 
-include Sandwich.Tunnel.Rec_bundle_54252925 {f_security_requirements as f_security_requirements}
+include Sandwich.Tunnel.Cyclic_bundle_473584177 {f_security_requirements as f_security_requirements}
 
-include Sandwich.Tunnel.Rec_bundle_54252925 {f_io as f_io}
+include Sandwich.Tunnel.Cyclic_bundle_473584177 {f_io as f_io}
 
-include Sandwich.Tunnel.Rec_bundle_54252925 {f_state as f_state}
+include Sandwich.Tunnel.Cyclic_bundle_473584177 {f_state as f_state}

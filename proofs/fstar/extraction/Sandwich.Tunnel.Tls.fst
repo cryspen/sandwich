@@ -44,16 +44,20 @@ let get_tls13_config (cfg: Sandwich_api_proto.Configuration.t_Configuration)
   match
     Core.Option.impl__as_ref #Sandwich_api_proto.Configuration.t_Opts
       cfg.Sandwich_api_proto.Configuration.f_opts
+    <:
+    Core.Option.t_Option Sandwich_api_proto.Configuration.t_Opts
   with
   | Core.Option.Option_Some opts ->
-    (match opts with
+    (match opts <: Sandwich_api_proto.Configuration.t_Opts with
       | Sandwich_api_proto.Configuration.Opts_Client c ->
         (match
             Core.Option.impl__as_ref #Sandwich_api_proto.Configuration.Client_options.t_Opts
               c.Sandwich_api_proto.Configuration.f_opts
+            <:
+            Core.Option.t_Option Sandwich_api_proto.Configuration.Client_options.t_Opts
           with
           | Core.Option.Option_Some opts ->
-            (match opts with
+            (match opts <: Sandwich_api_proto.Configuration.Client_options.t_Opts with
               | Sandwich_api_proto.Configuration.Client_options.Opts_Tls tls ->
                 Core.Option.impl__and_then #Sandwich_api_proto.Tls.t_TLSOptions
                   #Sandwich_api_proto.Tls.t_TLSv13Config
@@ -78,9 +82,11 @@ let get_tls13_config (cfg: Sandwich_api_proto.Configuration.t_Configuration)
         (match
             Core.Option.impl__as_ref #Sandwich_api_proto.Configuration.Server_options.t_Opts
               c.Sandwich_api_proto.Configuration.f_opts
+            <:
+            Core.Option.t_Option Sandwich_api_proto.Configuration.Server_options.t_Opts
           with
           | Core.Option.Option_Some opts ->
-            (match opts with
+            (match opts <: Sandwich_api_proto.Configuration.Server_options.t_Opts with
               | Sandwich_api_proto.Configuration.Server_options.Opts_Tls tls ->
                 Core.Option.impl__and_then #Sandwich_api_proto.Tls.t_TLSOptions
                   #Sandwich_api_proto.Tls.t_TLSv13Config

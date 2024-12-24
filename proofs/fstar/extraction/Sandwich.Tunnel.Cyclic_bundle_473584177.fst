@@ -1,4 +1,4 @@
-module Sandwich.Tunnel.Rec_bundle_54252925
+module Sandwich.Tunnel.Cyclic_bundle_473584177
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open Core
 open FStar.Mul
@@ -11,7 +11,6 @@ let _ =
   let open Sandwich.Implementation.Openssl3_impl.Tunnel.X509_verify_param in
   let open Sandwich.Tunnel.Tls in
   ()
-
 assume val configured: Sandwich_api_proto.Configuration.t_Configuration -> bool
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -40,7 +39,7 @@ val impl_2': Core.Cmp.t_PartialEq t_Mode t_Mode
 let impl_2 = impl_2'
 
 /// Tunnel context.
-type t_Context116464909 = {
+type t_Context_116464909 = {
   f__lib_ctx:Sandwich.Implementation.Openssl3_impl.t_LibCtx;
   f_ssl_ctx:Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st;
   f_security_requirements:Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements;
@@ -49,13 +48,13 @@ type t_Context116464909 = {
 
 /// Returns the security requirements of the context.
 assume
-val security_requirements': self: t_Context116464909
+val security_requirements': self: t_Context_116464909
   -> Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements
 
 let security_requirements = security_requirements'
 
 /// A Sandwich context.
-type t_Context665818913 = | Context665818913_OpenSSL3 : t_Context116464909 -> t_Context665818913
+type t_Context_665818913 = | Context_665818913_OpenSSL3 : t_Context_116464909 -> t_Context_665818913
 
 /// Sets the verification mode.
 /// If a `X509Verifier` structure is present in the protobuf configuration,
@@ -107,7 +106,7 @@ let tls_options_get_min_max_tls_version (tls_options: Sandwich_api_proto.Tls.t_T
 /// Tunnel builder.
 /// This is a convenient aggregate of useful values to build a tunnel.
 type t_TunnelBuilder = {
-  f_ssl_ctx:t_Context116464909;
+  f_ssl_ctx:t_Context_116464909;
   f_io:Sandwich.Tunnel.Io.t_BoxedIO;
   f_configuration:Sandwich_api_proto.Tunnel.t_TunnelConfiguration
 }
@@ -176,6 +175,7 @@ val set_alpn_protocols':
 let set_alpn_protocols
       (#v_S #impl_995885649_: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core.Convert.t_AsRef v_S string)
+      
      = set_alpn_protocols' #v_S #impl_995885649_ #i2
 
 /// Sets the default parameters for a SSL context.
@@ -215,7 +215,7 @@ let set_trust = set_trust'
 
 /// Instantiates a new SSL object.
 assume
-val new_ssl': self: t_Context116464909
+val new_ssl': self: t_Context_116464909
   -> Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_st) Sandwich.Error.t_Error
 
 let new_ssl = new_ssl'
@@ -274,7 +274,7 @@ let configuration_get_mode_and_options
           Core.Option.t_Option Sandwich_api_proto.Configuration.t_Opts)
         (fun opts ->
             let opts:Sandwich_api_proto.Configuration.t_Opts = opts in
-            match opts with
+            match opts <: Sandwich_api_proto.Configuration.t_Opts with
             | Sandwich_api_proto.Configuration.Opts_Client opt ->
               Core.Option.impl__map #Sandwich_api_proto.Tls.t_TLSOptions
                 #(t_Mode & Sandwich_api_proto.Tls.t_TLSOptions)
@@ -291,7 +291,9 @@ let configuration_get_mode_and_options
                             let proto:Sandwich_api_proto.Configuration.Client_options.t_Opts =
                               proto
                             in
-                            match proto with
+                            match
+                              proto <: Sandwich_api_proto.Configuration.Client_options.t_Opts
+                            with
                             | Sandwich_api_proto.Configuration.Client_options.Opts_Tls tls ->
                               Core.Option.Option_Some tls
                               <:
@@ -331,7 +333,9 @@ let configuration_get_mode_and_options
                             let proto:Sandwich_api_proto.Configuration.Server_options.t_Opts =
                               proto
                             in
-                            match proto with
+                            match
+                              proto <: Sandwich_api_proto.Configuration.Server_options.t_Opts
+                            with
                             | Sandwich_api_proto.Configuration.Server_options.Opts_Tls tls ->
                               Core.Option.Option_Some tls
                               <:
@@ -401,7 +405,11 @@ let set_min_and_max_tls_version
   =
     tls_options_get_min_max_tls_version tls_options
   in
-  match set_minimum_tls_version self min_version with
+  match
+    set_minimum_tls_version self min_version
+    <:
+    Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+  with
   | Core.Result.Result_Ok _ -> set_maximum_tls_version self max_version
   | Core.Result.Result_Err err ->
     Core.Result.Result_Err err <: Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
@@ -436,7 +444,7 @@ let tls_options_get_x509_verifier (tls_options: Sandwich_api_proto.Tls.t_TLSOpti
       Core.Result.t_Result Sandwich_api_proto.Tls.Tlsoptions.t_Peer_verifier Sandwich.Error.t_Error)
     (fun v ->
         let v:Sandwich_api_proto.Tls.Tlsoptions.t_Peer_verifier = v in
-        match v with
+        match v <: Sandwich_api_proto.Tls.Tlsoptions.t_Peer_verifier with
         | Sandwich_api_proto.Tls.Tlsoptions.Peer_verifier_X509Verifier x509 ->
           Core.Result.Result_Ok
           (Core.Option.Option_Some x509
@@ -467,7 +475,7 @@ let x509_verifier_verify_emptiness
       (x509_verifier: Core.Option.t_Option Sandwich_api_proto.Verifiers.t_X509Verifier)
     : Core.Result.t_Result (Core.Option.t_Option Sandwich_api_proto.Verifiers.t_X509Verifier)
       Sandwich.Error.t_Error =
-  match x509_verifier with
+  match x509_verifier <: Core.Option.t_Option Sandwich_api_proto.Verifiers.t_X509Verifier with
   | Core.Option.Option_Some x509 ->
     if
       Alloc.Vec.impl_1__is_empty #Sandwich_api_proto.Certificate.t_Certificate
@@ -506,7 +514,7 @@ let verify_tunnel_verifier
       (tunnel_verifier: Core.Option.t_Option Sandwich_api_proto.Verifiers.t_TunnelVerifier)
       (security_requirements: Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements)
     : Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
-  match tunnel_verifier with
+  match tunnel_verifier <: Core.Option.t_Option Sandwich_api_proto.Verifiers.t_TunnelVerifier with
   | Core.Option.Option_Some tunnel_verifier ->
     Sandwich.Tunnel.Tls.f_run_sanitizer_checks #Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements
       #Sandwich_api_proto.Verifiers.t_TunnelVerifier
@@ -528,8 +536,8 @@ let verify_tunnel_verifier
     Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
 
 /// A tunnel, wrapper around a SSL object.
-type t_Tunnel364847772 = {
-  f__ssl_ctx:t_Context116464909;
+type t_Tunnel_364847772 = {
+  f__ssl_ctx:t_Context_116464909;
   f_ssl:Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_st;
   f_security_requirements:Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements;
   f_io:Sandwich.Tunnel.Io.t_BoxedIO;
@@ -539,50 +547,71 @@ type t_Tunnel364847772 = {
 /// Attaches the security requirements structure to the `SSL` object
 /// through `ex_data`.
 assume
-val attach_security_requirements': self: Core.Pin.t_Pin t_Tunnel364847772
+val attach_security_requirements': self: Core.Pin.t_Pin t_Tunnel_364847772
   -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
 
 let attach_security_requirements = attach_security_requirements'
 
 /// Attaches itself to the current BIO.
 assume
-val attach_to_bio': self: Core.Pin.t_Pin t_Tunnel364847772
+val attach_to_bio': self: Core.Pin.t_Pin t_Tunnel_364847772
   -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
 
 let attach_to_bio = attach_to_bio'
 
 /// A tunnel.
-type t_Tunnel70284935 =
-  | Tunnel70284935_OpenSSL3 :
-      Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel364847772 Alloc.Alloc.t_Global)
-    -> t_Tunnel70284935
+type t_Tunnel_70284935 =
+  | Tunnel_70284935_OpenSSL3 :
+      Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel_364847772 Alloc.Alloc.t_Global)
+    -> t_Tunnel_70284935
 
 /// Instantiates a new [`Context`] from a [protobuf configuration](`pb_api::Configuration`)
 /// and a top-level context.
 let try_from
       (ctx: Sandwich.t_Context)
       (configuration: Sandwich_api_proto.Configuration.t_Configuration)
-    : Prims.Pure (Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error)
+    : Prims.Pure (Core.Result.t_Result t_Context_116464909 Sandwich.Error.t_Error)
       (requires configured (configuration))
       (ensures
         fun result ->
-          let result:Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error = result in
+          let result:Core.Result.t_Result t_Context_116464909 Sandwich.Error.t_Error = result in
           exists mode. Core.Result.Result_Ok? result ==> set_verify_mode_called mode) =
   let lib_ctx:Sandwich.Implementation.Openssl3_impl.t_LibCtx = ctx.Sandwich.f_ossl3_lib_ctx in
-  match configuration_get_mode_and_options configuration with
+  match
+    configuration_get_mode_and_options configuration
+    <:
+    Core.Result.t_Result (t_Mode & Sandwich_api_proto.Tls.t_TLSOptions) Sandwich.Error.t_Error
+  with
   | Core.Result.Result_Ok (mode, tls_options) ->
-    (match new_ssl_context ctx mode with
+    (match
+        new_ssl_context ctx mode
+        <:
+        Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st)
+          Sandwich.Error.t_Error
+      with
       | Core.Result.Result_Ok ssl_ctx ->
         let ssl_ctx_wrapped:t_SslContext =
           SslContext (Sandwich.Support.Pimpl.impl_2__as_nonnull #Openssl3.t_ssl_ctx_st ssl_ctx)
           <:
           t_SslContext
         in
-        (match set_default_parameters ssl_ctx_wrapped with
+        (match
+            set_default_parameters ssl_ctx_wrapped
+            <:
+            Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+          with
           | Core.Result.Result_Ok _ ->
-            (match set_trust ssl_ctx_wrapped mode with
+            (match
+                set_trust ssl_ctx_wrapped mode
+                <:
+                Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+              with
               | Core.Result.Result_Ok _ ->
-                (match set_min_and_max_tls_version ssl_ctx_wrapped tls_options with
+                (match
+                    set_min_and_max_tls_version ssl_ctx_wrapped tls_options
+                    <:
+                    Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+                  with
                   | Core.Result.Result_Ok _ ->
                     (match
                         configure_tls12 ssl_ctx_wrapped
@@ -590,6 +619,8 @@ let try_from
                               tls_options.Sandwich_api_proto.Tls.f_tls12
                             <:
                             Core.Option.t_Option Sandwich_api_proto.Tls.t_TLSv12Config)
+                        <:
+                        Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
                       with
                       | Core.Result.Result_Ok _ ->
                         (match
@@ -598,6 +629,8 @@ let try_from
                                   tls_options.Sandwich_api_proto.Tls.f_tls13
                                 <:
                                 Core.Option.t_Option Sandwich_api_proto.Tls.t_TLSv13Config)
+                            <:
+                            Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
                           with
                           | Core.Result.Result_Ok _ ->
                             (match
@@ -605,6 +638,8 @@ let try_from
                                   #(Alloc.Vec.t_Vec Alloc.String.t_String Alloc.Alloc.t_Global)
                                   ssl_ctx_wrapped
                                   tls_options.Sandwich_api_proto.Tls.f_alpn_protocols
+                                <:
+                                Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
                               with
                               | Core.Result.Result_Ok _ ->
                                 (match
@@ -612,11 +647,17 @@ let try_from
                                       #(Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_ctx_st)
                                       #FStar.Tactics.Typeclasses.solve
                                       ssl_ctx
+                                    <:
+                                    Core.Result.t_Result
+                                      Sandwich.Implementation.Openssl3_impl.Tunnel.X509_verify_param.t_X509VerifyParam
+                                      Sandwich.Error.t_Error
                                   with
                                   | Core.Result.Result_Ok x509_verify_param ->
                                     (match
                                         Sandwich.Implementation.Openssl3_impl.Tunnel.X509_verify_param.impl_4__set_default_parameters
                                           x509_verify_param
+                                        <:
+                                        Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
                                       with
                                       | Core.Result.Result_Ok _ ->
                                         (match
@@ -632,6 +673,11 @@ let try_from
                                                     Sandwich_api_proto.Verifiers.t_X509Verifier)
                                                   Sandwich.Error.t_Error)
                                               x509_verifier_verify_emptiness
+                                            <:
+                                            Core.Result.t_Result
+                                              (Core.Option.t_Option
+                                                Sandwich_api_proto.Verifiers.t_X509Verifier)
+                                              Sandwich.Error.t_Error
                                           with
                                           | Core.Result.Result_Ok x509_verifier ->
                                             let _:Prims.unit =
@@ -647,18 +693,27 @@ let try_from
                                                     <:
                                                     Core.Option.t_Option
                                                     Sandwich_api_proto.Tls.t_X509Identity)
+                                                <:
+                                                Core.Result.t_Result Prims.unit
+                                                  Sandwich.Error.t_Error
                                               with
                                               | Core.Result.Result_Ok _ ->
                                                 (match
                                                     fill_certificate_trust_store ssl_ctx_wrapped
                                                       lib_ctx
                                                       x509_verifier
+                                                    <:
+                                                    Core.Result.t_Result Prims.unit
+                                                      Sandwich.Error.t_Error
                                                   with
                                                   | Core.Result.Result_Ok _ ->
                                                     (match
                                                         fill_certificate_trust_store_with_default_cas
                                                           ssl_ctx_wrapped
                                                           x509_verifier
+                                                        <:
+                                                        Core.Result.t_Result Prims.unit
+                                                          Sandwich.Error.t_Error
                                                       with
                                                       | Core.Result.Result_Ok _ ->
                                                         let verify_mode:Sandwich.Tunnel.Tls.t_VerifyMode
@@ -704,68 +759,69 @@ let try_from
                                                             f_ssl_ctx = ssl_ctx
                                                           }
                                                           <:
-                                                          t_Context116464909)
+                                                          t_Context_116464909)
                                                         <:
-                                                        Core.Result.t_Result t_Context116464909
+                                                        Core.Result.t_Result t_Context_116464909
                                                           Sandwich.Error.t_Error
                                                       | Core.Result.Result_Err err ->
                                                         Core.Result.Result_Err err
                                                         <:
-                                                        Core.Result.t_Result t_Context116464909
+                                                        Core.Result.t_Result t_Context_116464909
                                                           Sandwich.Error.t_Error)
                                                   | Core.Result.Result_Err err ->
                                                     Core.Result.Result_Err err
                                                     <:
-                                                    Core.Result.t_Result t_Context116464909
+                                                    Core.Result.t_Result t_Context_116464909
                                                       Sandwich.Error.t_Error)
                                               | Core.Result.Result_Err err ->
                                                 Core.Result.Result_Err err
                                                 <:
-                                                Core.Result.t_Result t_Context116464909
+                                                Core.Result.t_Result t_Context_116464909
                                                   Sandwich.Error.t_Error)
                                           | Core.Result.Result_Err err ->
                                             Core.Result.Result_Err err
                                             <:
-                                            Core.Result.t_Result t_Context116464909
+                                            Core.Result.t_Result t_Context_116464909
                                               Sandwich.Error.t_Error)
                                       | Core.Result.Result_Err err ->
                                         Core.Result.Result_Err err
                                         <:
-                                        Core.Result.t_Result t_Context116464909
+                                        Core.Result.t_Result t_Context_116464909
                                           Sandwich.Error.t_Error)
                                   | Core.Result.Result_Err err ->
                                     Core.Result.Result_Err err
                                     <:
-                                    Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error)
+                                    Core.Result.t_Result t_Context_116464909 Sandwich.Error.t_Error)
                               | Core.Result.Result_Err err ->
                                 Core.Result.Result_Err err
                                 <:
-                                Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error)
+                                Core.Result.t_Result t_Context_116464909 Sandwich.Error.t_Error)
                           | Core.Result.Result_Err err ->
                             Core.Result.Result_Err err
                             <:
-                            Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error)
+                            Core.Result.t_Result t_Context_116464909 Sandwich.Error.t_Error)
                       | Core.Result.Result_Err err ->
                         Core.Result.Result_Err err
                         <:
-                        Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error)
+                        Core.Result.t_Result t_Context_116464909 Sandwich.Error.t_Error)
                   | Core.Result.Result_Err err ->
                     Core.Result.Result_Err err
                     <:
-                    Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error)
+                    Core.Result.t_Result t_Context_116464909 Sandwich.Error.t_Error)
               | Core.Result.Result_Err err ->
                 Core.Result.Result_Err err
                 <:
-                Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error)
+                Core.Result.t_Result t_Context_116464909 Sandwich.Error.t_Error)
           | Core.Result.Result_Err err ->
             Core.Result.Result_Err err
             <:
-            Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error)
+            Core.Result.t_Result t_Context_116464909 Sandwich.Error.t_Error)
       | Core.Result.Result_Err err ->
-        Core.Result.Result_Err err <: Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error
-    )
+        Core.Result.Result_Err err
+        <:
+        Core.Result.t_Result t_Context_116464909 Sandwich.Error.t_Error)
   | Core.Result.Result_Err err ->
-    Core.Result.Result_Err err <: Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error
+    Core.Result.Result_Err err <: Core.Result.t_Result t_Context_116464909 Sandwich.Error.t_Error
 
 /// Sets the required Subject Alternative Names (SAN) specified in the [`pb_api::TunnelVerifier`]
 /// object.
@@ -783,6 +839,8 @@ let set_subject_alternative_names
             tv.Sandwich_api_proto.Verifiers.f_verifier
           <:
           Core.Option.t_Option Sandwich_api_proto.Verifiers.Tunnel_verifier.t_Verifier)
+    <:
+    Core.Option.t_Option Sandwich_api_proto.Verifiers.Tunnel_verifier.t_Verifier
   with
   | Core.Option.Option_Some
     (Sandwich_api_proto.Verifiers.Tunnel_verifier.Verifier_SanVerifier san_verifier) ->
@@ -791,6 +849,10 @@ let set_subject_alternative_names
           #(Core.Ptr.Non_null.t_NonNull Openssl3.t_ssl_st)
           #FStar.Tactics.Typeclasses.solve
           self._0
+        <:
+        Core.Result.t_Result
+          Sandwich.Implementation.Openssl3_impl.Tunnel.X509_verify_param.t_X509VerifyParam
+          Sandwich.Error.t_Error
       with
       | Core.Result.Result_Ok x509_verify_param ->
         let res:Core.Result.t_Result Prims.unit Sandwich.Error.t_Error =
@@ -858,22 +920,41 @@ let prepare_ssl (self: t_TunnelBuilder)
   let security_requirements:Sandwich.Tunnel.Tls.t_TunnelSecurityRequirements =
     security_requirements self.f_ssl_ctx
   in
-  match verify_tunnel_verifier tunnel_verifier security_requirements with
+  match
+    verify_tunnel_verifier tunnel_verifier security_requirements
+    <:
+    Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+  with
   | Core.Result.Result_Ok _ ->
-    (match new_ssl self.f_ssl_ctx with
+    (match
+        new_ssl self.f_ssl_ctx
+        <:
+        Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_st)
+          Sandwich.Error.t_Error
+      with
       | Core.Result.Result_Ok ssl ->
         let ssl_wrapped:t_Ssl =
           Ssl (Sandwich.Support.Pimpl.impl_2__as_nonnull #Openssl3.t_ssl_st ssl) <: t_Ssl
         in
-        (match set_subject_alternative_names ssl_wrapped tunnel_verifier with
+        (match
+            set_subject_alternative_names ssl_wrapped tunnel_verifier
+            <:
+            Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+          with
           | Core.Result.Result_Ok _ ->
             (match
                 set_server_name_indication #Alloc.String.t_String
                   ssl_wrapped
                   self.f_configuration.Sandwich_api_proto.Tunnel.f_server_name_indication
+                <:
+                Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
               with
               | Core.Result.Result_Ok _ ->
-                (match create_and_attach_bio ssl_wrapped with
+                (match
+                    create_and_attach_bio ssl_wrapped
+                    <:
+                    Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+                  with
                   | Core.Result.Result_Ok _ ->
                     Core.Result.Result_Ok ssl
                     <:
@@ -907,13 +988,17 @@ let prepare_ssl (self: t_TunnelBuilder)
 /// Builds a tunnel.
 let build (self: t_TunnelBuilder)
     : Core.Result.t_Result
-      (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel364847772 Alloc.Alloc.t_Global))
+      (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel_364847772 Alloc.Alloc.t_Global))
       (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO) =
-  match prepare_ssl self with
+  match
+    prepare_ssl self
+    <:
+    Core.Result.t_Result (Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_st) Sandwich.Error.t_Error
+  with
   | Core.Result.Result_Ok ssl ->
     let ssl:Sandwich.Support.Pimpl.t_Pimpl Openssl3.t_ssl_st = ssl in
-    let tun:Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel364847772 Alloc.Alloc.t_Global) =
-      Alloc.Boxed.impl__pin #t_Tunnel364847772
+    let tun:Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel_364847772 Alloc.Alloc.t_Global) =
+      Alloc.Boxed.impl__pin #t_Tunnel_364847772
         ({
             f__ssl_ctx = self.f_ssl_ctx;
             f_ssl = ssl;
@@ -932,19 +1017,21 @@ let build (self: t_TunnelBuilder)
             Sandwich_proto.Tunnel.State_STATE_NOT_CONNECTED <: Sandwich_proto.Tunnel.t_State
           }
           <:
-          t_Tunnel364847772)
+          t_Tunnel_364847772)
     in
     (match
-        attach_security_requirements (Core.Pin.impl_6__as_ref #(Alloc.Boxed.t_Box t_Tunnel364847772
+        attach_security_requirements (Core.Pin.impl_6__as_ref #(Alloc.Boxed.t_Box t_Tunnel_364847772
                   Alloc.Alloc.t_Global)
               tun
             <:
-            Core.Pin.t_Pin t_Tunnel364847772)
+            Core.Pin.t_Pin t_Tunnel_364847772)
+        <:
+        Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
       with
       | Core.Result.Result_Err e ->
         Core.Result.Result_Err
         (e,
-          (Core.Pin.impl_8__into_inner_unchecked #(Alloc.Boxed.t_Box t_Tunnel364847772
+          (Core.Pin.impl_8__into_inner_unchecked #(Alloc.Boxed.t_Box t_Tunnel_364847772
                   Alloc.Alloc.t_Global)
               tun)
             .f_io
@@ -952,20 +1039,22 @@ let build (self: t_TunnelBuilder)
           (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO))
         <:
         Core.Result.t_Result
-          (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel364847772 Alloc.Alloc.t_Global))
+          (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel_364847772 Alloc.Alloc.t_Global))
           (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
       | _ ->
         match
-          attach_to_bio (Core.Pin.impl_6__as_ref #(Alloc.Boxed.t_Box t_Tunnel364847772
+          attach_to_bio (Core.Pin.impl_6__as_ref #(Alloc.Boxed.t_Box t_Tunnel_364847772
                     Alloc.Alloc.t_Global)
                 tun
               <:
-              Core.Pin.t_Pin t_Tunnel364847772)
+              Core.Pin.t_Pin t_Tunnel_364847772)
+          <:
+          Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
         with
         | Core.Result.Result_Err e ->
           Core.Result.Result_Err
           (e,
-            (Core.Pin.impl_8__into_inner_unchecked #(Alloc.Boxed.t_Box t_Tunnel364847772
+            (Core.Pin.impl_8__into_inner_unchecked #(Alloc.Boxed.t_Box t_Tunnel_364847772
                     Alloc.Alloc.t_Global)
                 tun)
               .f_io
@@ -973,27 +1062,28 @@ let build (self: t_TunnelBuilder)
             (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO))
           <:
           Core.Result.t_Result
-            (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel364847772 Alloc.Alloc.t_Global))
+            (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel_364847772 Alloc.Alloc.t_Global))
             (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
         | _ ->
           Core.Result.Result_Ok tun
           <:
           Core.Result.t_Result
-            (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel364847772 Alloc.Alloc.t_Global))
+            (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel_364847772 Alloc.Alloc.t_Global))
             (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO))
   | Core.Result.Result_Err e ->
     Core.Result.Result_Err (e, self.f_io <: (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO))
     <:
-    Core.Result.t_Result (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel364847772 Alloc.Alloc.t_Global))
+    Core.Result.t_Result
+      (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel_364847772 Alloc.Alloc.t_Global))
       (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
 
 /// Creates a new tunnel.
-let new_tunnel235737456
-      (self: t_Context116464909)
+let new_tunnel_235737456
+      (self: t_Context_116464909)
       (io: Sandwich.Tunnel.Io.t_BoxedIO)
       (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
     : Core.Result.t_Result
-      (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel364847772 Alloc.Alloc.t_Global))
+      (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel_364847772 Alloc.Alloc.t_Global))
       (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO) =
   build ({ f_ssl_ctx = self; f_io = io; f_configuration = configuration } <: t_TunnelBuilder)
 
@@ -1001,37 +1091,47 @@ let new_tunnel235737456
 /// The I/O interface must outlive the tunnel, as the tunnel makes use
 /// of it to send and receive data.
 /// If an error occured, the IO interface is returned to the user.
-let new_tunnel779812561
-      (self: t_Context665818913)
+let new_tunnel_779812561
+      (self: t_Context_665818913)
       (io: Sandwich.Tunnel.Io.t_BoxedIO)
       (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
-    : Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO) =
-  match self with
-  | Context665818913_OpenSSL3 c ->
-    match new_tunnel235737456 c io configuration with
-    | Core.Result.Result_Ok hoist4 ->
-      Core.Result.Result_Ok (Tunnel70284935_OpenSSL3 hoist4 <: t_Tunnel70284935)
+    : Core.Result.t_Result t_Tunnel_70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO) =
+  match self <: t_Context_665818913 with
+  | Context_665818913_OpenSSL3 c ->
+    match
+      new_tunnel_235737456 c io configuration
       <:
-      Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
+      Core.Result.t_Result
+        (Core.Pin.t_Pin (Alloc.Boxed.t_Box t_Tunnel_364847772 Alloc.Alloc.t_Global))
+        (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
+    with
+    | Core.Result.Result_Ok hoist4 ->
+      Core.Result.Result_Ok (Tunnel_70284935_OpenSSL3 hoist4 <: t_Tunnel_70284935)
+      <:
+      Core.Result.t_Result t_Tunnel_70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
     | Core.Result.Result_Err err ->
       Core.Result.Result_Err err
       <:
-      Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
+      Core.Result.t_Result t_Tunnel_70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO)
 
 let hax_try_from
       (context: Sandwich.t_Context)
       (configuration: Sandwich_api_proto.Configuration.t_Configuration)
-    : Prims.Pure (Core.Result.t_Result t_Context665818913 Sandwich.Error.t_Error)
+    : Prims.Pure (Core.Result.t_Result t_Context_665818913 Sandwich.Error.t_Error)
       (requires configured (configuration))
       (fun _ -> Prims.l_True) =
-  match Sandwich.Tunnel.Tls.Security.assert_compliance configuration with
+  match
+    Sandwich.Tunnel.Tls.Security.assert_compliance configuration
+    <:
+    Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
+  with
   | Core.Result.Result_Ok _ ->
-    Core.Result.impl__map_err #t_Context665818913
+    Core.Result.impl__map_err #t_Context_665818913
       #Sandwich.Error.t_Error
       #Sandwich.Error.t_Error
       (Core.Result.impl__and_then #Sandwich_api_proto.Configuration.t_Implementation
           #Sandwich.Error.t_Error
-          #t_Context665818913
+          #t_Context_665818913
           (Core.Result.impl__map_err #Sandwich_api_proto.Configuration.t_Implementation
               #i32
               #Sandwich.Error.t_Error
@@ -1057,20 +1157,20 @@ let hax_try_from
               Sandwich.Error.t_Error)
           (fun v ->
               let v:Sandwich_api_proto.Configuration.t_Implementation = v in
-              match v with
+              match v <: Sandwich_api_proto.Configuration.t_Implementation with
               | Sandwich_api_proto.Configuration.Implementation_IMPL_OPENSSL3_OQS_PROVIDER  ->
-                Core.Result.impl__map_err #t_Context665818913
+                Core.Result.impl__map_err #t_Context_665818913
                   #Sandwich.Error.t_Error
                   #Sandwich.Error.t_Error
-                  (Core.Result.impl__map #t_Context116464909
+                  (Core.Result.impl__map #t_Context_116464909
                       #Sandwich.Error.t_Error
-                      #t_Context665818913
+                      #t_Context_665818913
                       (try_from context configuration
                         <:
-                        Core.Result.t_Result t_Context116464909 Sandwich.Error.t_Error)
-                      Context665818913_OpenSSL3
+                        Core.Result.t_Result t_Context_116464909 Sandwich.Error.t_Error)
+                      Context_665818913_OpenSSL3
                     <:
-                    Core.Result.t_Result t_Context665818913 Sandwich.Error.t_Error)
+                    Core.Result.t_Result t_Context_665818913 Sandwich.Error.t_Error)
                   (fun e ->
                       let e:Sandwich.Error.t_Error = e in
                       shr_hax e
@@ -1080,7 +1180,7 @@ let hax_try_from
                       <:
                       Sandwich.Error.t_Error)
                 <:
-                Core.Result.t_Result t_Context665818913 Sandwich.Error.t_Error
+                Core.Result.t_Result t_Context_665818913 Sandwich.Error.t_Error
               | _ ->
                 Core.Result.Result_Err
                 (shr_hax (shr_hax (Sandwich.Error.impl__Error__new () <: Sandwich.Error.t_Error)
@@ -1095,9 +1195,9 @@ let hax_try_from
                   <:
                   Sandwich.Error.t_Error)
                 <:
-                Core.Result.t_Result t_Context665818913 Sandwich.Error.t_Error)
+                Core.Result.t_Result t_Context_665818913 Sandwich.Error.t_Error)
         <:
-        Core.Result.t_Result t_Context665818913 Sandwich.Error.t_Error)
+        Core.Result.t_Result t_Context_665818913 Sandwich.Error.t_Error)
       (fun e ->
           let e:Sandwich.Error.t_Error = e in
           shr_hax_api e
@@ -1107,11 +1207,11 @@ let hax_try_from
           <:
           Sandwich.Error.t_Error)
   | Core.Result.Result_Err err ->
-    Core.Result.Result_Err err <: Core.Result.t_Result t_Context665818913 Sandwich.Error.t_Error
+    Core.Result.Result_Err err <: Core.Result.t_Result t_Context_665818913 Sandwich.Error.t_Error
 
-let new_tunnel735299623
-      (context: t_Context665818913)
+let new_tunnel_735299623
+      (context: t_Context_665818913)
       (io: Sandwich.Tunnel.Io.t_BoxedIO)
       (configuration: Sandwich_api_proto.Tunnel.t_TunnelConfiguration)
-    : Core.Result.t_Result t_Tunnel70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO) =
-  new_tunnel779812561 context io configuration
+    : Core.Result.t_Result t_Tunnel_70284935 (Sandwich.Error.t_Error & Sandwich.Tunnel.Io.t_BoxedIO) =
+  new_tunnel_779812561 context io configuration
