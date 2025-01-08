@@ -16,27 +16,6 @@ index 6ba5197..5ebdc57 100644
  
  /// Convenient wrapper around a `SSL_CTX`.
  type t_SslContext = | SslContext : Core.Ptr.Non_null.t_NonNull Openssl3.t_ssl_ctx_st -> t_SslContext
-@@ -168,6 +161,7 @@ val set_alpn_protocols':
-     #v_S: Type0 ->
-     #impl_995885649_: Type0 ->
-     {| i2: Core.Convert.t_AsRef v_S string |} ->
-+    {| i3: Core.Iter.Traits.Collect.t_IntoIterator impl_995885649_ |} ->
-     self: t_SslContext ->
-     protocols: impl_995885649_
-   -> Core.Result.t_Result Prims.unit Sandwich.Error.t_Error
-@@ -175,8 +169,10 @@ val set_alpn_protocols':
- let set_alpn_protocols
-       (#v_S #impl_995885649_: Type0)
-       (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core.Convert.t_AsRef v_S string)
--      
--     = set_alpn_protocols' #v_S #impl_995885649_ #i2
-+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
-+          i3:
-+          Core.Iter.Traits.Collect.t_IntoIterator impl_995885649_)
-+     = set_alpn_protocols' #v_S #impl_995885649_ #i2 #i3
- 
- /// Sets the default parameters for a SSL context.
- assume
 @@ -591,7 +587,7 @@ let try_from
        with
        | Core.Result.Result_Ok ssl_ctx ->
