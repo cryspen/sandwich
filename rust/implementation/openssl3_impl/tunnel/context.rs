@@ -100,7 +100,7 @@ impl SslContext {
         configured c /\\
         $tls::support::configuration_get_mode_and_options c ==
         Core.Result.Result_Ok (mode, tls_options) /\\
-        (tls_options_get_min_max_tls_version tls_options == (version, max_version))"))]
+        ($tls::support::tls_options_get_min_max_tls_version tls_options == (version, max_version))"))]
     #[hax_lib::opaque]
     fn set_minimum_tls_version(&self, version: TlsVersion) -> Result<()> {
         // `SSL_CTX_set_min_proto_version` is a C macro.
