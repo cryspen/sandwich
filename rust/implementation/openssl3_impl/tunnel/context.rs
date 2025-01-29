@@ -128,6 +128,15 @@ impl SslContext {
 
     /// Defines the maximum TLS version to use.
     #[hax_lib::opaque]
+    #[hax_lib::fstar::before("
+assume val configured: Sandwich_api_proto.Configuration.t_Configuration -> bool
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume val missing_impl: Protobuf.Enums.t_Enum Sandwich_api_proto.Configuration.t_Implementation
+
+assume
+val set_verify_mode_called: verify_mode: Sandwich.Tunnel.Tls.t_VerifyMode -> Type0
+")]
     fn set_maximum_tls_version(&self, version: TlsVersion) -> Result<()> {
         // `SSL_CTX_set_max_proto_version` is a C macro.
         if unsafe {
@@ -154,7 +163,7 @@ impl SslContext {
 
     /// Sets the minimum and the maximum TLS versions to use.
     #[hax_lib::requires(fstar!("exists c mode. configured c /\\
-        configuration_get_mode_and_options c ==
+        $tls::support::configuration_get_mode_and_options c ==
         Core.Result.Result_Ok (mode, tls_options)"))]
     fn set_min_and_max_tls_version(&self, tls_options: &pb_api::TLSOptions) -> Result<()> {
         let (min_version, max_version) =

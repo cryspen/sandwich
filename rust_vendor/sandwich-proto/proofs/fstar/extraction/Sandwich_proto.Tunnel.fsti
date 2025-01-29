@@ -59,23 +59,23 @@ let impl_4: Protobuf.Enums.t_Enum t_HandshakeState =
     =
     (fun (value: i32) ->
         match value with
-        | 0l ->
+        | Rust_primitives.Integers.MkInt 0 ->
           Core.Option.Option_Some (HandshakeState_HANDSHAKESTATE_IN_PROGRESS <: t_HandshakeState)
           <:
           Core.Option.t_Option t_HandshakeState
-        | 1l ->
+        | Rust_primitives.Integers.MkInt 1 ->
           Core.Option.Option_Some (HandshakeState_HANDSHAKESTATE_DONE <: t_HandshakeState)
           <:
           Core.Option.t_Option t_HandshakeState
-        | 2l ->
+        | Rust_primitives.Integers.MkInt 2 ->
           Core.Option.Option_Some (HandshakeState_HANDSHAKESTATE_WANT_READ <: t_HandshakeState)
           <:
           Core.Option.t_Option t_HandshakeState
-        | 3l ->
+        | Rust_primitives.Integers.MkInt 3 ->
           Core.Option.Option_Some (HandshakeState_HANDSHAKESTATE_WANT_WRITE <: t_HandshakeState)
           <:
           Core.Option.t_Option t_HandshakeState
-        | 4l ->
+        | Rust_primitives.Integers.MkInt 4 ->
           Core.Option.Option_Some (HandshakeState_HANDSHAKESTATE_ERROR <: t_HandshakeState)
           <:
           Core.Option.t_Option t_HandshakeState
@@ -175,31 +175,31 @@ let impl_8: Protobuf.Enums.t_Enum t_RecordError =
     =
     (fun (value: i32) ->
         match value with
-        | 0l ->
+        | Rust_primitives.Integers.MkInt 0 ->
           Core.Option.Option_Some (RecordError_RECORDERROR_OK <: t_RecordError)
           <:
           Core.Option.t_Option t_RecordError
-        | 1l ->
+        | Rust_primitives.Integers.MkInt 1 ->
           Core.Option.Option_Some (RecordError_RECORDERROR_WANT_READ <: t_RecordError)
           <:
           Core.Option.t_Option t_RecordError
-        | 2l ->
+        | Rust_primitives.Integers.MkInt 2 ->
           Core.Option.Option_Some (RecordError_RECORDERROR_WANT_WRITE <: t_RecordError)
           <:
           Core.Option.t_Option t_RecordError
-        | 3l ->
+        | Rust_primitives.Integers.MkInt 3 ->
           Core.Option.Option_Some (RecordError_RECORDERROR_BEING_SHUTDOWN <: t_RecordError)
           <:
           Core.Option.t_Option t_RecordError
-        | 4l ->
+        | Rust_primitives.Integers.MkInt 4 ->
           Core.Option.Option_Some (RecordError_RECORDERROR_CLOSED <: t_RecordError)
           <:
           Core.Option.t_Option t_RecordError
-        | 5l ->
+        | Rust_primitives.Integers.MkInt 5 ->
           Core.Option.Option_Some (RecordError_RECORDERROR_TOO_BIG <: t_RecordError)
           <:
           Core.Option.t_Option t_RecordError
-        | 6l ->
+        | Rust_primitives.Integers.MkInt 6 ->
           Core.Option.Option_Some (RecordError_RECORDERROR_UNKNOWN <: t_RecordError)
           <:
           Core.Option.t_Option t_RecordError
@@ -308,31 +308,31 @@ let impl: Protobuf.Enums.t_Enum t_State =
     =
     (fun (value: i32) ->
         match value with
-        | 0l ->
+        | Rust_primitives.Integers.MkInt 0 ->
           Core.Option.Option_Some (State_STATE_NOT_CONNECTED <: t_State)
           <:
           Core.Option.t_Option t_State
-        | 1l ->
+        | Rust_primitives.Integers.MkInt 1 ->
           Core.Option.Option_Some (State_STATE_CONNECTION_IN_PROGRESS <: t_State)
           <:
           Core.Option.t_Option t_State
-        | 2l ->
+        | Rust_primitives.Integers.MkInt 2 ->
           Core.Option.Option_Some (State_STATE_HANDSHAKE_IN_PROGRESS <: t_State)
           <:
           Core.Option.t_Option t_State
-        | 3l ->
+        | Rust_primitives.Integers.MkInt 3 ->
           Core.Option.Option_Some (State_STATE_HANDSHAKE_DONE <: t_State)
           <:
           Core.Option.t_Option t_State
-        | 4l ->
+        | Rust_primitives.Integers.MkInt 4 ->
           Core.Option.Option_Some (State_STATE_BEING_SHUTDOWN <: t_State)
           <:
           Core.Option.t_Option t_State
-        | 5l ->
+        | Rust_primitives.Integers.MkInt 5 ->
           Core.Option.Option_Some (State_STATE_DISCONNECTED <: t_State)
           <:
           Core.Option.t_Option t_State
-        | 6l ->
+        | Rust_primitives.Integers.MkInt 6 ->
           Core.Option.Option_Some (State_STATE_ERROR <: t_State) <: Core.Option.t_Option t_State
         | _ -> Core.Option.Option_None <: Core.Option.t_Option t_State);
     f_from_str_pre = (fun (str: string) -> true);
