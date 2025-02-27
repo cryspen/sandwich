@@ -760,7 +760,12 @@ impl<'a> Context<'a> {
     /// Instantiates a new [`Context`] from a [protobuf configuration](`pb_api::Configuration`)
     /// and a top-level context.
     #[hax_lib::requires(fstar!("configured(configuration)"))]
-    #[hax_lib::ensures(|result| fstar!("exists mode. Core.Result.Result_Ok? result ==> set_verify_mode_called mode"))]
+    #[hax_lib::ensures(|result| fstar!(
+        r"Core.Result.Result_Ok? result ==> (
+        match (${crate::tunnel::hax_ghost_code::verify_mode_of_config} configuration) with
+        | Core.Option.Option_Some verify_mode -> set_verify_mode_called verify_mode
+        | _ -> false)"
+    ))]
     pub(crate) fn try_from<'b>(
         ctx: &'a crate::Context,
         configuration: &pb_api::Configuration,

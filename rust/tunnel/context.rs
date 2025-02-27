@@ -245,6 +245,21 @@ pub mod hax_ghost_code {
             .as_ref()
             .and_then(x509_verifier_of_tls_options)
     }
+    pub fn verify_mode_of_config(config: &pb_api::Configuration) -> Option<super::tls::VerifyMode> {
+        let mode = match config.opts.clone()? {
+            pb_api::configuration::configuration::Opts::Client(_) => super::Mode::Client,
+            pb_api::configuration::configuration::Opts::Server(_) => super::Mode::Server,
+            _ => return None,
+        };
+        let x509_verifier = x509_verifier_of_config(config);
+        if x509_verifier.is_none() {
+            Some(super::tls::VerifyMode::None)
+        } else if mode == super::Mode::Client {
+            Some(super::tls::VerifyMode::Peer)
+        } else {
+            Some(super::tls::VerifyMode::Mutual)
+        }
+    }
     pub fn ca_in_x509_verifier(
         x509_verifier: &pb_api::X509Verifier,
         ca: &pb_api::Certificate,
