@@ -165,43 +165,61 @@ pub mod hax_ghost_code {
             _ => None,
         }
     } */
-    /* pub fn san_in_tunnel_config(san: &pb_api::sanmatcher::San, tunnel_config: &pb_api::TunnelConfiguration) -> bool {
-      let Some(verifier) = tunnel_config.verifier.as_ref()
-      else {
-        return false
-      };
-      let sans = match &verifier.verifier {
-        Some(pb_api::verifiers::tunnel_verifier::Verifier::SanVerifier(san_verifier)) => san_verifier.alt_names.clone(),
-        _ => return false,
-      };
-      sans.iter().any(|s| {
-        if let Some(s) = s.san.as_ref() {
-          *s == *san
-        } else {false}
-      })
-    } */
-    /* fn san_verifier_of_tunnel_config(tunnel_config: &pb_api::TunnelConfiguration) -> Option<pb_api::SANVerifier>{
-      let Some(verifier) = tunnel_config.verifier.as_ref()
-      else {
-        return None
-      };
-      match &verifier.verifier {
-        Some(pb_api::verifiers::tunnel_verifier::Verifier::SanVerifier(san_verifier)) => Some(san_verifier.clone()),
-        _ => None,
-      }
+    // #[hax_lib::ensures(|result| fstar!(r"Some? (FStar.Seq.seq_find $f $v) == $result"))]
+    #[hax_lib::fstar::replace(
+        r"let exists_in_vec
+    (#v_T: Type0)
+    (v: Alloc.Vec.t_Vec v_T Alloc.Alloc.t_Global)
+    (f: v_T -> bool)
+  : Prims.Pure bool
+    Prims.l_True
+    (ensures
+      fun result ->
+        let result:bool = result in
+        Some? (FStar.Seq.seq_find f v) == result) =
+        Some? (FStar.Seq.seq_find f v)"
+    )]
+    fn exists_in_vec<T>(v: Vec<T>, f: impl Fn(&T) -> bool) -> bool {
+        v.iter().any(f)
+    }
+
+    pub fn san_in_tunnel_config(
+        san: &pb_api::sanmatcher::San,
+        tunnel_config: &pb_api::TunnelConfiguration,
+    ) -> bool {
+        let Some(verifier) = tunnel_config.verifier.as_ref() else {
+            return false;
+        };
+        let sans = match &verifier.verifier {
+            Some(pb_api::verifiers::tunnel_verifier::Verifier::SanVerifier(san_verifier)) => {
+                san_verifier.alt_names.clone()
+            }
+            _ => return false,
+        };
+        exists_in_vec(sans, |s| {
+            if let Some(s) = s.san.as_ref() {
+                *s == *san
+            } else {
+                false
+            }
+        })
+    }
+    fn san_verifier_of_tunnel_config(
+        tunnel_config: &pb_api::TunnelConfiguration,
+    ) -> Option<pb_api::SANVerifier> {
+        let Some(verifier) = tunnel_config.verifier.as_ref() else {
+            return None;
+        };
+        match &verifier.verifier {
+            Some(pb_api::verifiers::tunnel_verifier::Verifier::SanVerifier(san_verifier)) => {
+                Some(san_verifier.clone())
+            }
+            _ => None,
+        }
     }
     #[hax_lib::requires(fstar!(r"exists tc. tunnel_configured tc /\ Core.Option.Option_Some san_verifier == ${san_verifier_of_tunnel_config} tc"))]
-    pub fn dummy(san_verifier: &pb_api::SANVerifier) {
+    pub fn dummy(san_verifier: &pb_api::SANVerifier) {}
 
-    } */
-
-    /*
-    for propagating in pre, we would need:
-    x509_verifier
-    tls_options
-    */
-    // ignore this for now, and focus on the interesting part,
-    // use tls::support::configuration_get_mode_and_options in spec assuming it is correct
     pub fn tls_options_of_config(config: &pb_api::Configuration) -> Option<pb_api::TLSOptions> {
         match config.opts.clone() {
             Some(pb_api::configuration::configuration::Opts::Client(ClientOptions {
