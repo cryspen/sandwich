@@ -1,5 +1,3 @@
-
-
 pub mod message {
     /// Trait which is implemented by all generated message.
     ///
@@ -10,9 +8,9 @@ pub mod message {
 }
 
 pub mod message_full {
-    use std::fmt;
     use crate::message::Message;
     use crate::reflect::value::ProtobufValue;
+    use std::fmt;
 
     /// Trait implemented for all the generated messages, except when lite runtime is enabled.
     ///
@@ -34,7 +32,6 @@ pub mod message_full {
     /// See [`text_format`](crate::text_format) for more details.
     pub trait MessageFull: Message + ProtobufValue + fmt::Debug + fmt::Display {}
 }
-
 
 pub mod enums {
     use core::fmt;
@@ -72,7 +69,7 @@ pub mod special {
     pub struct SpecialFields {
         unknown_fields: crate::unknown_fields::UnknownFields,
         cached_size: crate::cached_size::CachedSize,
-    }   
+    }
 }
 
 pub mod cached_size {
@@ -158,13 +155,12 @@ pub mod oneof {
     pub trait Oneof {}
 }
 
-
 pub mod oneof_full {
     use crate::oneof::Oneof;
     use crate::reflect::OneofDescriptor;
 
     /// Implemented by all oneof types when lite runtime is not enabled.
-    pub trait OneofFull: Oneof { 
+    pub trait OneofFull: Oneof {
         /// Descriptor object for this oneof.
         fn descriptor() -> OneofDescriptor;
     }
@@ -182,17 +178,17 @@ pub mod reflect {
         impl EnumDescriptor {
             pub fn new<T>(file_descriptor: T, index: usize) -> Self {
                 EnumDescriptor {
-                    _hax_placeholder: ()
+                    _hax_placeholder: (),
                 }
-            } 
+            }
             pub fn hax_new() -> Self {
                 EnumDescriptor {
-                    _hax_placeholder: ()
+                    _hax_placeholder: (),
                 }
             }
             fn value_by_index(self, index: usize) -> EnumValueDescriptor {
                 EnumValueDescriptor {
-                    _hax_placeholder: ()
+                    _hax_placeholder: (),
                 }
             }
         }
@@ -265,12 +261,15 @@ pub mod reflect {
     }
 
     pub mod value {
-        pub trait ProtobufValue: Clone + Default + std::fmt::Debug + Send + Sync + Sized + 'static {}
+        pub trait ProtobufValue:
+            Clone + Default + std::fmt::Debug + Send + Sync + Sized + 'static
+        {
+        }
     }
 
     pub mod file {
-        use crate::reflect::file::index::FileDescriptorCommon;
         use crate::descriptor::FileDescriptorProto;
+        use crate::reflect::file::index::FileDescriptorCommon;
 
         pub mod index {
             use std::collections::HashMap;
@@ -305,7 +304,7 @@ pub mod reflect {
             #[derive(Clone)]
             pub struct GeneratedFileDescriptor {
                 pub(crate) common: FileDescriptorCommon,
-            }            
+            }
         }
 
         use crate::reflect::enums::EnumDescriptor;
@@ -366,9 +365,9 @@ pub mod enum_full {
 }
 
 pub mod descriptor {
-    use super::special::SpecialFields;
-    use super::message_field::MessageField;
     use super::enum_or_unknown::EnumOrUnknown;
+    use super::message_field::MessageField;
+    use super::special::SpecialFields;
 
     #[derive(Clone)]
     pub struct FileDescriptorProto {
@@ -601,7 +600,6 @@ pub mod descriptor {
 
     #[derive(Clone)]
     pub struct FileOptions {
-
         pub java_package: Option<String>,
         pub java_outer_classname: Option<String>,
         pub java_multiple_files: Option<bool>,

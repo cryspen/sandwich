@@ -23,15 +23,14 @@ pub(super) struct X509VerifyParam<'a>(
     PhantomData<&'a NativeX509VerifyParam>,
 );
 #[hax_lib::opaque]
-    fn try_from<'a>(ssl_ctx: &Pimpl<'a, NativeSslCtx>) -> Result<X509VerifyParam<'a>> {
-        let ptr =
-            NonNull::new(unsafe { openssl3::SSL_CTX_get0_param(ssl_ctx.as_nonnull().as_ptr()) })
-                .ok_or((
-                    pb::SystemError::SYSTEMERROR_MEMORY,
-                    "no X509_VERIFY_PARAM attached to the given SSL context",
-                ))?;
-        Ok(X509VerifyParam(ptr, PhantomData))
-    }
+fn try_from<'a>(ssl_ctx: &Pimpl<'a, NativeSslCtx>) -> Result<X509VerifyParam<'a>> {
+    let ptr = NonNull::new(unsafe { openssl3::SSL_CTX_get0_param(ssl_ctx.as_nonnull().as_ptr()) })
+        .ok_or((
+            pb::SystemError::SYSTEMERROR_MEMORY,
+            "no X509_VERIFY_PARAM attached to the given SSL context",
+        ))?;
+    Ok(X509VerifyParam(ptr, PhantomData))
+}
 /// Instantiates an [`X509VerifyParam`] from an SSL context.
 impl<'a> TryFrom<&Pimpl<'a, NativeSslCtx>> for X509VerifyParam<'a> {
     type Error = crate::Error;
@@ -68,6 +67,7 @@ impl<'a> TryFrom<&'a Pimpl<'a, NativeSsl>> for X509VerifyParam<'a> {
 }
 
 #[hax_lib::opaque]
+#[hax_lib::attributes]
 impl<'a> X509VerifyParam<'a> {
     /// Applies the default parameters.
     ///
@@ -84,6 +84,8 @@ impl<'a> X509VerifyParam<'a> {
     }
 
     /// Adds a Subject Alternative Name (SAN).
+    // Seems dodgy to take non-mut ref param but mutate with unsafe
+    /* #[hax_lib::requires(fstar!(r"exists tc. tunnel_configured tc /\ ${crate::tunnel::hax_ghost_code::san_in_tunnel_config} san tc"))] */
     pub(super) fn add_san(&self, san: &SANEntry) -> Result<()> {
         fn create_cstring(value: impl AsRef<str>) -> Result<CString> {
             let value = value.as_ref();
@@ -130,7 +132,10 @@ impl<'a> X509VerifyParam<'a> {
         } else {
             Err((
                 pb::TunnelError::TUNNELERROR_VERIFIER,
-                format!("failed to add the SAN entry {san:?}: {}", crate::ossl3::errstr()),
+                format!(
+                    "failed to add the SAN entry {san:?}: {}",
+                    crate::ossl3::errstr()
+                ),
             )
                 .into())
         }

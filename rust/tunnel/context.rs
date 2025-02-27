@@ -20,7 +20,10 @@ use crate::implementation::ossl;
 
 use super::Tunnel;
 
-use crate::{io::listener::try_from, tunnel::{tls, BoxedIO, IO}};
+use crate::{
+    io::listener::try_from,
+    tunnel::{tls, BoxedIO, IO},
+};
 
 /// Mode for a [`Context`].
 ///
@@ -44,7 +47,6 @@ pub(crate) enum Mode {
 pub type TunnelResult<'a> = Result<Tunnel<'a>, (crate::Error, BoxedIO)>;
 
 /// A Sandwich context.
-//#[hax_lib::fstar::before("assume val configured: t_Configuration -> bool")]
 pub enum Context<'a> {
     /// OpenSSL 1.1.1 context.
     #[cfg(feature = "openssl1_1_1")]
@@ -74,11 +76,11 @@ impl std::fmt::Debug for Context<'_> {
 
 #[hax_lib::opaque]
 fn shr_hax(e1: crate::Error, e: ConfigurationError) -> crate::Error {
-  e1 >> e
+    e1 >> e
 }
 #[hax_lib::opaque]
 fn shr_hax_api(e1: crate::Error, e: pb::APIError) -> crate::Error {
-  e1 >> e
+    e1 >> e
 }
 
 use std::ops::Shr;
@@ -87,15 +89,23 @@ use std::ops::Shr;
 /*#[hax_lib::fstar::before(impl, "[@@ FStar.Tactics.Typeclasses.tcinstance]
 assume val missing_impl: Protobuf.Enums.t_Enum Sandwich_api_proto.Configuration.t_Implementation")]*/
 #[hax_lib::requires(fstar!("configured(configuration)"))]
-fn hax_try_from<'a> (
-  context: &'a crate::Context,
-  configuration: &pb_api::Configuration,
+fn hax_try_from<'a>(
+    context: &'a crate::Context,
+    configuration: &pb_api::Configuration,
 ) -> crate::Result<Context<'a>> {
-        tls::assert_compliance(configuration)?;
-        configuration
+    tls::assert_compliance(configuration)?;
+    configuration
         .impl_
         .enum_value()
-        .map_err(|_| shr_hax(shr_hax(crate::Error::new(), ConfigurationError::CONFIGURATIONERROR_INVALID_IMPLEMENTATION), ConfigurationError::CONFIGURATIONERROR_INVALID))
+        .map_err(|_| {
+            shr_hax(
+                shr_hax(
+                    crate::Error::new(),
+                    ConfigurationError::CONFIGURATIONERROR_INVALID_IMPLEMENTATION,
+                ),
+                ConfigurationError::CONFIGURATIONERROR_INVALID,
+            )
+        })
         .and_then(|v| match v {
             #[cfg(feature = "openssl1_1_1")]
             pb_api::Implementation::IMPL_OPENSSL1_1_1_OQS => {
@@ -115,12 +125,155 @@ fn hax_try_from<'a> (
                     .map(Context::OpenSSL3)
                     .map_err(|e| shr_hax(e, ConfigurationError::CONFIGURATIONERROR_INVALID))
             }
-            _ => Err(
-              shr_hax(shr_hax(crate::Error::new(), ConfigurationError::CONFIGURATIONERROR_INVALID_IMPLEMENTATION), ConfigurationError::CONFIGURATIONERROR_INVALID)
-            ),
+            _ => Err(shr_hax(
+                shr_hax(
+                    crate::Error::new(),
+                    ConfigurationError::CONFIGURATIONERROR_INVALID_IMPLEMENTATION,
+                ),
+                ConfigurationError::CONFIGURATIONERROR_INVALID,
+            )),
         })
         .map_err(|e| shr_hax_api(e, pb::APIError::APIERROR_CONFIGURATION))
-    
+}
+
+pub mod hax_ghost_code {
+    use pb_api::{tunnel_verifier, ClientOptions};
+
+    /* fn ciphersuite_of_ssl_context<S>(context : & SslContext) -> impl IntoIterator<Item = S> where S: AsRef<str> {
+      vec![]
+    } */
+    /* pub fn ciphersuite_of_config(
+        config: &pb_api::Configuration,
+    ) -> ::std::vec::Vec<::std::string::String> {
+        match config.opts.clone() {
+            Some(pb_api::configuration::configuration::Opts::Client(ClientOptions {
+                opts:
+                    Some(pb_api::client_options::Opts::Tls(pb_api::tls::TLSClientOptions {
+                        common_options: protobuf::MessageField(Some(tls_opts)),
+                        ..
+                    })),
+                ..
+            })) => (tls_opts).tls13.ciphersuite.clone(),
+            _ => Vec::new(),
+        }
+    } */
+    /* pub fn san_of_tunnel_config(
+        config: &pb_api::TunnelConfiguration,
+    ) -> Option<::std::vec::Vec<pb_api::SANMatcher>> {
+        match &config.verifier.as_ref()?.verifier {
+            Some(pb_api::verifiers::tunnel_verifier::Verifier::SanVerifier(san_verifier)) => Some(san_verifier.alt_names.clone()),
+            _ => None,
+        }
+    } */
+    /* pub fn san_in_tunnel_config(san: &pb_api::sanmatcher::San, tunnel_config: &pb_api::TunnelConfiguration) -> bool {
+      let Some(verifier) = tunnel_config.verifier.as_ref()
+      else {
+        return false
+      };
+      let sans = match &verifier.verifier {
+        Some(pb_api::verifiers::tunnel_verifier::Verifier::SanVerifier(san_verifier)) => san_verifier.alt_names.clone(),
+        _ => return false,
+      };
+      sans.iter().any(|s| {
+        if let Some(s) = s.san.as_ref() {
+          *s == *san
+        } else {false}
+      })
+    } */
+    /* fn san_verifier_of_tunnel_config(tunnel_config: &pb_api::TunnelConfiguration) -> Option<pb_api::SANVerifier>{
+      let Some(verifier) = tunnel_config.verifier.as_ref()
+      else {
+        return None
+      };
+      match &verifier.verifier {
+        Some(pb_api::verifiers::tunnel_verifier::Verifier::SanVerifier(san_verifier)) => Some(san_verifier.clone()),
+        _ => None,
+      }
+    }
+    #[hax_lib::requires(fstar!(r"exists tc. tunnel_configured tc /\ Core.Option.Option_Some san_verifier == ${san_verifier_of_tunnel_config} tc"))]
+    pub fn dummy(san_verifier: &pb_api::SANVerifier) {
+
+    } */
+
+    /*
+    for propagating in pre, we would need:
+    x509_verifier
+    tls_options
+    */
+    // ignore this for now, and focus on the interesting part,
+    // use tls::support::configuration_get_mode_and_options in spec assuming it is correct
+    pub fn tls_options_of_config(config: &pb_api::Configuration) -> Option<pb_api::TLSOptions> {
+        /* match config.opts.clone() {
+            Some(pb_api::configuration::configuration::Opts::Client(ClientOptions {
+                opts:
+                    Some(pb_api::client_options::Opts::Tls(pb_api::tls::TLSClientOptions {
+                        common_options: protobuf::MessageField(Some(tls_opts)),
+                        ..
+                    })),
+                ..
+            }))
+            | Some(pb_api::configuration::configuration::Opts::Server(pb_api::ServerOptions {
+              opts:
+                  Some(pb_api::server_options::Opts::Tls(pb_api::tls::TLSServerOptions {
+                      common_options: protobuf::MessageField(Some(tls_opts)),
+                      ..
+                  })),
+              ..
+          }))
+             => Some(*tls_opts),
+            _ => None
+        } */
+
+        match crate::tunnel::tls::support::configuration_get_mode_and_options(config) {
+            Ok((_, tls_options)) => Some(tls_options.clone()),
+            _ => None,
+        }
+    }
+    pub fn tls13_config_of_config(config: &pb_api::Configuration) -> Option<pb_api::TLSv13Config> {
+        tls_options_of_config(config)
+            .and_then(|tls_config| tls_config.tls13.as_ref().map(|v| v.clone()))
+    }
+    /* fn ciphersuites_of_config(config: &pb_api::Configuration) -> Option<pb_api::TLSv13Config> {
+      tls_options_of_config(config).and_then(|tls_config| tls_config.tls13.as_ref().map(|v| v.clone()))
+    } */
+    pub fn x509_verifier_of_tls_options(
+        tls_options: &pb_api::TLSOptions,
+    ) -> Option<pb_api::X509Verifier> {
+        match tls_options.peer_verifier.clone()? {
+            pb_api::tlsoptions::Peer_verifier::X509Verifier(x509) => Some(x509),
+            _ => None,
+        }
+    }
+    pub fn x509_verifier_of_config(config: &pb_api::Configuration) -> Option<pb_api::X509Verifier> {
+        tls_options_of_config(config)
+            .as_ref()
+            .and_then(x509_verifier_of_tls_options)
+    }
+    pub fn ca_in_x509_verifier(
+        x509_verifier: &pb_api::X509Verifier,
+        ca: &pb_api::Certificate,
+    ) -> bool {
+        let cas = x509_verifier.trusted_cas.clone();
+        cas.contains(ca)
+    }
+    pub fn cas_of_x509_verifier(
+        x509_verifier: &pb_api::X509Verifier,
+    ) -> Option<::std::vec::Vec<pb_api::Certificate>> {
+        Some(x509_verifier.clone().trusted_cas)
+    }
+
+    pub fn ca_in_config(config: &pb_api::Configuration, ca: &pb_api::Certificate) -> bool {
+        let x509_verifier = x509_verifier_of_config(config);
+        x509_verifier
+            .map(|verifier| ca_in_x509_verifier(&verifier, ca))
+            .unwrap_or(false)
+    }
+    pub fn is_verifier_of_tunnel_config(
+        verifier: Option<pb_api::TunnelVerifier>,
+        tv: pb_api::TunnelConfiguration,
+    ) -> bool {
+        tv.verifier.as_ref() == verifier.as_ref()
+    }
 }
 
 #[hax_lib::attributes]
@@ -159,7 +312,7 @@ impl<'a> Context<'a> {
     ///
     /// ```
     #[allow(unused_variables)]
-    #[hax_lib::requires(fstar!("configured(configuration)"))] 
+    #[hax_lib::requires(fstar!("configured(configuration)"))]
     pub fn try_from(
         context: &'a crate::Context,
         configuration: &pb_api::Configuration,
@@ -173,6 +326,8 @@ impl<'a> Context<'a> {
     /// of it to send and receive data.
     ///
     /// If an error occured, the IO interface is returned to the user.
+    // We could have a precondition
+    #[hax_lib::requires(fstar!("tunnel_configured(configuration)"))]
     pub fn new_tunnel(
         &self,
         io: BoxedIO,
@@ -194,8 +349,13 @@ impl<'a> Context<'a> {
     }
 }
 
-fn new_tunnel<'a>(context : &'a Context, io: BoxedIO, configuration: pb_api::TunnelConfiguration) -> TunnelResult<'a>{
-  context.new_tunnel(io, configuration)
+#[hax_lib::requires(fstar!("tunnel_configured(configuration)"))]
+fn new_tunnel<'a>(
+    context: &'a Context,
+    io: BoxedIO,
+    configuration: pb_api::TunnelConfiguration,
+) -> TunnelResult<'a> {
+    context.new_tunnel(io, configuration)
 }
 
 #[cfg(test)]

@@ -12,6 +12,12 @@ use crate::Result;
 use super::TlsVersion;
 
 /// Returns the execution mode (Client or Server) and the tls options (`TLSOptions`).
+/* #[hax_lib::ensures(|result| {
+    match (result, crate::tunnel::hax_ghost_code::tls_options_of_config(configuration)) {
+        (Ok((_, opts)), Some(true_opts)) => true_opts == *opts,
+        _ => true
+    }
+})] */
 pub(crate) fn configuration_get_mode_and_options(
     configuration: &Configuration,
 ) -> Result<(Mode, &TLSOptions)> {
@@ -57,6 +63,13 @@ pub(crate) fn tls_options_get_min_max_tls_version(
 /// Returns the X.509 verifier if exists.
 /// If no X.509 verifier is found, and `EmptyVerifier` isn't specified, then
 /// it's an error.
+#[hax_lib::ensures(|result| {
+    match result {
+        Ok(verifier) => verifier.map(|v| v.clone()) == crate::tunnel::hax_ghost_code::x509_verifier_of_tls_options(tls_options),
+        _ => true
+    }
+
+})]
 pub(crate) fn tls_options_get_x509_verifier(
     tls_options: &TLSOptions,
 ) -> Result<Option<&X509Verifier>> {
@@ -163,7 +176,7 @@ where
             if crate::support::contains_any_of(c.as_ref(), invalid_chars) {
                 error = Some(Err(
                     pb::TLSConfigurationError::TLSCONFIGURATIONERROR_UNSUPPORTED_CONTROL_CHARACTERS
-                        .into()
+                        .into(),
                 ))
             } else {
                 output.push_str(c.as_ref());

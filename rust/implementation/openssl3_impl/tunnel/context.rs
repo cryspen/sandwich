@@ -8,12 +8,14 @@ use std::ffi::{c_int, CString};
 use std::pin::Pin;
 use std::ptr::{self, NonNull};
 
+use openssl3::x509_store_st;
+
+use super::Context;
 use crate::ossl3::LibCtx;
 use crate::support::Pimpl;
 use crate::tunnel::tls::{TlsVersion, VerifyMode};
-use crate::tunnel::{tls, Mode, BoxedIO};
+use crate::tunnel::{tls, BoxedIO, Mode};
 use crate::Result;
-use super::Context;
 
 use crate::ossl3::{NativePrivateKey, NativeSsl, NativeSslCtx, NativeX509Certificate};
 
@@ -128,15 +130,18 @@ impl SslContext {
 
     /// Defines the maximum TLS version to use.
     #[hax_lib::opaque]
-    #[hax_lib::fstar::before("
+    #[hax_lib::fstar::before(
+        "
 assume val configured: Sandwich_api_proto.Configuration.t_Configuration -> bool
+assume val tunnel_configured: Sandwich_api_proto.Tunnel.t_TunnelConfiguration -> bool
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume val missing_impl: Protobuf.Enums.t_Enum Sandwich_api_proto.Configuration.t_Implementation
 
 assume
 val set_verify_mode_called: verify_mode: Sandwich.Tunnel.Tls.t_VerifyMode -> Type0
-")]
+"
+    )]
     fn set_maximum_tls_version(&self, version: TlsVersion) -> Result<()> {
         // `SSL_CTX_set_max_proto_version` is a C macro.
         if unsafe {
@@ -205,7 +210,10 @@ val set_verify_mode_called: verify_mode: Sandwich.Tunnel.Tls.t_VerifyMode -> Typ
         } else {
             Err((
                 pb::SystemError::SYSTEMERROR_BACKEND,
-                format!("failed to set the trust parameter: {}", crate::ossl3::errstr()),
+                format!(
+                    "failed to set the trust parameter: {}",
+                    crate::ossl3::errstr()
+                ),
             )
                 .into())
         }
@@ -354,7 +362,11 @@ val set_verify_mode_called: verify_mode: Sandwich.Tunnel.Tls.t_VerifyMode -> Typ
     }
 
     /// Configures TLS 1.3.
-    #[hax_lib::opaque]
+    // Note: seems to be where we set the ciphersuites, but string based...
+    #[hax_lib::requires(fstar!(r"
+    exists c. configured c /\ 
+    ${tls13_config} == ${crate::tunnel::hax_ghost_code::tls13_config_of_config} c
+    "))]
     fn configure_tls13(&self, tls13_config: Option<&pb_api::TLSv13Config>) -> Result<()> {
         let Some(config) = tls13_config else {
             return Ok(());
@@ -590,9 +602,40 @@ val set_verify_mode_called: verify_mode: Sandwich.Tunnel.Tls.t_VerifyMode -> Typ
         Ok(())
     }
 
+    #[hax_lib::opaque]
+    #[hax_lib::requires(fstar!(r"exists configuration. configured(configuration) /\ ${crate::tunnel::hax_ghost_code::ca_in_config} configuration $certificate"))]
+    fn add_certificate(
+        &self,
+        certificate: &pb_api::Certificate,
+        lib_ctx: &LibCtx<'_>,
+        store: NonNull<x509_store_st>,
+    ) -> Result<()> {
+        let (format, data_source) = tls::support::configuration_read_certificate(certificate)?;
+        let bio = crate::ossl3::BIO_from_buffer(&data_source)?;
+
+        while !crate::ossl3::is_BIO_eof(bio.as_nonnull()) {
+            let x509 = crate::ossl3::X509_from_BIO(lib_ctx, bio.as_nonnull(), format)?;
+            unsafe { openssl3::X509_STORE_add_cert(store.as_ptr(), x509.as_nonnull().as_ptr()) };
+        }
+        Ok(())
+    }
+
+    #[hax_lib::opaque]
+    fn store(&self) -> Result<NonNull<x509_store_st>> {
+        Ok(
+            NonNull::new(unsafe { openssl3::SSL_CTX_get_cert_store(self.0.as_ptr()) }).ok_or((
+                pb::SystemError::SYSTEMERROR_MEMORY,
+                "SSL_CTX does not have a certificate store",
+            ))?,
+        )
+    }
+
     /// Imports the trusted certificates from the protobuf configuration to the
     /// OpenSSL SSL context.
-    #[hax_lib::opaque]
+    #[hax_lib::requires(fstar!(r"
+exists c. configured c /\ 
+$x509_verifier == (${crate::tunnel::hax_ghost_code::x509_verifier_of_config} c)
+"))]
     fn fill_certificate_trust_store(
         &self,
         lib_ctx: &LibCtx<'_>,
@@ -602,25 +645,17 @@ val set_verify_mode_called: verify_mode: Sandwich.Tunnel.Tls.t_VerifyMode -> Typ
             return Ok(());
         };
 
-        let store = NonNull::new(unsafe { openssl3::SSL_CTX_get_cert_store(self.0.as_ptr()) })
-            .ok_or((
-                pb::SystemError::SYSTEMERROR_MEMORY,
-                "SSL_CTX does not have a certificate store",
-            ))?;
+        let store = self.store()?;
+
+        let mut res = Ok(());
 
         for certificate in x509_verifier.trusted_cas.iter() {
-            let (format, data_source) = tls::support::configuration_read_certificate(certificate)?;
-            let bio = crate::ossl3::BIO_from_buffer(&data_source)?;
-
-            while !crate::ossl3::is_BIO_eof(bio.as_nonnull()) {
-                let x509 = crate::ossl3::X509_from_BIO(lib_ctx, bio.as_nonnull(), format)?;
-                unsafe {
-                    openssl3::X509_STORE_add_cert(store.as_ptr(), x509.as_nonnull().as_ptr())
-                };
+            if res.is_ok() {
+                res = self.add_certificate(certificate, lib_ctx, store);
             }
         }
 
-        Ok(())
+        res
     }
 
     /// Loads the OpenSSL system-default trust anchors into context store.
@@ -686,7 +721,10 @@ where
     .ok_or_else(|| {
         (
             pb::SystemError::SYSTEMERROR_MEMORY,
-            format!("failed to instantiate a new SSL: {}", crate::ossl3::errstr()),
+            format!(
+                "failed to instantiate a new SSL: {}",
+                crate::ossl3::errstr()
+            ),
         )
             .into()
     })
@@ -709,7 +747,6 @@ fn get_verify_mode_from_mode_and_x509_verifier(
 
 /// A boxed and pinned tunnel.
 pub(crate) type PinnedTunnel<'a> = Pin<Box<Tunnel<'a>>>;
-
 
 #[hax_lib::attributes]
 impl<'a> Context<'a> {
@@ -784,6 +821,7 @@ impl<'a> Context<'a> {
     }
 
     /// Creates a new tunnel.
+    #[hax_lib::requires(fstar!("tunnel_configured(configuration)"))]
     pub(crate) fn new_tunnel(
         &self,
         io: BoxedIO,
@@ -1306,12 +1344,9 @@ mod test {
                     >
                 >
             "#,
-                etc_ssl_cert_pem =
-                    crate::test::resolve_runfile("testdata/etc_ssl_cert.pem"),
-                certificate_file =
-                    crate::test::resolve_runfile("testdata/falcon1024.cert.pem"),
-                private_key_file =
-                    crate::test::resolve_runfile("testdata/falcon1024.key.pem"),
+                etc_ssl_cert_pem = crate::test::resolve_runfile("testdata/etc_ssl_cert.pem"),
+                certificate_file = crate::test::resolve_runfile("testdata/falcon1024.cert.pem"),
+                private_key_file = crate::test::resolve_runfile("testdata/falcon1024.key.pem"),
             ))
             .unwrap();
 

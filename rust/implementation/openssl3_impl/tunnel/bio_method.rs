@@ -9,14 +9,12 @@ use std::ptr::{self, NonNull};
 use crate::io::error::IntoIOError;
 use crate::ossl3::{NativeBio, NativeSsl};
 
-
 use super::Tunnel;
 
 use crate::tunnel::IO;
 
 use std::io::Read;
 use std::io::Write;
-
 
 /// A wrapper around a BIO.
 struct Bio(NonNull<NativeBio>);

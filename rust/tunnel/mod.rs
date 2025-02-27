@@ -9,14 +9,14 @@
 //! information.
 
 pub(crate) use context::Mode;
-pub use context::{Context, TunnelResult};
+pub use context::{hax_ghost_code, Context, TunnelResult};
 
 #[cfg(feature = "tracer")]
 use crate::support::tracing::SandwichTracer;
 
 #[cfg(any(feature = "openssl1_1_1", feature = "boringssl"))]
 use crate::implementation::ossl;
-pub use io::{IO, BoxedIO};
+pub use io::{BoxedIO, IO};
 
 mod context;
 
@@ -223,9 +223,11 @@ impl<'a> From<crate::ossl3::tunnel::Tunnel<'a>> for Tunnel<'a> {
 
 impl<'a> Tunnel<'a> {
     fn rewrap<Inner, Other>((inner, other): (Inner, Other)) -> (Self, Other)
-        where Self: From<Inner> {
-            (inner.into(), other)
-        }
+    where
+        Self: From<Inner>,
+    {
+        (inner.into(), other)
+    }
 }
 
 macro_rules! dispatch {
@@ -283,9 +285,7 @@ impl Tunnel<'_> {
             Self::BoringSSL(t) => t.0.handshake(),
 
             #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(t) => {
-                Self::rewrap((*std::pin::Pin::into_inner(t)).handshake())
-            }
+            Self::OpenSSL3(t) => Self::rewrap((*std::pin::Pin::into_inner(t)).handshake()),
         }
     }
 
@@ -342,7 +342,7 @@ impl Tunnel<'_> {
             Self::BoringSSL(t) => t.0.add_tracer(tracer),
 
             #[cfg(feature = "openssl3")]
-            Self::OpenSSL3(t) => Self::rewrap(((*std::pin::Pin::into_inner(t))).add_tracer(tracer)),
+            Self::OpenSSL3(t) => Self::rewrap((*std::pin::Pin::into_inner(t)).add_tracer(tracer)),
         }
     }
 }

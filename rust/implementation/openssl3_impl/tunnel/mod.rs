@@ -3,17 +3,17 @@
 
 //! Tunnel implementation using OpenSSL 3 and oqs-provider.
 
+use crate::ossl3::LibCtx;
+use crate::ossl3::NativeSsl;
+use crate::ossl3::NativeSslCtx;
+use crate::support::Pimpl;
+use crate::tunnel::tls;
+use crate::tunnel::BoxedIO;
+use crate::tunnel::Mode;
 use bio_method::BIO_METHOD;
 use ssl::{Ssl, TunnelBuilder};
 use verify_callback::verify_callback;
 use x509_verify_param::X509VerifyParam;
-use crate::support::Pimpl;
-use crate::ossl3::NativeSsl;
-use crate::ossl3::NativeSslCtx;
-use crate::tunnel::tls;
-use crate::tunnel::BoxedIO;
-use crate::tunnel::Mode;
-use crate::ossl3::LibCtx;
 
 mod bio_method;
 mod context;
@@ -22,6 +22,7 @@ mod verify_callback;
 mod x509_verify_param;
 
 /// A tunnel, wrapper around a SSL object.
+// Have this as an opaque type with getters (whose values are in accordance with the setters)
 pub struct Tunnel<'a> {
     /// Parent SSL_CTX object.
     pub(crate) _ssl_ctx: &'a Context<'a>,

@@ -21,7 +21,6 @@
 
 extern crate protobuf;
 
-
 pub mod tracing {
     include!(concat!(env!("OUT_DIR"), "/tracing.rs"));
 }

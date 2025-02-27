@@ -14,9 +14,9 @@ use crate::Result;
 
 use crate::ossl3::{Error, ErrorLibrary, SslError};
 
-use crate::ossl3::{NativeBio, NativeSsl};
 use super::Tunnel;
 use crate::ossl3::LibCtx;
+use crate::ossl3::{NativeBio, NativeSsl};
 
 use super::{Context, X509VerifyParam, BIO_METHOD};
 
@@ -39,6 +39,7 @@ impl From<NonNull<NativeSsl>> for Ssl {
     }
 }
 
+#[hax_lib::attributes]
 impl Ssl {
     #[hax_lib::opaque]
     /// Returns a pointer to some extra data from a SSL object.
@@ -78,6 +79,7 @@ impl Ssl {
 
     /// Sets the required Subject Alternative Names (SAN) specified in the [`pb_api::TunnelVerifier`]
     /// object.
+    #[hax_lib::requires(fstar!(r"exists tc. tunnel_configured tc /\ ${crate::tunnel::hax_ghost_code::is_verifier_of_tunnel_config} tunnel_verifier tc"))]
     fn set_subject_alternative_names(
         &self,
         tunnel_verifier: Option<&pb_api::TunnelVerifier>,
@@ -87,10 +89,10 @@ impl Ssl {
         else {
             return Ok(());
         };
-        let x509_verify_param = X509VerifyParam::try_from(self.0)?;
+        let x509_verify_param: X509VerifyParam<'_> = X509VerifyParam::try_from(self.0)?;
         let mut res = Ok(());
         for san in &san_verifier.alt_names {
-            if let Some(san) = san.san.as_ref(){
+            if let Some(san) = san.san.as_ref() {
                 let add_res = x509_verify_param.add_san(san);
                 if add_res.is_err() {
                     res = add_res
@@ -98,7 +100,6 @@ impl Ssl {
             } else {
                 res = Err((pb::TunnelError::TUNNELERROR_VERIFIER, "empty SANMatcher").into());
             };
-            
         }
         res
     }
@@ -130,7 +131,10 @@ impl Ssl {
         } else {
             Err((
                 pb::TunnelError::TUNNELERROR_VERIFIER,
-                format!("failed to set the SNI to '{sni}': {}", crate::ossl3::errstr()),
+                format!(
+                    "failed to set the SNI to '{sni}': {}",
+                    crate::ossl3::errstr()
+                ),
             )
                 .into())
         }
@@ -323,7 +327,10 @@ impl Ssl {
                 return (
                     Err((
                         pb::HandshakeError::HANDSHAKEERROR_NO_SHARED_CIPHER,
-                        format!("no shared cipher. error: {error:?} ({})", crate::ossl3::errstr()),
+                        format!(
+                            "no shared cipher. error: {error:?} ({})",
+                            crate::ossl3::errstr()
+                        ),
                     )
                         .into()),
                     None,
@@ -447,8 +454,7 @@ pub(crate) struct TunnelBuilder<'a> {
 }
 
 /// Tunnel builder result.
-type TunnelBuilderResult<'a> =
-    std::result::Result<Pin<Box<Tunnel<'a>>>, (crate::Error, BoxedIO)>;
+type TunnelBuilderResult<'a> = std::result::Result<Pin<Box<Tunnel<'a>>>, (crate::Error, BoxedIO)>;
 
 impl std::fmt::Debug for TunnelBuilder<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
@@ -456,8 +462,10 @@ impl std::fmt::Debug for TunnelBuilder<'_> {
     }
 }
 
+#[hax_lib::attributes]
 impl<'a> TunnelBuilder<'a> {
     /// Prepares a tunnel structure.
+    #[hax_lib::requires(fstar!("let ${self_} = self in tunnel_configured(${self_.configuration})"))]
     fn prepare_ssl(&self) -> Result<Pimpl<'a, NativeSsl>> {
         let tunnel_verifier = self.configuration.verifier.as_ref();
         let security_requirements = self.ssl_ctx.security_requirements();
@@ -472,6 +480,7 @@ impl<'a> TunnelBuilder<'a> {
     }
 
     /// Builds a tunnel.
+    #[hax_lib::requires(fstar!("let ${self_} = self in tunnel_configured(${self_.configuration})"))]
     pub(crate) fn build(self) -> TunnelBuilderResult<'a> {
         let ssl = match self.prepare_ssl() {
             Ok(ssl) => ssl,
@@ -565,7 +574,10 @@ impl<'a> Tunnel<'a> {
         if let Some(tunnel_state) = tunnel_state {
             self.state = tunnel_state;
         }
-        (self, handshake_state.map(crate::tunnel::HandshakeState::from))
+        (
+            self,
+            handshake_state.map(crate::tunnel::HandshakeState::from),
+        )
     }
 
     pub(crate) fn read(mut self, buf: &mut [u8]) -> (Self, crate::tunnel::RecordResult<usize>) {

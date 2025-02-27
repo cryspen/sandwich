@@ -224,7 +224,6 @@ pub(crate) use openssl3::{
 use std::ffi::{c_int, c_ulong, CStr, CString};
 use std::ptr::{self};
 
-
 /// Returns the last error.
 pub(crate) fn peek_last_error() -> c_ulong {
     unsafe { openssl3::ERR_peek_last_error() }
@@ -330,7 +329,9 @@ pub(crate) fn new_BIO(
 
 /// Creates a `BIO` object from a immutable buffer.
 #[allow(non_snake_case)]
-pub(crate) fn BIO_from_buffer<'a>(buffer: impl AsRef<[u8]> + 'a) -> crate::Result<Pimpl<'a, NativeBio>> {
+pub(crate) fn BIO_from_buffer<'a>(
+    buffer: impl AsRef<[u8]> + 'a,
+) -> crate::Result<Pimpl<'a, NativeBio>> {
     let buffer = buffer.as_ref();
     let size: i32 = buffer.len().try_into().map_err(|e| {
         (
@@ -628,7 +629,6 @@ impl From<SslError> for pb::RecordError {
     }
 }
 
-
 #[cfg(test)]
 pub(crate) mod test {
     use std::ffi::{c_int, CString};
@@ -767,8 +767,7 @@ pub(crate) mod test {
     #[test]
     #[allow(non_snake_case)]
     fn test_X509_from_BIO_PEM() {
-        let cert_path =
-            crate::test::resolve_runfile("testdata/falcon1024.cert.pem");
+        let cert_path = crate::test::resolve_runfile("testdata/falcon1024.cert.pem");
         let data = std::fs::read(cert_path).unwrap();
         let bio = BIO_from_buffer(&data).unwrap();
         let lib_ctx = LibCtx::try_new().unwrap();
@@ -786,8 +785,7 @@ pub(crate) mod test {
     #[test]
     #[allow(non_snake_case)]
     fn test_X509_from_BIO_DER() {
-        let cert_path =
-            crate::test::resolve_runfile("testdata/dilithium5.cert.der");
+        let cert_path = crate::test::resolve_runfile("testdata/dilithium5.cert.der");
         let data = std::fs::read(cert_path).unwrap();
         let bio = BIO_from_buffer(&data).unwrap();
         let lib_ctx = LibCtx::try_new().unwrap();
@@ -804,8 +802,7 @@ pub(crate) mod test {
     #[test]
     #[allow(non_snake_case)]
     fn test_X509_from_BIO_DER_invalid() {
-        let cert_path =
-            crate::test::resolve_runfile("testdata/cert_unknown_sig_alg.der");
+        let cert_path = crate::test::resolve_runfile("testdata/cert_unknown_sig_alg.der");
         let data = std::fs::read(cert_path).unwrap();
         let bio = BIO_from_buffer(&data).unwrap();
         let lib_ctx = LibCtx::try_new().unwrap();
@@ -824,8 +821,7 @@ pub(crate) mod test {
     #[test]
     #[allow(non_snake_case)]
     fn test_EVP_PKEY_from_BIO_PEM() {
-        let private_key_path =
-            crate::test::resolve_runfile("testdata/dilithium5.key.pem");
+        let private_key_path = crate::test::resolve_runfile("testdata/dilithium5.key.pem");
         let data = std::fs::read(private_key_path).unwrap();
         let bio = BIO_from_buffer(&data).unwrap();
         let lib_ctx = LibCtx::try_new().unwrap();
@@ -842,8 +838,7 @@ pub(crate) mod test {
     #[test]
     #[allow(non_snake_case)]
     fn test_EVP_PKEY_from_BIO_DER() {
-        let private_key_path =
-            crate::test::resolve_runfile("testdata/dilithium5.key.der");
+        let private_key_path = crate::test::resolve_runfile("testdata/dilithium5.key.der");
         let data = std::fs::read(private_key_path).unwrap();
         let bio = BIO_from_buffer(&data).unwrap();
         let lib_ctx = LibCtx::try_new().unwrap();

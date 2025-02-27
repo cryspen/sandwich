@@ -43,8 +43,7 @@ fn test_nok_depth_exceeded() {
 
     let root_ca = runfile("testdata/certificate_chain/chain_example_com/ca.pem");
 
-    let fullchain =
-        runfile("testdata/certificate_chain/chain_example_com/fullchain.pem");
+    let fullchain = runfile("testdata/certificate_chain/chain_example_com/fullchain.pem");
     let key = runfile("testdata/certificate_chain/chain_example_com/leaf.key");
 
     let client_context = Context::try_from(
@@ -196,8 +195,7 @@ fn test_ok() {
 
     let root_ca = runfile("testdata/certificate_chain/chain_example_com/ca.pem");
 
-    let fullchain =
-        runfile("testdata/certificate_chain/chain_example_com/fullchain.pem");
+    let fullchain = runfile("testdata/certificate_chain/chain_example_com/fullchain.pem");
     let key = runfile("testdata/certificate_chain/chain_example_com/leaf.key");
 
     let client_context = Context::try_from(

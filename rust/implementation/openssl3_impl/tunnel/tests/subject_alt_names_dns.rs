@@ -40,8 +40,7 @@ fn test_ok() {
     let lib_ctx = sandwich::Context::new();
 
     let root_ca = runfile("testdata/certificate_chain/chain_example_com/ca.pem");
-    let fullchain =
-        runfile("testdata/certificate_chain/chain_example_com/fullchain.pem");
+    let fullchain = runfile("testdata/certificate_chain/chain_example_com/fullchain.pem");
     let key = runfile("testdata/certificate_chain/chain_example_com/leaf.key");
 
     let client_context = Context::try_from(
@@ -199,8 +198,7 @@ fn test_nok_sans_dont_match() {
     let lib_ctx = sandwich::Context::new();
 
     let root_ca = runfile("testdata/certificate_chain/chain_example_com/ca.pem");
-    let fullchain =
-        runfile("testdata/certificate_chain/chain_example_com/fullchain.pem");
+    let fullchain = runfile("testdata/certificate_chain/chain_example_com/fullchain.pem");
     let key = runfile("testdata/certificate_chain/chain_example_com/leaf.key");
     let client_context = Context::try_from(
         &lib_ctx,

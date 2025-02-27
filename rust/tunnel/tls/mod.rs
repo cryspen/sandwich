@@ -250,7 +250,10 @@ impl VerifierSanitizer<pb_api::SANVerifier> for TunnelSecurityRequirements {
 }
 
 #[hax_lib::opaque]
-fn run_sanitizer_checks(x: &TunnelSecurityRequirements, verifier: &pb_api::TunnelVerifier) -> crate::Result<()> {
+fn run_sanitizer_checks(
+    x: &TunnelSecurityRequirements,
+    verifier: &pb_api::TunnelVerifier,
+) -> crate::Result<()> {
     match verifier.verifier.as_ref() {
         Some(pb_api::verifiers::tunnel_verifier::Verifier::SanVerifier(san_verifier)) => {
             x.run_sanitizer_checks(san_verifier)
@@ -315,8 +318,7 @@ pub(crate) mod test {
     pub(crate) const EXAMPLE_COM_CERT_PATH: &str = "testdata/example.com.cert.pem";
 
     /// Path to a certificate signed for the `user@example.com` email address.
-    pub(crate) const USER_AT_EXAMPLE_COM_CERT_PATH: &str =
-        "testdata/user@example.com.cert.pem";
+    pub(crate) const USER_AT_EXAMPLE_COM_CERT_PATH: &str = "testdata/user@example.com.cert.pem";
 
     /// Path to a certificate signed for the `127.0.0.1` IP address.
     pub(crate) const IP_127_0_0_1_CERT_PATH: &str = "testdata/127.0.0.1.cert.pem";

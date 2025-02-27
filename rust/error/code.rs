@@ -418,7 +418,6 @@ TUNNELERROR_UNKNOWN => "Unknown error.",
 },
 );
 
-
 /// An error code.
 /// An error code consists of an error code based on a protobuf enum - [`ProtoBasedErrorCode`]
 /// and an arbitrary string.

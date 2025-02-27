@@ -224,10 +224,7 @@ impl<'a> CertificateChainBuilder<'a> {
         format: pb_api::ASN1EncodingFormat,
     ) -> crate::Result<&mut Self> {
         self.root_ca_from_testdata(
-            format!(
-                "testdata/certificate_chain/{}",
-                root_ca_path.as_ref()
-            ),
+            format!("testdata/certificate_chain/{}", root_ca_path.as_ref()),
             format,
         )
     }
