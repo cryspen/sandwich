@@ -227,9 +227,11 @@ pub mod hax_ghost_code {
         tls_options_of_config(config)
             .and_then(|tls_config| tls_config.tls13.as_ref().map(|v| v.clone()))
     }
-    /* fn ciphersuites_of_config(config: &pb_api::Configuration) -> Option<pb_api::TLSv13Config> {
-      tls_options_of_config(config).and_then(|tls_config| tls_config.tls13.as_ref().map(|v| v.clone()))
-    } */
+    pub fn ciphersuites_of_config(config: &pb_api::Configuration) -> Vec<String> {
+        tls13_config_of_config(config)
+            .map(|c| c.ciphersuite)
+            .unwrap_or(Vec::new())
+    }
     pub fn x509_verifier_of_tls_options(
         tls_options: &pb_api::TLSOptions,
     ) -> Option<pb_api::X509Verifier> {

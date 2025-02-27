@@ -360,6 +360,13 @@ val set_verify_mode_called: verify_mode: Sandwich.Tunnel.Tls.t_VerifyMode -> Typ
 
         Ok(())
     }
+    #[hax_lib::requires(fstar!(r"
+    exists c. configured c /\ 
+    ${ciphers} == ${crate::tunnel::hax_ghost_code::ciphersuites_of_config} c
+    "))]
+    fn set_ciphersuites_wrapper(&self, ciphers: &Vec<String>) -> Result<()> {
+        self.set_ciphersuites(ciphers)
+    }
 
     /// Configures TLS 1.3.
     // Note: seems to be where we set the ciphersuites, but string based...
@@ -377,7 +384,7 @@ val set_verify_mode_called: verify_mode: Sandwich.Tunnel.Tls.t_VerifyMode -> Typ
         if config.ciphersuite.is_empty() {
             self.set_default_ciphersuites()?;
         } else {
-            self.set_ciphersuites(&config.ciphersuite)?;
+            self.set_ciphersuites_wrapper(&config.ciphersuite)?;
         }
 
         Ok(())
