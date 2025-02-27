@@ -203,29 +203,23 @@ pub mod hax_ghost_code {
     // ignore this for now, and focus on the interesting part,
     // use tls::support::configuration_get_mode_and_options in spec assuming it is correct
     pub fn tls_options_of_config(config: &pb_api::Configuration) -> Option<pb_api::TLSOptions> {
-        /* match config.opts.clone() {
+        match config.opts.clone() {
             Some(pb_api::configuration::configuration::Opts::Client(ClientOptions {
                 opts:
                     Some(pb_api::client_options::Opts::Tls(pb_api::tls::TLSClientOptions {
-                        common_options: protobuf::MessageField(Some(tls_opts)),
+                        common_options,
                         ..
                     })),
                 ..
             }))
             | Some(pb_api::configuration::configuration::Opts::Server(pb_api::ServerOptions {
-              opts:
-                  Some(pb_api::server_options::Opts::Tls(pb_api::tls::TLSServerOptions {
-                      common_options: protobuf::MessageField(Some(tls_opts)),
-                      ..
-                  })),
-              ..
-          }))
-             => Some(*tls_opts),
-            _ => None
-        } */
-
-        match crate::tunnel::tls::support::configuration_get_mode_and_options(config) {
-            Ok((_, tls_options)) => Some(tls_options.clone()),
+                opts:
+                    Some(pb_api::server_options::Opts::Tls(pb_api::tls::TLSServerOptions {
+                        common_options,
+                        ..
+                    })),
+                ..
+            })) => common_options.as_ref().map(|o| o.clone()),
             _ => None,
         }
     }
